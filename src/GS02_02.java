@@ -12,7 +12,7 @@ Maintenance log:
 Date:       Done:
 9/19/2023   Finished GS02-02
  */
-public class GS02_2 {
+public class GS02_02 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         long num =1;
