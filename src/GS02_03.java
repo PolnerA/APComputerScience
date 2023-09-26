@@ -3,6 +3,7 @@ Name: Adam Polner
 Problem: Write a program that produces the ASCII stair output (see book figure).
 Use a class constant to make it possible to change the number of stairs in the figure.
 PseudoCode: See DrawStair Function
+Notes:
 Maintenance log:
 Date:       Done:
 9/21/2023   Started GS02-03
