@@ -1,10 +1,12 @@
 /*
-Name:
-Problem:
-Pseudocode:
-Notes:
+Name:Adam Polner
+Problem:Do BJP Ch 1 Project 4. Write a program with static methods 
+to output the song The Twelve Days of Christmas.
+Pseudocode: Use System.out.println and methods that go into each other to output the song
+Notes: Same as GS01-04 except longer
 Maintenance log:
 Date:       Done:
+9/27/2023   Finished GS01-05
  */
 public class GS01_05 {
     public static void main(String[] args) {
