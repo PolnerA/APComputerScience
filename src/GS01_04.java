@@ -1,9 +1,13 @@
 /*
-Name:
-Problem:
-Pseudocode:
+Name: Adam Polner
+Problem: Do BJP Ch 1 Project 3. Write a program with static methods to output 
+    the song I Know an Old Lady Who Swallowed a Fly. Use methods for each verse and one for the refrain.
+Pseudocode: Use System.out.println to output each line, then use a method for the following things, the methods go back to the final one
 Notes:
 Maintenance log:
+Date:        Done:
+9/26/2023  Finished the first half of GS01-04
+9/27/2023  Finished GS01-04
  */
 public class GS01_04 {
     public static void main(String[] args) {
