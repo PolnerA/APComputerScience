@@ -1,10 +1,11 @@
 import java.util.Scanner;
 /*
-Name:
+Name: Adam Polner
 Problem:
 Pseudocode:
 Notes: use cosine rule measure of angle C when given a, b and c is c^2 = a^2 + b^2 -2ab cos C
-use sine rule measure of angle B when given a, b, c and C : B=arcsine((b sine C)/c)
+Measure of angle C = arccos((a^2+b^2-c^2)/(2*a*b))
+B = arccos((a^2+c^2-b^2)/(2*c*a))
 Maintenance log:
 Date:       Done:
  */
@@ -17,12 +18,15 @@ public class GS02_05 {
         double b= sc.nextDouble();
         System.out.println("Third Side:");
         double c= sc.nextDouble();
-        double twoab = 2*a*b;
-        double aaPlusbbMinuscc= (a*a+b*b)-c*c;
-        double cosCequals = aaPlusbbMinuscc/twoab;
-        double C=Math.acos((cosCequals*Math.PI)/180);
-        double B=Math.asin((((b*Math.sin(C))/c)*Math.PI)/180);
-        double A=180-c-b;
-        System.out.println("A: "+A+"\nB: +"+B+"\nC: "+C);
+        if(a<b+c||b<c+a||c<b+a) {
+            double C = acos((a * a + b * b - c * c) / (2 * a * b));//Function converts to radian and returns in deg
+            double B = acos((a * a + c * c - b * b) / (2 * c * a));
+            double A = 180 - C - B;
+            System.out.println("A: " + A + "\nB: " + B + "\nC: " + C);
+        }
+    }
+    public static double acos(double r)
+    {
+        return ((Math.acos(r)*180)/Math.PI);
     }
 }
