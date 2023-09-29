@@ -7,6 +7,9 @@ public class RockPaperScissors
         boolean rerun = true;
         Random rng = new Random();
         Scanner sc = new Scanner(System.in);
+        int wins =0;
+        int losses=0;
+        int draws =0;
         while(rerun) {
             rerun =false;
             int choice = rng.nextInt(3);
@@ -45,14 +48,18 @@ public class RockPaperScissors
             }switch (Gameoutcome) {
                 case 0:
                     System.out.println("draw");
+                    draws++;
                     break;
                 case 1:
                     System.out.println("win");
+                    wins++;
                     break;
                 case 2:
                     System.out.println("loss");
+                    losses++;
                     break;
-            }System.out.println("replay?(1.yes|2.No)");
+            }System.out.println("wins: "+wins+"| losses: "+losses+"| draws: "+draws);
+            System.out.println("replay?(1.yes|2.No)");
             int ans = sc.nextInt();
             if(ans ==1) {
                 rerun=true;
