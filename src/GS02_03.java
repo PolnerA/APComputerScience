@@ -51,20 +51,6 @@ public class GS02_03 {
         }
         DrawFloor(steps);
     }
-    /*
-    static void DrawTopStair(int steps) {
-        for (int i = 0; i <= 2 + ((steps-1) * 5); i++) {
-        System.out.print(" ");
-        }
-        System.out.print("o");
-        System.out.print("  ");
-        System.out.print("*******\n");
-        for (int i = 0; i <= 1 + ((steps-1) * 5); i++) {
-            System.out.print(" ");
-        }
-        System.out.print("/|\\ *");
-
-    }*/
     static void DrawFloor(int steps){
         for(int i=0;i<=(steps*5)+7;i++){
             System.out.print("*");
