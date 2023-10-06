@@ -36,8 +36,8 @@ public class Wordle {
                     }
                 }
                 search.close();
-                Scanner loopsearch = new Scanner(FiveLetterWords);
                 while (fiveletters.length() != 5 || !realword) {
+                    Scanner loopsearch = new Scanner(FiveLetterWords);
                     System.out.print("Five letter word: ");
                     fiveletters = sc.nextLine();
                     while (loopsearch.hasNextLine()) {
@@ -46,8 +46,8 @@ public class Wordle {
                             realword = true;
                             break;
                         }
-                        loopsearch.reset();
                     }
+                    loopsearch.close();
                 }
                 //automatically gray (Gray 0 | Yellow 1 | Green 2)
                 for (int i = 0; i < 5; i++) {
@@ -62,13 +62,13 @@ public class Wordle {
                 }
                 for (int i = 0; i < 5; i++) {
                     if(statuschar[i]==0){
-                        System.out.print("Grey.");
+                        System.out.print(Colors.RED+fiveletters.charAt(i)+Colors.RESET);
                     }
                     else if(statuschar[i]==1){
-                        System.out.print("Yellow.");
+                        System.out.print(Colors.YELLOW_BRIGHT+fiveletters.charAt(i)+Colors.RESET);
                     }
                     else{
-                        System.out.print("Green.");
+                        System.out.print(Colors.GREEN_BOLD_BRIGHT+fiveletters.charAt(i)+Colors.RESET);
                     }
                 }
                 System.out.println();
