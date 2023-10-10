@@ -13,7 +13,7 @@ public class Wordle {
                 File FiveLetterWords = new File("/Users/polnera/IdeaProjects/APComputerScience/src/FiveLetterWords.txt");
                 Scanner myReader = new Scanner(WordleAns);
                 String word = "error";
-                for (int i = 0; i <= rng.nextInt(15919); i++) {//15919
+                for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of words in the answers
                     word = myReader.nextLine();
                 }
                 myReader.close();
