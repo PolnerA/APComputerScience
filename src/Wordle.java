@@ -26,18 +26,8 @@ public class Wordle {
                 int[] statuschar = new int[5];
                 for (int j = 1; j <= 6; j++) {
                     System.out.println("Guess number " + j + "/6");
-                    System.out.print("Five letter word: ");
-                    String fiveletters = sc.nextLine();
                     boolean realword = false;
-                    Scanner search = new Scanner(FiveLetterWords);
-                    while (search.hasNextLine()) {
-                        String line = search.nextLine();
-                        if (line.equals(fiveletters)) {
-                            realword = true;
-                            break;
-                        }
-                    }
-                    search.close();
+                    String fiveletters ="";
                     while (fiveletters.length() != 5 || !realword) {
                         Scanner loopsearch = new Scanner(FiveLetterWords);
                         System.out.print("Five letter word: ");
