@@ -23,46 +23,32 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  */
         Random rng = new Random();
         Scanner sc = new Scanner(System.in);
-        //int num0 = rng.nextInt(10);
-        //int num1 = rng.nextInt(10);
-        //int num2 = rng.nextInt(10);
-        //int num3 = rng.nextInt(10);
-        int num0=6;
-        int num1=6;
-        int num2=8;
-        int num3=4;
-        int[] num = {num0,num1,num2,num3};
-        for (int j : num) {
-            System.out.print(j);
+        int[] num = new int[]{rng.nextInt(10),rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
+        String stringnum ="";
+        for (int i=0;i<num.length;i++){
+            stringnum = stringnum + num[i];
+            System.out.println(stringnum);
         }
-        int intinputnum;
-        int numinputs;
+        String stringinputnum;
         do {
-            System.out.println("\n4 digit number:");
-            numinputs=0;
-            intinputnum = sc.nextInt();
-            int n = intinputnum;
-            while (n != 0) {
-                n /= 10;
-                numinputs++;
+            do {
+                System.out.println("\n4 digit number:");
+                stringinputnum = sc.nextLine();
+            } while (stringinputnum.length()!=4);
+            int blackpins = 0;
+            int whitepins = 0;
+            for (int i = 0; i < stringinputnum.length(); i++) {
+                if (stringinputnum.charAt(i) == stringnum.charAt(i)) {
+                    blackpins++;
+                } else if (stringinputnum.charAt(i) == stringnum.charAt(0) || stringinputnum.charAt(i) == stringnum.charAt(1) || stringinputnum.charAt(i)== stringnum.charAt(2) || stringinputnum.charAt(i) == stringnum.charAt(3)) {
+                            whitepins++;
+                }
             }
-        }while (numinputs!=4);
-        int inputnum0 = intinputnum/1000;
-        int inputnum1 = intinputnum/100 - inputnum0*10;
-        int inputnum2 = intinputnum/10 - inputnum1*10 - inputnum0*100;
-        int inputnum3 = intinputnum-inputnum0*1000-inputnum1*100-inputnum2*10;
-        int[] inputnum = {inputnum0,inputnum1,inputnum2,inputnum3};
-        int blackpins =0;
-        int whitepins =0;
-        for (int i =0;i<inputnum.length;i++){
-            if(inputnum[i]==num[i]){
-                blackpins++;
-            }
-            else if(inputnum[i]==num0||inputnum[i]==num1||inputnum[i]==num2||inputnum[i]==num3){
-                whitepins++;
-            }
-        }
-        System.out.println("Correct space and number: "+blackpins);
-        System.out.println("Incorrect space, Correct number: "+whitepins);
+            System.out.println("Correct space and number: " + blackpins);
+            System.out.println("Incorrect space, Correct number: " + whitepins);
+
+        }while(stringinputnum.charAt(0)!=stringnum.charAt(0)||stringinputnum.charAt(1)!=stringnum.charAt(1)||stringinputnum.charAt(2)!=stringnum.charAt(2)||stringinputnum.charAt(3)!=stringnum.charAt(3));
+
+
     }
 }
