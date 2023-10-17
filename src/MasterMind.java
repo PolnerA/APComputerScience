@@ -23,9 +23,9 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  */
         Random rng = new Random();
         Scanner sc = new Scanner(System.in);
-        int[] num = new int[]{rng.nextInt(10),rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
-        String stringnum ="";
-        for (int i=0;i<num.length;i++){
+        int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
+        String stringnum = "";
+        for (int i = 0; i < num.length; i++) {
             stringnum = stringnum + num[i];
             System.out.println(stringnum);
         }
@@ -34,21 +34,24 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
             do {
                 System.out.println("\n4 digit number:");
                 stringinputnum = sc.nextLine();
-            } while (stringinputnum.length()!=4);
+            } while (stringinputnum.length() != 4);
             int blackpins = 0;
             int whitepins = 0;
-            for (int i = 0; i < stringinputnum.length(); i++) {
-                if (stringinputnum.charAt(i) == stringnum.charAt(i)) {
-                    blackpins++;
-                } else if (stringinputnum.charAt(i) == stringnum.charAt(0) || stringinputnum.charAt(i) == stringnum.charAt(1) || stringinputnum.charAt(i)== stringnum.charAt(2) || stringinputnum.charAt(i) == stringnum.charAt(3)) {
-                            whitepins++;
-                }
-            }
+
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
 
-        }while(stringinputnum.charAt(0)!=stringnum.charAt(0)||stringinputnum.charAt(1)!=stringnum.charAt(1)||stringinputnum.charAt(2)!=stringnum.charAt(2)||stringinputnum.charAt(3)!=stringnum.charAt(3));
-
-
+        } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
+    }
+    public static int[] EvaluateGuess(String guess, String num){
+        int[] pins = new int[]{0, 0};
+        for (int i = 0; i < guess.length(); i++) {
+            if (guess.charAt(i) == num.charAt(i)) {
+                pins[0]++;
+            } else if (guess.charAt(i) == num.charAt(0) || guess.charAt(i) == num.charAt(1) || guess.charAt(i) == num.charAt(2) || guess.charAt(i) == num.charAt(3)) {
+                pins[1]++;
+            }
+        }
+        return pins;
     }
 }
