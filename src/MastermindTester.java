@@ -23,17 +23,31 @@ public class MastermindTester {
     static class ExampleStudent extends StudentAlgorithm {
 
         public ExampleStudent() {
-            super("ExampleJoe"); // Put your name or GitHub username here
+            super("polnera"); // Put your name or GitHub username here
         }
 
         // Return black hits (correct color and position) in [0] and white hits (correct color but wrong
         // position) in [1].
         public int[] scoreCodewords(String codeword1, String codeword2) {
             // This algorithm likes the codewords to be in byte arrays.
-            byte[] secretDigits = codeStringToBytes(codeword1);
-            byte[] guessDigits = codeStringToBytes(codeword2);
-            int[] num ={0};
-            return num;
+            int[] pins = new int[]{0, 0};
+            //for(int i=0;i<codeword2.length();i++){
+            //    if(codeword1.charAt(i)==codeword2.charAt(i)){
+            //        pins[0]++;
+            //    }
+            //}
+            for (int i = 0; i < codeword1.length(); i++) {
+                if (codeword1.charAt(i) == codeword2.charAt(i)) {
+                    pins[0]++;
+                }if (codeword1.charAt(i) == codeword2.charAt(0) || codeword1.charAt(i) == codeword2.charAt(1) || codeword1.charAt(i) == codeword2.charAt(2) || codeword1.charAt(i) == codeword2.charAt(3)) {
+                    pins[1]++;
+                }
+            }
+            pins[1]-=pins[0];
+            if(pins[1]<0){
+                pins[1]=0;
+            }
+            return pins;
         }
     }
 

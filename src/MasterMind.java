@@ -23,21 +23,22 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  */
         Random rng = new Random();
         Scanner sc = new Scanner(System.in);
-        int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
-        String stringnum = "";
-        for (int i = 0; i < num.length; i++) {
-            stringnum = stringnum + num[i];
-            System.out.println(stringnum);
-        }
+        //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
+        String stringnum = "6684";
+        //for (int i = 0; i < num.length; i++) {
+        //    stringnum = stringnum + num[i];
+        //    System.out.println(stringnum);
+        //}
         String stringinputnum;
         do {
             do {
                 System.out.println("\n4 digit number:");
                 stringinputnum = sc.nextLine();
             } while (stringinputnum.length() != 4);
-            int blackpins = 0;
-            int whitepins = 0;
 
+            int[] blackwhitepins = EvaluateGuess(stringinputnum,stringnum);
+            int blackpins = blackwhitepins[0];
+            int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
 
@@ -51,6 +52,10 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
             } else if (guess.charAt(i) == num.charAt(0) || guess.charAt(i) == num.charAt(1) || guess.charAt(i) == num.charAt(2) || guess.charAt(i) == num.charAt(3)) {
                 pins[1]++;
             }
+        }//6480 {2,1} {2,0}, white pins subtract 2 because of black pins| 4589 {1,1} {1,0} same| 8468 {0,3} {0,4} subtracts 0| 8866 {0,3} {0,4} same
+        pins[1]-=pins[0];
+        if(pins[1]<0){
+            pins[1]=0;
         }
         return pins;
     }
