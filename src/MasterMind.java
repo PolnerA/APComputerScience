@@ -45,18 +45,42 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
     public static int[] EvaluateGuess(String guess, String num){
-        int[] pins = new int[]{0, 0};
+        /*
+        int blackpins=0;
+        int whitepins=0;
         for (int i = 0; i < guess.length(); i++) {
             if (guess.charAt(i) == num.charAt(i)) {
-                pins[0]++;
+                blackpins++;
             } else if (guess.charAt(i) == num.charAt(0) || guess.charAt(i) == num.charAt(1) || guess.charAt(i) == num.charAt(2) || guess.charAt(i) == num.charAt(3)) {
-                pins[1]++;
-            }
-        }//6480 {2,1} {2,0}, white pins subtract 2 because of black pins| 4589 {1,1} {1,0} same| 8468 {0,3} {0,4} subtracts 0| 8866 {0,3} {0,4} same
-        pins[1]-=pins[0];
-        if(pins[1]<0){
-            pins[1]=0;
+                whitepins++;
+            }6684 4 1
+        }//6684 | 6480 {2,1} {2,0}, white pins subtract 2 because of black pins| 4589 {1,1} {1,0} same| 8468 {0,3} {0,4} subtracts 0| 8866 {0,3} {0,4} same
+        whitepins-=blackpins;
+        if(whitepins<0){
+            whitepins=0;
         }
-        return pins;
+        */
+        int blackpins=0;
+        int whitepins=0;
+        int numofdigit=0;
+        for(int i=0;i<10;i++){
+            for(int j=0;j<4;j++){
+                if(i==num.charAt(j)-'0') {
+                 numofdigit++;
+                }
+            }
+            if(numofdigit!=0){
+                if(guess.charAt(0)-'0'==i||guess.charAt(1)-'0'==i||guess.charAt(2)-'0'==i||guess.charAt(3)-'0'==i){
+
+                }
+            }
+        }
+        for(int i=0;i<4;i++){
+            if(guess.charAt(i)==num.charAt(i)){
+                blackpins++;
+            }
+        }
+        whitepins-=blackpins;
+        return new int[] {blackpins,whitepins};
     }
 }
