@@ -29,26 +29,9 @@ public class MastermindTester {
         // Return black hits (correct color and position) in [0] and white hits (correct color but wrong
         // position) in [1].
         public int[] scoreCodewords(String codeword1, String codeword2) {
-            // This algorithm likes the codewords to be in byte arrays.
-            int[] pins = new int[]{0, 0};
-            //for(int i=0;i<codeword2.length();i++){
-            //    if(codeword1.charAt(i)==codeword2.charAt(i)){
-            //        pins[0]++;
-            //    }
-            //}
-            for (int i = 0; i < codeword1.length(); i++) {
-                if (codeword1.charAt(i) == codeword2.charAt(i)) {
-                    pins[0]++;
-                }if (codeword1.charAt(i) == codeword2.charAt(0) || codeword1.charAt(i) == codeword2.charAt(1) || codeword1.charAt(i) == codeword2.charAt(2) || codeword1.charAt(i) == codeword2.charAt(3)) {
-                    pins[1]++;
-                }
-            }
-            pins[1]-=pins[0];
-            if(pins[1]<0){
-                pins[1]=0;
-            }
-            return pins;
+        return new int[]{0,0};
         }
+
     }
 
     // Abstract class for students' algorithms. Implement this with the student's code in
