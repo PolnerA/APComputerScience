@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -36,7 +38,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
                 stringinputnum = sc.nextLine();
             } while (stringinputnum.length() != 4);
 
-            int[] blackwhitepins = EvaluateGuess(stringinputnum,stringnum);
+            int[] blackwhitepins = EvaluateGuess("6684",stringnum);
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
@@ -44,24 +46,20 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
 
         } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
-    public static int[] EvaluateGuess(String guess, String num){
+    public static int[] EvaluateGuess(String codeword1, String codeword2){
         int blackpins=0;
         int whitepins=0;
-        for (int i = 0; i < 4; i++) {
-            if (guess.charAt(i) == num.charAt(i)) {
+        boolean[] removed = new boolean[]{false,false,false,false};
+        for(int i=0;i<4;i++) {
+            if (codeword1.charAt(i) == codeword2.charAt(i)) {
                 blackpins++;
-                guess = RemoveCharAt(guess,i);
-                num = RemoveCharAt(num,i);
-            } else{
-                whitepins++;
+                removed[i]=true;
             }
-        }//6684 | 6480 {2,1} {2,0}, white pins subtract 2 because of black pins| 4589 {1,1} {1,0} same| 8468 {0,3} {0,4} subtracts 0| 8866 {0,3} {0,4} same
+        }
+        if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
+            return new int[] {blackpins,whitepins};//returns 4,0
+        }
+        //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
         return new int[] {blackpins,whitepins};
-    }
-    public static String RemoveCharAt(String string, int index){
-        String firsthalf = string.substring(0,index);
-        String secondhalf = string.substring(index+1);
-        string = firsthalf+secondhalf;
-        return string;
     }
 }
