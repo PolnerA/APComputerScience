@@ -17,12 +17,7 @@ public class Wordle {
                     word = myReader.nextLine();
                 }
                 myReader.close();
-                char[] chararray = new char[5];
-                chararray[0] = word.charAt(0);
-                chararray[1] = word.charAt(1);
-                chararray[2] = word.charAt(2);
-                chararray[3] = word.charAt(3);
-                chararray[4] = word.charAt(4);
+                char[] chararray = word.toCharArray();
                 int[] statuschar = new int[5];
                 for (int j = 1; j <= 6; j++) {
                     System.out.println("Guess number " + j + "/6");
