@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MasterMind {
     public static void main(String[] args) {
@@ -27,6 +28,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         Scanner sc = new Scanner(System.in);
         //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
         String stringnum = "6684";
+
         //for (int i = 0; i < num.length; i++) {
         //    stringnum = stringnum + num[i];
         //    System.out.println(stringnum);
@@ -58,6 +60,11 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         }
         if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
             return new int[] {blackpins,whitepins};//returns 4,0
+        }
+        for (boolean a:removed) {
+            if(!a){
+
+            }
         }
         //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
         return new int[] {blackpins,whitepins};
