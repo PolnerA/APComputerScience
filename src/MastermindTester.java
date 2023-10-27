@@ -29,7 +29,33 @@ public class MastermindTester {
         // Return black hits (correct color and position) in [0] and white hits (correct color but wrong
         // position) in [1].
         public int[] scoreCodewords(String codeword1, String codeword2) {
-        return new int[]{0,0};
+                 int blackpins=0;
+                 int whitepins=0;
+                 boolean[] removed = new boolean[]{false,false,false,false};
+                 for(int i=0;i<4;i++) {
+                 if (codeword1.charAt(i) == codeword2.charAt(i)) {
+                     blackpins++;
+                     removed[i]=true;
+                   }
+                 }
+                 if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
+                     return new int[] {blackpins,whitepins};//returns 4,0
+                 }
+             for(int i=0;i<4;i++){
+            if(!removed[i]){
+                for(int j=0;j<4;j++){
+                    if(!removed[i]){
+                        if(j!=k){
+                            if(codeword1.charAt(i)==codeword2.charAt(j)){
+                                whitepins++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
+        return new int[] {blackpins,whitepins};
         }
 
     }
