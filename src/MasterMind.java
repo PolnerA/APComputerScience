@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class MasterMind {
     public static void main(String[] args) {
@@ -61,9 +60,17 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
             return new int[] {blackpins,whitepins};//returns 4,0
         }
-        for (boolean a:removed) {
-            if(!a){
-
+        for(int i=0;i<4;i++){
+            if(!removed[i]){
+                for(int j=0;j<4;j++){
+                    if(!removed[i]){
+                        if(j!=k){
+                            if(codeword1.charAt(i)==codeword2.charAt(j)){
+                                whitepins++;
+                            }
+                        }
+                    }
+                }
             }
         }
         //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
