@@ -44,10 +44,12 @@ public class MastermindTester {
              for(int i=0;i<4;i++){
             if(!removed[i]){
                 for(int j=0;j<4;j++){
-                    if(!removed[i]){
-                        if(j!=k){
+                    if(!removed[j]){
+                        if(j!=i){
                             if(codeword1.charAt(i)==codeword2.charAt(j)){
+                                if(removed[0]){
                                 whitepins++;
+                                }
                             }
                         }
                     }

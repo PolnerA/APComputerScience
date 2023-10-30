@@ -64,7 +64,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
             if(!removed[i]){
                 for(int j=0;j<4;j++){
                     if(!removed[i]){
-                        if(j!=k){
+                        if(j!=i){
                             if(codeword1.charAt(i)==codeword2.charAt(j)){
                                 whitepins++;
                             }
