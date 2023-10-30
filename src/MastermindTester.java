@@ -125,7 +125,7 @@ public class MastermindTester {
 
             System.out.format("Done running %,d test cases.\n\n", total);
         } catch (Exception e) {
-            System.out.println(e);
+            System.err.println(e);
         }
     }
 

@@ -24,6 +24,8 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  Feedback was given in terms of black and white pegs. A black peg signified that the guesser had gotten a pin of the correct color in the correct position. A white peg signified that the guesser had gotten a pin of the correct color in the wrong location.
  */
         Random rng = new Random();
+        int[] arr = new int[2];
+        System.out.println(arr[0]);
         Scanner sc = new Scanner(System.in);
         //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
         String stringnum = "6684";
@@ -39,7 +41,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
                 stringinputnum = sc.nextLine();
             } while (stringinputnum.length() != 4);
 
-            int[] blackwhitepins = EvaluateGuess("6684",stringnum);
+            int[] blackwhitepins = ComplexEvaluateGuess("6684",stringnum);
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
@@ -47,14 +49,16 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
 
         } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
-    public static int[] EvaluateGuess(String codeword1, String codeword2){
+    public static int[] ComplexEvaluateGuess(String codeword1, String codeword2){
         int blackpins=0;
         int whitepins=0;
         boolean[] removed = new boolean[]{false,false,false,false};
+        boolean[] removed2 = new boolean[4];
         for(int i=0;i<4;i++) {
             if (codeword1.charAt(i) == codeword2.charAt(i)) {
                 blackpins++;
                 removed[i]=true;
+                removed2[i]=true;
             }
         }
         if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
@@ -63,10 +67,18 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         for(int i=0;i<4;i++){
             if(!removed[i]){
                 for(int j=0;j<4;j++){
-                    if(!removed[i]){
+                    if(!removed[j]){
                         if(j!=i){
                             if(codeword1.charAt(i)==codeword2.charAt(j)){
-                                whitepins++;
+                                removed[i]=true;
+                                removed2[j]=true;
+                               // for(int a=0;a<4;a++){
+                                    //if(removedchars[a]!=0) {
+                                        //if(codeword1.charAt(a)!=removedchars[a]) {
+                                            whitepins++;
+                                        //}
+                                    //}
+                                //}
                             }
                         }
                     }
@@ -74,6 +86,31 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
             }
         }
         //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
+        return new int[] {blackpins,whitepins};
+    }
+    public static int[] EvaluateGuess(String codeword1,String codeword2){
+        int whitepins;
+        int blackpins=0;
+        int totalpins=0;
+        boolean[] removed = new boolean[4];
+        for(int i=0;i<4;i++) {
+            if(codeword1.charAt(i)==codeword2.charAt(i))
+            {
+                blackpins++;
+                removed[i]=true;
+            }
+            for(int j=0;j<4;j++){//1111 V 1112 should be 3,0 not 3,9 compares each 111 at the beginning
+                if(codeword1.charAt(i)==codeword2.charAt(j)){
+                    //if() {
+                        totalpins++;
+                    //}
+                }
+            }
+        }
+        if(blackpins==4){
+            return new int[] {4,0};
+        }
+        whitepins = totalpins -blackpins;
         return new int[] {blackpins,whitepins};
     }
 }
