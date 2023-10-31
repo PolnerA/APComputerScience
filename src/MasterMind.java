@@ -4,6 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class MasterMind {
+    static int pins=4;
+    static int colors=10;
     public static void main(String[] args) {
 /*
 Write a program that plays a variation of the game Mastermind with a user.
@@ -26,8 +28,8 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         Random rng = new Random();
         Scanner sc = new Scanner(System.in);
 
-        //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
-        String stringnum = "1112";
+        int[] num = new int[]{rng.nextInt(colors), rng.nextInt(colors), rng.nextInt(10), rng.nextInt(10)};
+        String stringnum = num[0]+""+num[1]+""+num[2]+""+num[3];
 
         //for (int i = 0; i < num.length; i++) {
         //    stringnum = stringnum + num[i];
@@ -51,20 +53,20 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
     public static int[] ComplexEvaluateGuess(String codeword1, String codeword2){
         int blackpins=0;
         int whitepins=0;
-        boolean[] removed = new boolean[]{false,false,false,false};
-        boolean[] removed2 = new boolean[4];
-        for(int i=0;i<4;i++) {
+        boolean[] removed = new boolean[pins];
+        boolean[] removed2 = new boolean[pins];
+        for(int i=0;i<pins;i++) {
             if (codeword1.charAt(i) == codeword2.charAt(i)) {
                 blackpins++;
                 removed[i]=true;
                 removed2[i]=true;
             }
         }
-        if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
+        if(blackpins==pins){
             return new int[] {blackpins,whitepins};//returns 4,0
         }//1112 1121
-        for(int i=0;i<4;i++){
-                for (int j = 0; j < 4; j++) {
+        for(int i=0;i<pins;i++){
+                for (int j = 0; j < pins; j++) {
                     if (!removed2[j] && !removed[i]) {//rejects i=3, j=2
                         if (codeword1.charAt(i) == codeword2.charAt(j)) {
                             removed[i]=true;
@@ -74,7 +76,6 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
                     }
                 }
         }
-        //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
         return new int[] {blackpins,whitepins};
     }
     public static int[] EvaluateGuess(String codeword1,String codeword2){
