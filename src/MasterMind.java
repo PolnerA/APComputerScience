@@ -27,26 +27,26 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         Scanner sc = new Scanner(System.in);
 
         //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
-        String stringnum = "6684";
+        String stringnum = "1112";
 
         //for (int i = 0; i < num.length; i++) {
         //    stringnum = stringnum + num[i];
         //    System.out.println(stringnum);
         //}
         String stringinputnum;
-        do {
-            do {
+        //do {
+            //do {
                 System.out.println("\n4 digit number:");
-                stringinputnum = sc.nextLine();
-            } while (stringinputnum.length() != 4);
+                //stringinputnum = sc.nextLine();
+            //} while (stringinputnum.length() != 4);
 
-            int[] blackwhitepins = ComplexEvaluateGuess("6684",stringnum);
+            int[] blackwhitepins = ComplexEvaluateGuess("1121",stringnum);
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
 
-        } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
+        //} while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
     public static int[] ComplexEvaluateGuess(String codeword1, String codeword2){
         int blackpins=0;
@@ -62,28 +62,17 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         }
         if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
             return new int[] {blackpins,whitepins};//returns 4,0
-        }
-        //What????? Ignore code below
+        }//1112 1121
         for(int i=0;i<4;i++){
-            if(!removed[i]){
-                for(int j=0;j<4;j++){
-                    if(!removed[j]){
-                        if(j!=i){
-                            if(codeword1.charAt(i)==codeword2.charAt(j)){
-                                removed[i]=true;
-                                removed2[j]=true;
-                               // for(int a=0;a<4;a++){
-                                    //if(removedchars[a]!=0) {
-                                        //if(codeword1.charAt(a)!=removedchars[a]) {
-                                            whitepins++;
-                                        //}
-                                    //}
-                                //}
-                            }
+                for (int j = 0; j < 4; j++) {
+                    if (!removed2[j] && !removed[i]) {//rejects i=3, j=2
+                        if (codeword1.charAt(i) == codeword2.charAt(j)) {
+                            removed[i]=true;
+                            removed2[j]=true;
+                            whitepins++;
                         }
                     }
                 }
-            }
         }
         //uses indexes 0-3 excluding the ones removed and making sure it doesn't compare to itself
         return new int[] {blackpins,whitepins};
