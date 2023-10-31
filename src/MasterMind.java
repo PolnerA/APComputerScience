@@ -24,9 +24,8 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  Feedback was given in terms of black and white pegs. A black peg signified that the guesser had gotten a pin of the correct color in the correct position. A white peg signified that the guesser had gotten a pin of the correct color in the wrong location.
  */
         Random rng = new Random();
-        int[] arr = new int[2];
-        System.out.println(arr[0]);
         Scanner sc = new Scanner(System.in);
+
         //int[] num = new int[]{rng.nextInt(10), rng.nextInt(10), rng.nextInt(10), rng.nextInt(10)};
         String stringnum = "6684";
 
@@ -64,6 +63,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         if(removed[0]&&removed[1]&&removed[2]&&removed[3]){
             return new int[] {blackpins,whitepins};//returns 4,0
         }
+        //What????? Ignore code below
         for(int i=0;i<4;i++){
             if(!removed[i]){
                 for(int j=0;j<4;j++){
@@ -89,28 +89,85 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         return new int[] {blackpins,whitepins};
     }
     public static int[] EvaluateGuess(String codeword1,String codeword2){
-        int whitepins;
-        int blackpins=0;
-        int totalpins=0;
-        boolean[] removed = new boolean[4];
-        for(int i=0;i<4;i++) {
-            if(codeword1.charAt(i)==codeword2.charAt(i))
-            {
-                blackpins++;
-                removed[i]=true;
-            }
-            for(int j=0;j<4;j++){//1111 V 1112 should be 3,0 not 3,9 compares each 111 at the beginning
-                if(codeword1.charAt(i)==codeword2.charAt(j)){
-                    //if() {
-                        totalpins++;
-                    //}
-                }
-            }
-        }
+        int blackpins=CalculateBlackPins(codeword1,codeword2);
         if(blackpins==4){
             return new int[] {4,0};
         }
-        whitepins = totalpins -blackpins;
+        int whitepins=CalculateWhitePins(codeword1,codeword2);
         return new int[] {blackpins,whitepins};
+    }
+    public static int CalculateBlackPins(String codeword1,String codeword2){
+        int blackpins=0;
+        for(int i=0;i<4;i++){
+            if(codeword1.charAt(i)==codeword2.charAt(i)){
+                blackpins++;
+            }
+        }
+        return blackpins;
+    }
+    public static int CalculateWhitePins(String codeword1,String codeword2){
+        int whitepins=0;
+        char[] arr = codeword2.toCharArray();
+        if(codeword1.charAt(0)==codeword2.charAt(1)){
+            if(arr[1]!='-'){
+            whitepins++;}
+            arr[1]='-';
+        }
+        if(codeword1.charAt(0)==codeword2.charAt(2)){
+            if(arr[2]!='-'){
+            whitepins++;}
+            arr[2]='-';
+        }
+        if(codeword1.charAt(0)==codeword2.charAt(3)){
+            if(arr[3]!='-'){
+            whitepins++;}
+            arr[3]='-';
+        }
+        if(codeword1.charAt(1)==codeword2.charAt(0)){
+            if(arr[0]!='-'){
+            whitepins++;}
+            arr[0]='-';
+        }
+        if(codeword1.charAt(1)==codeword2.charAt(2)){
+            if(arr[2]!='-'){
+            whitepins++;}
+            arr[2]='-';
+        }
+        if(codeword1.charAt(1)==codeword2.charAt(3)){
+            if(arr[3]!='-'){
+            whitepins++;}
+            arr[3]='-';
+        }
+        if(codeword1.charAt(2)==codeword2.charAt(0)){
+            if(arr[0]!='-'){
+            whitepins++;}
+            arr[0]='-';
+        }
+        if(codeword1.charAt(2)==codeword2.charAt(1)){
+            if(arr[1]!='-'){
+            whitepins++;}
+            arr[1]='-';
+        }
+        if(codeword1.charAt(2)==codeword2.charAt(3)){
+            if(arr[3]!='-'){
+            whitepins++;}
+            arr[3]='-';
+        }
+        if(codeword1.charAt(3)==codeword2.charAt(0)){
+            if(arr[0]!='-'){
+            whitepins++;}
+            arr[0]='-';
+        }
+        if(codeword1.charAt(3)==codeword2.charAt(1)){
+            if(arr[1]!='-'){
+            whitepins++;}
+            arr[1]='-';
+        }
+        if(codeword1.charAt(3)==codeword2.charAt(2)){
+            if(arr[2]!='-'){
+            whitepins++;}
+            arr[2]='-';
+        }
+        return whitepins;
     }
 }
