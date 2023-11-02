@@ -28,7 +28,7 @@ public class MastermindTester {
 
         // Return black hits (correct color and position) in [0] and white hits (correct color but wrong
         // position) in [1].
-        public int[] scoreCodewords(String codeword1, String codeword2) {return MasterMind.ComplexEvaluateGuess(codeword1,codeword2);}
+        public int[] scoreCodewords(String codeword1, String codeword2) {return MasterMind.EvaluateGuess(codeword1,codeword2);}
 
     }
 
