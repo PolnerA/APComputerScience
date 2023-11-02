@@ -4,8 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class MasterMind {
-    static int pins=4;
-    static int colors=10;
+    public static final int pins=4;
+    public static final int colors=10;//max 10 as the chars wouldn't work 0-9 is the amount in one place
     public static void main(String[] args) {
 /*
 Write a program that plays a variation of the game Mastermind with a user.
@@ -25,32 +25,33 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
  One player put in the secret and the other player guessed based on feedback.
  Feedback was given in terms of black and white pegs. A black peg signified that the guesser had gotten a pin of the correct color in the correct position. A white peg signified that the guesser had gotten a pin of the correct color in the wrong location.
  */
-        Random rng = new Random();
         Scanner sc = new Scanner(System.in);
-
-        int[] num = new int[]{rng.nextInt(colors), rng.nextInt(colors), rng.nextInt(10), rng.nextInt(10)};
-        String stringnum = num[0]+""+num[1]+""+num[2]+""+num[3];
-
-        //for (int i = 0; i < num.length; i++) {
-        //    stringnum = stringnum + num[i];
-        //    System.out.println(stringnum);
-        //}
+        String stringnum=GenerateCode();
         String stringinputnum;
-        //do {
-            //do {
+        System.out.println(Math.abs(0x80000000));
+        do {
+            do {
                 System.out.println("\n4 digit number:");
-                //stringinputnum = sc.nextLine();
-            //} while (stringinputnum.length() != 4);
+                stringinputnum = sc.nextLine();
+            } while (stringinputnum.length() != 4);
 
-            int[] blackwhitepins = ComplexEvaluateGuess("1121",stringnum);
+            int[] blackwhitepins = EvaluateGuess("1121",stringnum);
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
 
-        //} while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
+        } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
-    public static int[] ComplexEvaluateGuess(String codeword1, String codeword2){
+    public static String GenerateCode(){
+        Random rng = new Random();
+        String code = "";
+        for(int i=0;i<pins;i++){
+            code+=rng.nextInt(colors);
+        }
+        return code;
+    }
+    public static int[] EvaluateGuess(String codeword1, String codeword2){
         int blackpins=0;
         int whitepins=0;
         boolean[] removed = new boolean[pins];
@@ -67,7 +68,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         }//1112 1121
         for(int i=0;i<pins;i++){
                 for (int j = 0; j < pins; j++) {
-                    if (!removed2[j] && !removed[i]) {//rejects i=3, j=2
+                    if (!removed2[j] && !removed[i]) {
                         if (codeword1.charAt(i) == codeword2.charAt(j)) {
                             removed[i]=true;
                             removed2[j]=true;
@@ -78,14 +79,6 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         }
         return new int[] {blackpins,whitepins};
     }
-    public static int[] EvaluateGuess(String codeword1,String codeword2){
-        int blackpins=CalculateBlackPins(codeword1,codeword2);
-        if(blackpins==4){
-            return new int[] {4,0};
-        }
-        int whitepins=CalculateWhitePins(codeword1,codeword2);
-        return new int[] {blackpins,whitepins};
-    }
     public static int CalculateBlackPins(String codeword1,String codeword2){
         int blackpins=0;
         for(int i=0;i<4;i++){
@@ -94,70 +87,5 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
             }
         }
         return blackpins;
-    }
-    public static int CalculateWhitePins(String codeword1,String codeword2){
-        int whitepins=0;
-        char[] arr = codeword2.toCharArray();
-        if(codeword1.charAt(0)==codeword2.charAt(1)){
-            if(arr[1]!='-'){
-            whitepins++;}
-            arr[1]='-';
-        }
-        if(codeword1.charAt(0)==codeword2.charAt(2)){
-            if(arr[2]!='-'){
-            whitepins++;}
-            arr[2]='-';
-        }
-        if(codeword1.charAt(0)==codeword2.charAt(3)){
-            if(arr[3]!='-'){
-            whitepins++;}
-            arr[3]='-';
-        }
-        if(codeword1.charAt(1)==codeword2.charAt(0)){
-            if(arr[0]!='-'){
-            whitepins++;}
-            arr[0]='-';
-        }
-        if(codeword1.charAt(1)==codeword2.charAt(2)){
-            if(arr[2]!='-'){
-            whitepins++;}
-            arr[2]='-';
-        }
-        if(codeword1.charAt(1)==codeword2.charAt(3)){
-            if(arr[3]!='-'){
-            whitepins++;}
-            arr[3]='-';
-        }
-        if(codeword1.charAt(2)==codeword2.charAt(0)){
-            if(arr[0]!='-'){
-            whitepins++;}
-            arr[0]='-';
-        }
-        if(codeword1.charAt(2)==codeword2.charAt(1)){
-            if(arr[1]!='-'){
-            whitepins++;}
-            arr[1]='-';
-        }
-        if(codeword1.charAt(2)==codeword2.charAt(3)){
-            if(arr[3]!='-'){
-            whitepins++;}
-            arr[3]='-';
-        }
-        if(codeword1.charAt(3)==codeword2.charAt(0)){
-            if(arr[0]!='-'){
-            whitepins++;}
-            arr[0]='-';
-        }
-        if(codeword1.charAt(3)==codeword2.charAt(1)){
-            if(arr[1]!='-'){
-            whitepins++;}
-            arr[1]='-';
-        }
-        if(codeword1.charAt(3)==codeword2.charAt(2)){
-            if(arr[2]!='-'){
-            whitepins++;}
-            arr[2]='-';
-        }
-        return whitepins;
     }
 }
