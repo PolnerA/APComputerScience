@@ -11,11 +11,11 @@ public class MastermindSolver {
             max *= 10;
             max += colors-1;
           }
+          String num="";
           for(int i =0; i<=max;i++){
 
           }
         */
-        Solve();
     }
     public static void Solve(){
         String guess="1122";
@@ -25,7 +25,7 @@ public class MastermindSolver {
         int blackpins = blacknwhitepins[0];
         int whitepins = blacknwhitepins[1];
         while(blackpins!=4){
-
+            //check against file of mastermind_#p#c.txt to find the pins and check against guess
         }
     }
 }
