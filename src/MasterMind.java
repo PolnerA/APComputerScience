@@ -81,7 +81,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
     }
     public static int CalculateBlackPins(String codeword1,String codeword2){
         int blackpins=0;
-        for(int i=0;i<4;i++){
+        for(int i=0;i<pins;i++){
             if(codeword1.charAt(i)==codeword2.charAt(i)){
                 blackpins++;
             }
