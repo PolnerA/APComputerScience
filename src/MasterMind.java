@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class MasterMind {
     public static final int pins=4;
-    public static final int colors=10;//max 10 as the chars wouldn't work 0-9 is the amount in one place
+    public static final int colors=6;//max 10 as the chars wouldn't work 0-9 is the amount in one place
     public static void main(String[] args) {
 /*
 Write a program that plays a variation of the game Mastermind with a user.
