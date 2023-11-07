@@ -3,6 +3,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Wordle {
+    enum colors {Gray,Yellow,Green}
+
     public static void main(String[] args) {
         try{
             int ans =1;
@@ -18,7 +20,7 @@ public class Wordle {
                 }
                 myReader.close();
                 char[] chararray = word.toCharArray();
-                int[] statuschar = new int[5];
+                colors[] statuschar = new colors[5];
                 for (int j = 1; j <= 6; j++) {
                     System.out.println("Guess number " + j + "/6");
                     boolean realword = false;
@@ -36,28 +38,28 @@ public class Wordle {
                         }
                         loopsearch.close();
                     }
-                    //automatically gray (Gray 0 | Yellow 1 | Green 2)
+                    //automatically gray
                     for (int i = 0; i < 5; i++) {
-                        statuschar[i] = 0;
+                        statuschar[i] = colors.Gray;
                     }
                     for (int i = 0; i < 5; i++) {
                         if (fiveletters.charAt(i) == chararray[i]) {
-                            statuschar[i] = 2;
+                            statuschar[i] = colors.Green;
                         } else if (fiveletters.charAt(i) == chararray[0] || fiveletters.charAt(i) == chararray[1] || fiveletters.charAt(i) == chararray[2] || fiveletters.charAt(i) == chararray[3] || fiveletters.charAt(i) == chararray[4]) {
-                            statuschar[i] = 1;
+                            statuschar[i] = colors.Yellow;
                         }
                     }
                     for (int i = 0; i < 5; i++) {
-                        if (statuschar[i] == 0) {
+                        if (statuschar[i] == colors.Gray) {
                             System.out.print(Colors.RED + fiveletters.charAt(i) + Colors.RESET);
-                        } else if (statuschar[i] == 1) {
+                        } else if (statuschar[i] == colors.Yellow) {
                             System.out.print(Colors.YELLOW_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         } else {
                             System.out.print(Colors.GREEN_BOLD_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         }
                     }
                     System.out.println();
-                    if (statuschar[0] == 2 && statuschar[1] == 2 && statuschar[2] == 2 && statuschar[3] == 2 && statuschar[4] == 2) {
+                    if (statuschar[0] == colors.Green && statuschar[1] == colors.Green && statuschar[2] == colors.Green && statuschar[3] == colors.Green && statuschar[4] == colors.Green) {
                         System.out.println("You took " + j + " guesses");
                         break;
                     }
