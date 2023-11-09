@@ -1,6 +1,5 @@
 public class SortingAlgorithms {
-    public static void main(String[] args) {
-//selection, merge, bubble, quick
+    public static void main(String[] args) {//selection, merge, bubble, quick, double selection sort
     }
     public static void SelectionSort(int[] list){//O(N^2) performance
         for(int i=0;i< list.length-1;i++){
@@ -13,7 +12,7 @@ public class SortingAlgorithms {
             Swap(list,i,smallest);
         }
     }
-    public static void ModifiedSelectionSort(int[] list){//O(N^2) performance
+    public static void ModifiedSelectionSort(int[] list){//O(N^2) performance runs faster
         for(int i=0;i< list.length-1;i++){
             int largest=i;
             for(int j=i+1;j<list.length;j++){
