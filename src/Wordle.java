@@ -18,6 +18,11 @@ public class Wordle {
                 for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of words in the answers
                     word = myReader.nextLine();
                 }
+                word="actor";
+                //aahed should get GBBBB
+                //acorn should get GGYYB
+                //syrup should get BBYBB
+                //actor should get GGGGG
                 myReader.close();
                 char[] chararray = word.toCharArray();
                 colors[] statuschar = new colors[5];
