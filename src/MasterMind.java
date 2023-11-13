@@ -65,7 +65,7 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         }
         if(blackpins==pins){
             return new int[] {blackpins,whitepins};//returns 4,0
-        }//1112 1121
+        }
         for(int i=0;i<pins;i++){
                 for (int j = 0; j < pins; j++) {
                     if (!removed2[j] && !removed[i]) {
