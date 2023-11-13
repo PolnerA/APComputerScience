@@ -11,8 +11,8 @@ public class Wordle {
             while(ans==1) {
                 Random rng = new Random();
                 Scanner sc = new Scanner(System.in);
-                File WordleAns = new File("/Users/polnera/IdeaProjects/APComputerScience/src/WordleAns.txt");
-                File FiveLetterWords = new File("/Users/polnera/IdeaProjects/APComputerScience/src/FiveLetterWords.txt");
+                File WordleAns = new File("WordleAns.txt");
+                File FiveLetterWords = new File("FiveLetterWords.txt");
                 Scanner myReader = new Scanner(WordleAns);
                 String word = "error";
                 for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of words in the answers
@@ -43,15 +43,24 @@ public class Wordle {
                         }
                         loopsearch.close();
                     }
-                    //automatically gray
-                    for (int i = 0; i < 5; i++) {
-                        statuschar[i] = colors.Gray;
+                    boolean[] removed = new boolean[5];
+                    boolean[] removed2 = new boolean[5];
+                    for(int i=0;i<5;i++) {
+                        if (word.charAt(i) == fiveletters.charAt(i)) {
+                            statuschar[i]=colors.Green;
+                            removed[i]=true;
+                            removed2[i]=true;
+                        }
                     }
-                    for (int i = 0; i < 5; i++) {
-                        if (fiveletters.charAt(i) == chararray[i]) {
-                            statuschar[i] = colors.Green;
-                        } else if (fiveletters.charAt(i) == chararray[0] || fiveletters.charAt(i) == chararray[1] || fiveletters.charAt(i) == chararray[2] || fiveletters.charAt(i) == chararray[3] || fiveletters.charAt(i) == chararray[4]) {
-                            statuschar[i] = colors.Yellow;
+                    for(int i=0;i<5;i++){
+                        for (int k = 0; k < 5; k++) {
+                            if (!removed2[k] && !removed[i]) {
+                                if (word.charAt(i) == fiveletters.charAt(k)) {
+                                    removed[i]=true;
+                                    removed2[j]=true;
+                                    statuschar[i]=colors.Yellow;
+                                }
+                            }
                         }
                     }
                     for (int i = 0; i < 5; i++) {
