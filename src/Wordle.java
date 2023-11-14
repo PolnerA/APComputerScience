@@ -7,8 +7,7 @@ public class Wordle {
 
     public static void main(String[] args) {
         try{
-            int ans =1;
-            while(ans==1) {
+            while(true) {
                 Random rng = new Random();
                 Scanner sc = new Scanner(System.in);
                 File WordleAns = new File("WordleAns.txt");
@@ -18,11 +17,6 @@ public class Wordle {
                 for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of words in the answers
                     word = myReader.nextLine();
                 }
-                word="actor";
-                //aahed should get GBBBB
-                //acorn should get GGYYB
-                //syrup should get BBYBB
-                //actor should get GGGGG
                 myReader.close();
                 char[] chararray = word.toCharArray();
                 colors[] statuschar = new colors[5];
@@ -57,20 +51,21 @@ public class Wordle {
                             if (!removed2[k] && !removed[i]) {
                                 if (word.charAt(i) == fiveletters.charAt(k)) {
                                     removed[i]=true;
-                                    removed2[j]=true;
-                                    statuschar[i]=colors.Yellow;
+                                    removed2[k]=true;
+                                    statuschar[k]=colors.Yellow;
                                 }
                             }
                         }
-                    }
+                    }//to do add eliminated letters
                     for (int i = 0; i < 5; i++) {
-                        if (statuschar[i] == colors.Gray) {
-                            System.out.print(Colors.RED + fiveletters.charAt(i) + Colors.RESET);
+                        if (statuschar[i] == colors.Green) {
+                            System.out.print(Colors.GREEN_BOLD_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         } else if (statuschar[i] == colors.Yellow) {
                             System.out.print(Colors.YELLOW_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         } else {
-                            System.out.print(Colors.GREEN_BOLD_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
+                            System.out.print(Colors.RED + fiveletters.charAt(i) + Colors.RESET);
                         }
+                        statuschar[i]=colors.Gray;
                     }
                     System.out.println();
                     if (statuschar[0] == colors.Green && statuschar[1] == colors.Green && statuschar[2] == colors.Green && statuschar[3] == colors.Green && statuschar[4] == colors.Green) {
@@ -81,7 +76,9 @@ public class Wordle {
                 }
                 System.out.println("The word was " + word);
                 System.out.println("Replay?(1.Y|2.No)");
-                ans = sc.nextInt();
+                if(sc.nextInt()==2){
+                    break;
+                }
             }
 
         } catch (FileNotFoundException e) {
