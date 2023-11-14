@@ -18,7 +18,6 @@ public class Wordle {
                     word = myReader.nextLine();
                 }
                 myReader.close();
-                char[] chararray = word.toCharArray();
                 colors[] statuschar = new colors[5];
                 for (int j = 1; j <= 6; j++) {
                     System.out.println("Guess number " + j + "/6");
