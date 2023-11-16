@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -7,6 +8,10 @@ public class Wordle {
 
     public static void main(String[] args) {
         try{
+            ArrayList<Character> useablechars = new ArrayList<>(26);
+            for(int i=0;i<26;i++){
+                useablechars.add((char)(i+'a'));
+            }
             while(true) {
                 Random rng = new Random();
                 Scanner sc = new Scanner(System.in);
@@ -14,7 +19,7 @@ public class Wordle {
                 File FiveLetterWords = new File("FiveLetterWords.txt");
                 Scanner myReader = new Scanner(WordleAns);
                 String word = "error";
-                for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of words in the answers
+                for (int i = 0; i <= rng.nextInt(2315); i++) {//2315 is the number of lines in the answers
                     word = myReader.nextLine();
                 }
                 myReader.close();
@@ -63,6 +68,9 @@ public class Wordle {
                             System.out.print(Colors.YELLOW_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         } else {
                             System.out.print(Colors.RED + fiveletters.charAt(i) + Colors.RESET);
+                            if(useablechars.contains(fiveletters.charAt(i))){
+                                useablechars.remove((Character) fiveletters.charAt(i));
+                            }
                         }
                         statuschar[i]=colors.Gray;
                     }
@@ -71,12 +79,17 @@ public class Wordle {
                         System.out.println("You took " + j + " guesses");
                         break;
                     }
-
+                    System.out.println("Not eliminated characters: "+useablechars);
                 }
                 System.out.println("The word was " + word);
                 System.out.println("Replay?(1.Y|2.No)");
                 if(sc.nextInt()==2){
                     break;
+                }
+                //reset possible chars after replay here
+                useablechars = new ArrayList<>(26);
+                for(int i=0;i<26;i++){
+                    useablechars.add((char)(i+'a'));
                 }
             }
 
