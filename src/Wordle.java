@@ -31,7 +31,7 @@ public class Wordle {
                     while (fiveletters.length() != 5 || !realword) {
                         Scanner loopsearch = new Scanner(FiveLetterWords);
                         System.out.print("Five letter word: ");
-                        fiveletters = sc.nextLine();
+                        fiveletters = sc.nextLine().toLowerCase();
                         while (loopsearch.hasNextLine()) {
                             String line = loopsearch.nextLine();
                             if (line.equals(fiveletters)) {
@@ -44,6 +44,7 @@ public class Wordle {
                     boolean[] removed = new boolean[5];
                     boolean[] removed2 = new boolean[5];
                     for(int i=0;i<5;i++) {
+                        statuschar[i]=colors.Gray;
                         if (word.charAt(i) == fiveletters.charAt(i)) {
                             statuschar[i]=colors.Green;
                             removed[i]=true;
@@ -72,7 +73,6 @@ public class Wordle {
                                 useablechars.remove((Character) fiveletters.charAt(i));
                             }
                         }
-                        statuschar[i]=colors.Gray;
                     }
                     System.out.println();
                     if (statuschar[0] == colors.Green && statuschar[1] == colors.Green && statuschar[2] == colors.Green && statuschar[3] == colors.Green && statuschar[4] == colors.Green) {
@@ -83,7 +83,7 @@ public class Wordle {
                 }
                 System.out.println("The word was " + word);
                 System.out.println("Replay?(1.Y|2.No)");
-                if(sc.nextInt()==2){
+                if(sc.nextInt() ==2){
                     break;
                 }
                 //reset possible chars after replay here
