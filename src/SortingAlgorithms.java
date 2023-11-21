@@ -1,5 +1,23 @@
+import java.util.Arrays;
+
 public class SortingAlgorithms {
     public static void main(String[] args) {//selection, merge, bubble, quick, double selection sort
+        int[] mergedlist = {14,32,67,76,23,41,58,85};
+        MergeSort(mergedlist);
+        int[] list = {14,32,67,76,23,41,58,85};
+        System.out.println(Arrays.toString(list));
+        System.out.println(Arrays.toString(mergedlist));
+    }
+    public static void MergeSort(int[] list){//O(N Log N) performance
+        if(1<list.length){
+            int[] left = Arrays.copyOfRange(list,0,list.length/2);
+            int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
+            //recursively sort both halves
+            MergeSort(left);
+            MergeSort(right);
+            //merge sorted halves into one sorted array
+             Merge(list,left,right);
+        }
     }
     public static void SelectionSort(int[] list){//O(N^2) performance
         for(int i=0;i< list.length-1;i++){
@@ -27,5 +45,19 @@ public class SortingAlgorithms {
         int temp = list[i];
         list[i]=list[j];
         list[j]=temp;
+    }
+    public static void Merge(int[] result, int[] left, int[] right){
+        int i1=0; // left array index
+        int i2=0; // right array index
+        for(int i=0;i< result.length;i++){
+            if(right.length<=i2||(i1< left.length&&left[i1]<=right[i2])){
+                result[i]=left[i1]; //take from left
+                i1++;
+            }
+            else{
+                result[i]=right[i2]; //take from right
+                i2++;
+            }
+        }
     }
 }
