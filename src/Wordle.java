@@ -8,10 +8,11 @@ public class Wordle {
     //colors enum for the different wordle colors, added to improve code readability
     public static void main(String[] args) {
         try{
-            //on start up adds all 26 characters in the alphabet to all the useable characters for the answer
-            ArrayList<Character> useablechars = new ArrayList<>(26);
+            //on start up adds all 26 characters in the alphabet to all the usable characters for the answer
+            ArrayList<Character> UsableCharacters = new ArrayList<>(26);
             for(int i=0;i<26;i++){
-                useablechars.add((char)(i+'a'));
+                UsableCharacters.add((char)('a'+i));
+                //'a'+0 is a, 'a'+1 is b, and so on all the way to z
             }
             //game loop
             while(true) {
@@ -39,7 +40,7 @@ public class Wordle {
                     boolean realword = false;
                     String fiveletters ="";
                     //guess is set to an empty string which isn't considered a real word
-                    while (fiveletters.length() != 5 || !realword) {
+                    while (!realword) {
                         //sets up a scanner in the acceptable input file
                         //sets the input to a lowercase version, and compares to the file
                         Scanner loopsearch = new Scanner(FiveLetterWords);
@@ -58,7 +59,7 @@ public class Wordle {
                     //two boolean arrays for which letter has been currently compared, soon as it is it's removed
                     boolean[] removed = new boolean[5];
                     boolean[] removed2 = new boolean[5];
-                    //for each of the five letters checks if any match -> sets to green, originally sets gray
+                    //for each of the five letters checks if any match -> sets to green, originally sets to gray
                     for(int i=0;i<5;i++) {
                         statuschar[i]=colors.Gray;
                         if (word.charAt(i) == fiveletters.charAt(i)) {
@@ -67,46 +68,58 @@ public class Wordle {
                             removed2[i]=true;
                         }
                     }
-                    //goes through both with a 
+                    //goes through both lists and checks each index excluding ones that are the same,
+                    //as they are removed
                     for(int i=0;i<5;i++){
                         for (int k = 0; k < 5; k++) {
+                            //if both the words are not removed
                             if (!removed2[k] && !removed[i]) {
+                                //makes comparison
                                 if (word.charAt(i) == fiveletters.charAt(k)) {
-                                    removed[i]=true;
-                                    removed2[k]=true;
-                                    statuschar[k]=colors.Yellow;
+                                    removed[i] = true;
+                                    removed2[k] = true;
+                                    //removes both of them and changes the status to yellow
+                                    //(user input value is checked at k)
+                                    statuschar[k] = colors.Yellow;
                                 }
                             }
                         }
-                    }//to do add eliminated letters
-                    for (int i = 0; i < 5; i++) {
+                    }
+                    //gray by default, green if same place and char, yellow if different space and same char
+                    for (int i = 0; i < 5; i++) {//for each one of the characters checks the status nad outputs the char
                         if (statuschar[i] == colors.Green) {
                             System.out.print(Colors.GREEN_BOLD_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
                         } else if (statuschar[i] == colors.Yellow) {
                             System.out.print(Colors.YELLOW_BRIGHT + fiveletters.charAt(i) + Colors.RESET);
-                        } else {
+                        } else {//since default color in terminal is gray red is used, instead
                             System.out.print(Colors.RED + fiveletters.charAt(i) + Colors.RESET);
-                            if(useablechars.contains(fiveletters.charAt(i))){
-                                useablechars.remove((Character) fiveletters.charAt(i));
+                            if(UsableCharacters.contains(fiveletters.charAt(i))){
+                                //checks if the grayed out characters are int the UsableCharacters, if so removes it.
+                                UsableCharacters.remove((Character) fiveletters.charAt(i));
                             }
                         }
                     }
+                    //goes to new line as soon as the characters are done.
                     System.out.println();
                     if (statuschar[0] == colors.Green && statuschar[1] == colors.Green && statuschar[2] == colors.Green && statuschar[3] == colors.Green && statuschar[4] == colors.Green) {
                         System.out.println("You took " + j + " guesses");
+                        //if all the characters are green it breaks out of the 6 guess loop early
                         break;
                     }
-                    System.out.println("Not eliminated characters: "+useablechars);
+                    System.out.println("Not eliminated characters: "+ UsableCharacters);
+                    //prints out the Character array of all the usable characters
                 }
                 System.out.println("The word was " + word);
                 System.out.println("Replay?(1.Y|2.No)");
                 if(sc.nextInt() ==2){
                     break;
+                    //breaks out of the while(true) ending the infinite game loop
                 }
-                //reset possible chars after replay here
-                useablechars = new ArrayList<>(26);
+                //reset possible chars after replay
+                UsableCharacters = new ArrayList<>(26);
                 for(int i=0;i<26;i++){
-                    useablechars.add((char)(i+'a'));
+                    UsableCharacters.add((char)('a'+i));
+                    //0+'a' is a, 1+'a' is b, and so on all the way to z
                 }
             }
 
