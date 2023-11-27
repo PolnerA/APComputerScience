@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Wordle {
     enum colors {Gray,Yellow,Green}
-    //colors enum for the different wordle colors, added to improve code readability
+    //colors enum for the different wordle colors to improve code readability
     public static void main(String[] args) {
         try{
             //on start up adds all 26 characters in the alphabet to all the usable characters for the answer
