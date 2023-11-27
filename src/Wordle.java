@@ -2,18 +2,25 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
-
+/*
+Name: Adam Polner
+Problem:Create a game which lets the user play a game of wordle
+Pseudocode: 2 files (one for answers one for guesses), then it picks a random line from the answers file,
+after this it asks the user for a guess, it keeps asking until the guess matches what is in the guesses file it compares
+the guess to the saved answer and sees how many are in the correct spot, wrong place, not in the word and right spot right place
+it prints it out and exits the loop if the guesses is correct otherwise starts a new guess. (out of 6 guesses)
+Notes: Same evaluation of guess as mastermind, 
+Maintenance log:
+    
+*/
 public class Wordle {
     enum colors {Gray,Yellow,Green}
     //colors enum for the different wordle colors to improve code readability
     public static void main(String[] args) {
         try{
             //on start up adds all 26 characters in the alphabet to all the usable characters for the answer
-            ArrayList<Character> UsableCharacters = new ArrayList<>(26);
-            for(int i=0;i<26;i++){
-                UsableCharacters.add((char)('a'+i));
-                //'a'+0 is a, 'a'+1 is b, and so on all the way to z
-            }
+            ArrayList<Character> UseableCharacters = new ArrayList<Character>(26);
+            ResetLetters(UseableCharacters);
             //game loop
             while(true) {
                 //Sets up the rng, and a scanner for user input
@@ -116,16 +123,18 @@ public class Wordle {
                     //breaks out of the while(true) ending the infinite game loop
                 }
                 //reset possible chars after replay
-                UsableCharacters = new ArrayList<>(26);
-                for(int i=0;i<26;i++){
-                    UsableCharacters.add((char)('a'+i));
-                    //0+'a' is a, 1+'a' is b, and so on all the way to z
-                }
+                    ResetLetters(UseableCharacters);
             }
 
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        }
+    }
+    public static void ResetLetters(ArrayList<Character> list){
+        for(int i=0;i<26;i++){
+            list.add((char)('a'+i));
+            //'a'+0 is a, 'a'+1 is b, and so on all the way to z
         }
     }
 }
