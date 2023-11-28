@@ -7,11 +7,10 @@ Name: Adam Polner
 Problem:Create a game which lets the user play a game of wordle
 Pseudocode: 2 files (one for answers one for guesses), then it picks a random line from the answers file,
 after this it asks the user for a guess, it keeps asking until the guess matches what is in the guesses file it compares
-the guess to the saved answer and sees how many are in the correct spot, wrong place, not in the word and right spot right place
+the guess to the saved answer and sees how many are in the correct spot, wrong place, not in the word and right spot and
+place
 it prints it out and exits the loop if the guesses is correct otherwise starts a new guess. (out of 6 guesses)
-Notes: Same evaluation of guess as mastermind, 
-Maintenance log:
-    
+Notes: Same evaluation of guess as mastermind
 */
 public class Wordle {
     enum colors {Gray,Yellow,Green}
@@ -132,6 +131,7 @@ public class Wordle {
         }
     }
     public static void ResetLetters(ArrayList<Character> list){
+        list.removeAll(list);//resets the list and later populates with a-z
         for(int i=0;i<26;i++){
             list.add((char)('a'+i));
             //'a'+0 is a, 'a'+1 is b, and so on all the way to z
