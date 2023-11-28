@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -29,19 +27,20 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         String stringnum=GenerateCode();
         String stringinputnum;
         int guesses =0;
-        do {
+        do {//keeps in the loop while the input number isn't the same as code
             do {
-                System.out.println("\n4 digit number:");
-                stringinputnum = sc.nextLine();
-                guesses++;
-            } while (stringinputnum.length() != 4);
-
+                System.out.println("\n"+pins+" digit number:");
+                stringinputnum = sc.nextLine();//keeps asking the user for input while it isn't the correct length
+            } while (stringinputnum.length() != pins);
+            //evaluate the pins with the function
             int[] blackwhitepins = EvaluateGuess(stringinputnum,stringnum);
+            guesses++;
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
             System.out.println("Guesses: " +guesses);
+            //outputs all the info to the user
 
         } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
