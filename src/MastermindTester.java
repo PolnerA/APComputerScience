@@ -23,7 +23,7 @@ public class MastermindTester {
     static class ExampleStudent extends StudentAlgorithm {
 
         public ExampleStudent() {
-            super("polnera"); // Put your name or GitHub username here
+            super("Adam Polner"); // Put your name or GitHub username here
         }
 
         // Return black hits (correct color and position) in [0] and white hits (correct color but wrong
