@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class MasterMind {
     public static final int pins=4;
-    public static final int colors=6;//max 10 as the chars wouldn't work 0-9 is the amount in one place
+    public static final int colors=6;
     public static void main(String[] args) {
 /*
 Write a program that plays a variation of the game Mastermind with a user.
@@ -28,18 +28,20 @@ By the way, traditional Mastermind had only 4 pins which could have 6 different 
         Scanner sc = new Scanner(System.in);
         String stringnum=GenerateCode();
         String stringinputnum;
-        System.out.println(Math.abs(0x80000000));
+        int guesses =0;
         do {
             do {
                 System.out.println("\n4 digit number:");
                 stringinputnum = sc.nextLine();
+                guesses++;
             } while (stringinputnum.length() != 4);
 
-            int[] blackwhitepins = EvaluateGuess("1121",stringnum);
+            int[] blackwhitepins = EvaluateGuess(stringinputnum,stringnum);
             int blackpins = blackwhitepins[0];
             int whitepins = blackwhitepins[1];
             System.out.println("Correct space and number: " + blackpins);
             System.out.println("Incorrect space, Correct number: " + whitepins);
+            System.out.println("Guesses: " +guesses);
 
         } while (stringinputnum.charAt(0) != stringnum.charAt(0) || stringinputnum.charAt(1) != stringnum.charAt(1) || stringinputnum.charAt(2) != stringnum.charAt(2) || stringinputnum.charAt(3) != stringnum.charAt(3));
     }
