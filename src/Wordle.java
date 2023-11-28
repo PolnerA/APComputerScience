@@ -19,8 +19,8 @@ public class Wordle {
     public static void main(String[] args) {
         try{
             //on start up adds all 26 characters in the alphabet to all the usable characters for the answer
-            ArrayList<Character> UseableCharacters = new ArrayList<Character>(26);
-            ResetLetters(UseableCharacters);
+            ArrayList<Character> UsableCharacters = new ArrayList<>(26);
+            ResetLetters(UsableCharacters);
             //game loop
             while(true) {
                 //Sets up the rng, and a scanner for user input
@@ -123,7 +123,7 @@ public class Wordle {
                     //breaks out of the while(true) ending the infinite game loop
                 }
                 //reset possible chars after replay
-                    ResetLetters(UseableCharacters);
+                    ResetLetters(UsableCharacters);
             }
 
         } catch (FileNotFoundException e) {
