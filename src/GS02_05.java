@@ -3,7 +3,7 @@ import java.util.Scanner;
 Name: Adam Polner
 Problem:Do BJP Ch 3 Project 4. Write a program that prompts 
 for the three sides of a triangle and reports the three angles.
-Pseudocode: Ask for the first three, check if its a real triangle then use the cosine rule to find 
+Pseudocode: Ask for the first three, check if it's a real triangle then use the cosine rule to find
 angles c and b, then subtract from 180 to get a
 Notes: use cosine rule measure of angle C when given a, b and c is c^2 = a^2 + b^2 -2ab cos C
 Measure of angle C = arccos((a^2+b^2-c^2)/(2*a*b))
