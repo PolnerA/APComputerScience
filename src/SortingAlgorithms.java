@@ -19,6 +19,17 @@ public class SortingAlgorithms {
              Merge(list,left,right);
         }
     }
+    public static void ModifiedMergeSort(int[] list){//O(N Log N) performance
+        if(1<list.length){
+            int[] left = Arrays.copyOfRange(list,0,list.length/2);
+            int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
+            //recursively sort both halves
+            ModifiedMergeSort(right);
+            ModifiedMergeSort(left);
+            //merge sorted halves into one sorted array
+            Merge(list,left,right);
+        }
+    }
     public static void SelectionSort(int[] list){//O(N^2) performance
         for(int i=0;i< list.length-1;i++){
             int smallest=i;
