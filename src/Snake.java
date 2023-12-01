@@ -1,78 +1,69 @@
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Scanner;
-
 public class Snake {
     public static void main(String[] args) throws InterruptedException {
-        Game maingame = new Game();
+        Thread maingame = new Thread(new Game1());
         maingame.run();
-        Keyboard Object = new Keyboard();
-        Object.run();
+        Thread input = new Thread(new Keyboard());
+        input.run();
     }
+    public static class Game1 implements Runnable{
+        int snakelength = 1;
+        int snakex = 0;
+        int snakey = 0;
 
-}
-class Game extends Thread {
-    static int snakelength = 1;
-    static int snakex = 0;
-    static int snakey = 0;
+        public enum directions {up, left, down, right};
+        public static directions snakedirections = directions.right;
+        public Game1(){
 
-    public static enum directions {up, left, down, right}
-
-    ;
-    public static directions snakedirections = directions.right;
-
-    public void run() {
-        try {
-            while (true) {
-                switch (snakedirections) {
-                    case up:
-                        snakey--;
-                        break;
-                    case left:
-                        snakex--;
-                        break;
-                    case down:
-                        snakey++;
-                        break;
-                    case right:
-                        snakex++;
-                        break;
+        }
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    switch (snakedirections) {
+                        case up:
+                            snakey--;
+                            break;
+                        case left:
+                            snakex--;
+                            break;
+                        case down:
+                            snakey++;
+                            break;
+                        case right:
+                            snakex++;
+                            break;
+                    }
+                    DrawSnake();
+                    System.out.print("\033[H\033[2J");
                 }
-                DrawSnake();
-                int direction = 1;
-                if (direction == 2 && snakedirections != directions.up) {
-                    snakedirections = directions.down;
-                } else if (direction == 4 && snakedirections != directions.right) {
-                    snakedirections = directions.left;
-                } else if (direction == 6 && snakedirections != directions.left) {
-                    snakedirections = directions.right;
-                } else if (direction == 8 && snakedirections != directions.down) {
-                    snakedirections = directions.up;
-                }
-                System.out.print("\033[H\033[2J");
+            } catch (Exception e) {
+                System.out.print("Exception is caught.");
             }
-        } catch (Exception e) {
-            System.out.print("Exception is caught.");
+        }
+        public void DrawSpace() {
+            for (int i = 0; i < snakey; i++) {
+                System.out.println();
+            }
+            for (int i = 0; i < snakex; i++) {
+                System.out.print(" ");
+            }
+        }
+        public void DrawSnake() throws InterruptedException {
+            DrawSpace();
+            for(int i=0;i<snakelength;i++){
+                System.out.print("*");
+            }
+            Thread.sleep(500);
         }
     }
 
-    public static void DrawSpace() {
-        for (int i = 0; i < snakey; i++) {
-            System.out.println();
-        }
-        for (int i = 0; i < snakex; i++) {
-            System.out.print(" ");
-        }
-    }
-    public static void DrawSnake() throws InterruptedException {
-        DrawSpace();
-        for(int i=0;i<snakelength;i++){
-            System.out.print("*");
-        }
-    }
 }
-class Keyboard extends Thread{
+class Game implements Runnable {
+}
+class Keyboard implements Runnable{
     public void run()
     {
         try {
