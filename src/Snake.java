@@ -9,7 +9,7 @@ public class Snake {
     static int snakex = 0;
     static int snakey = 0;
 
-    enum directions {up, left, down, right};
+    enum directions {up, left, down, right}
     static directions snakedirections = directions.right;
     public static void main(String[] args) throws InterruptedException {
         /*int mousex =MouseInfo.getPointerInfo().getLocation().x;
