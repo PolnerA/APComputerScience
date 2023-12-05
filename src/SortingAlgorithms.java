@@ -1,12 +1,8 @@
 import java.util.Arrays;
 
 public class SortingAlgorithms {
-    public static void main(String[] args) {//selection, merge, bubble, quick, double selection sort
-        int[] mergedlist = {14,32,67,76,23,41,58,85};
-        MergeSort(mergedlist);
-        int[] list = {14,32,67,76,23,41,58,85};
-        System.out.println(Arrays.toString(list));
-        System.out.println(Arrays.toString(mergedlist));
+    public static void main(String[] args) {//bubble, quick, double selection sort
+
     }
     public static void MergeSort(int[] list){//O(N Log N) performance
         if(1<list.length){
