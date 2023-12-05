@@ -1,3 +1,5 @@
+import com.sun.tools.jconsole.JConsolePlugin;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,6 +14,7 @@ public class Snake {
     enum directions {up, left, down, right}
     static directions snakedirections = directions.right;
     public static void main(String[] args) throws InterruptedException {
+        //for the terminal use jcurses or lanterna
         /*int mousex =MouseInfo.getPointerInfo().getLocation().x;
         int mousey =MouseInfo.getPointerInfo().getLocation().y;
         if(0<(mousex + 2048/2)-(2048/2)){
@@ -64,7 +67,6 @@ public class Snake {
             System.out.print("*");
         }
         Thread.sleep(500);
-        snakelength++;
     }
 
 }
