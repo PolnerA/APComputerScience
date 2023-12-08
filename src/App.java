@@ -4,22 +4,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class App extends Frame{
-    static Graphics graphics;
 
     public static void main(String[] args) {
-        new App();
-    }
-    public App (){
+        //new App();
 
-            setVisible(true);
-            setSize(300, 200);
-            addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e)
-                {
-                    System.exit(0);
-                }
-            });
+    //public App (){
+
+            //setVisible(true);
+            //setSize(300, 300);
 
 /*
         // Creating a panel to add
@@ -30,7 +22,7 @@ public class App extends Frame{
 
         g.drawLine(0,0,100,100);
         f.show();*/
-        /*int boardWidth = 2000;
+        int boardWidth = 2000;
         int boardHeight = boardWidth;
 
         JFrame frame = new JFrame("Snake");
@@ -39,12 +31,12 @@ public class App extends Frame{
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SnakeGame snakeGame = new SnakeGame(boardWidth, boardHeight);
-        frame.add(snakeGame);
-        snakeGame.requestFocus();*/
+        Snake snake = new Snake(boardWidth, boardHeight);
+        frame.add(snake);
+        snake.requestFocus();
     }
-    public void paint(Graphics g)
-    {
-        g.drawRect(100, 100, 100, 50);
-    }
+    //public void paint(Graphics g)
+    //{
+        //g.drawLine(0, 0, 200, 200);
+    //}
 }

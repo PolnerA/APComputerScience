@@ -2,71 +2,123 @@ import com.sun.tools.jconsole.JConsolePlugin;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Random;
 
-public class Snake {
-    static int snakelength = 1;
-    static int snakex = 0;
-    static int snakey = 0;
+public class Snake extends JPanel implements ActionListener, KeyListener  {
+    private class Tile{
+        int x;
+        int y;
 
-    enum directions {up, left, down, right}
-    static directions snakedirections = directions.right;
-    public static void main(String[] args) throws InterruptedException {
-        //for the terminal use jcurses or lanterna
-        /*int mousex =MouseInfo.getPointerInfo().getLocation().x;
-        int mousey =MouseInfo.getPointerInfo().getLocation().y;
-        if(0<(mousex + 2048/2)-(2048/2)){
-            snakedirections=directions.right;
-        }//2048 X 1152
-        else if(20<mousey){
-            snakedirections=directions.down;
-        }*/
-        Random rng = new Random();
-        while (true) {
-            int randomdir = rng.nextInt(4);
-            if(randomdir==0){
-                snakedirections=directions.up;
-            } else if (randomdir==1) {
-                snakedirections=directions.left;
-            }else if (randomdir==2) {
-                snakedirections=directions.down;
-            }else if (randomdir==3) {
-                snakedirections=directions.right;
-            }
-            switch (snakedirections) {
-                case up:
-                    snakey--;
-                    break;
-                case left:
-                    snakex--;
-                    break;
-                case down:
-                    snakey++;
-                    break;
-                case right:
-                    snakex++;
-                    break;
-            }
-            DrawSnake();
-            System.out.print("\033[H\033[2J");
+        Tile(int x, int y){
+            this.x=x;
+            this.y=y;
         }
     }
-    public static void DrawSpace() {
-        for (int i = 0; i < snakey; i++) {
-            System.out.println();
-        }
-        for (int i = 0; i < snakex; i++) {
-            System.out.print(" ");
+    int boardWidth;
+    int boardHeight;
+    int tileSize = 25;
+
+    //snake
+    Tile snakeHead;
+    ArrayList<Tile> snakeBody;
+
+    //food
+    Tile food;
+    Random rng;
+
+    //game logic
+    int velocityX;
+    int velocityY;
+    Timer gameLoop;
+
+    boolean gameOver = false;
+
+    public Snake(int boardWidth, int boardHeight) {
+        this.boardWidth = boardWidth;
+        this.boardHeight = boardHeight;
+        setPreferredSize(new Dimension(this.boardWidth, this.boardHeight));
+        setBackground(Color.black);
+        addKeyListener(this);
+        setFocusable(true);
+        setVisible(true);
+        snakeHead = new Tile(5, 5);
+        snakeBody = new ArrayList<Tile>();
+
+        velocityX = 1;
+        velocityY = 0;
+
+        Gameloop();
+    }
+    public void Gameloop(){
+        while (true){
+            switch(velocityX){
+                case-1:
+                    snakeHead = new Tile(snakeHead.x--,snakeHead.y);
+            }
+            //move snake
+            //detect intersection
+            //
         }
     }
-    public static void DrawSnake() throws InterruptedException {
-        DrawSpace();
-        for (int i = 0; i < snakelength; i++) {
-            System.out.print("*");
-        }
-        Thread.sleep(500);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        draw(g);
     }
 
+    public void draw(Graphics g) {
+        //Grid Lines
+        for(int i = 0; i < boardWidth/tileSize; i++) {
+            //(x1, y1, x2, y2)
+            g.drawLine(i*tileSize, 0, i*tileSize, boardHeight);
+            g.drawLine(0, i*tileSize, boardWidth, i*tileSize);
+        }
+
+        //Food
+
+        //Snake Head
+        g.setColor(Color.green);
+        // g.fillRect(snakeHead.x, snakeHead.y, tileSize, tileSize);
+        // g.fillRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize, tileSize);
+        g.fill3DRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize, tileSize, true);
+
+        //Snake Body
+        for (int i = 0; i < snakeBody.size(); i++) {
+            Tile snakePart = snakeBody.get(i);
+            // g.fillRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize);
+            g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
+        }
+
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) { //called every x milliseconds by gameLoop timer
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getID() == KeyEvent.VK_W){
+            velocityY=-1;
+            velocityX=0;
+        } else if (e.getID()== KeyEvent.VK_A) {
+            velocityY=0;
+            velocityX=-1;
+        } else if (e.getID()== KeyEvent.VK_S) {
+            velocityY=1;
+            velocityX=0;
+        } else if (e.getID()== KeyEvent.VK_D) {
+            velocityY=0;
+            velocityX=1;
+        }
+    }
+
+    //not needed
+    @Override
+    public void keyTyped(KeyEvent e) {}
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
 }
