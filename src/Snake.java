@@ -52,18 +52,39 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         velocityX = 1;
         velocityY = 0;
 
-        Gameloop();
+        //Gameloop();
     }
     public void Gameloop(){
         while (true){
             switch(velocityX){
                 case-1:
                     snakeHead = new Tile(snakeHead.x--,snakeHead.y);
+                    break;
+                case 1:
+                    snakeHead = new Tile(snakeHead.x++,snakeHead.y);
+                    break;
+            }
+            switch(velocityY){
+                case -1:
+                    snakeHead = new Tile(snakeHead.x,snakeHead.y--);
+                    break;
+                case 1:
+                    snakeHead = new Tile(snakeHead.x,snakeHead.y++);
+                    break;
             }
             //move snake
-            //detect intersection
+            //detect intersection with snake head
+            for(Tile body:snakeBody){
+                if(Intersection(snakeHead,body)){
+                    gameOver=true;
+                    return;
+                }
+            }
             //
         }
+    }
+    public boolean Intersection(Tile a, Tile b){
+        return (a.x==b.x&&a.y==b.y);
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
