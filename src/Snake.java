@@ -32,8 +32,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
     Random rng;
 
     //game logic
-    int velocityX;
-    int velocityY;
+    public int velocityX=1;
+    public int velocityY=0;
     Timer gameLoop;
 
     boolean gameOver = false;
@@ -45,43 +45,18 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         setBackground(Color.black);
         addKeyListener(this);
         setFocusable(true);
-        setVisible(true);
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<Tile>();
+        setVisible(true);
 
-        velocityX = 1;
-        velocityY = 0;
 
-        //Gameloop();
+        gameLoop = new Timer(100,this);
+        gameLoop.start();
     }
-    public void Gameloop(){
-        while (true){
-            switch(velocityX){
-                case-1:
-                    snakeHead = new Tile(snakeHead.x--,snakeHead.y);
-                    break;
-                case 1:
-                    snakeHead = new Tile(snakeHead.x++,snakeHead.y);
-                    break;
-            }
-            switch(velocityY){
-                case -1:
-                    snakeHead = new Tile(snakeHead.x,snakeHead.y--);
-                    break;
-                case 1:
-                    snakeHead = new Tile(snakeHead.x,snakeHead.y++);
-                    break;
-            }
-            //move snake
-            //detect intersection with snake head
-            for(Tile body:snakeBody){
-                if(Intersection(snakeHead,body)){
-                    gameOver=true;
-                    return;
-                }
-            }
-            //
-        }
+    public void Move(){
+            //move snake head
+            snakeHead.x+=velocityX;
+            snakeHead.y+=velocityY;
     }
     public boolean Intersection(Tile a, Tile b){
         return (a.x==b.x&&a.y==b.y);
@@ -108,32 +83,44 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         g.fill3DRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize, tileSize, true);
 
         //Snake Body
-        for (int i = 0; i < snakeBody.size(); i++) {
-            Tile snakePart = snakeBody.get(i);
+        //for (int i = 0; i < snakeBody.size(); i++) {
+            //Tile snakePart = snakeBody.get(i);
             // g.fillRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize);
-            g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
-        }
+            //g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
+        //}
 
     }
     @Override
     public void actionPerformed(ActionEvent e) { //called every x milliseconds by gameLoop timer
+        Move();
+        repaint();
+        if(gameOver){
+            gameLoop.stop();
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getID() == KeyEvent.VK_W){
+        //System.out.println("KeyEvent: " + e.getKeyCode());
+        //System.out.println(KeyEvent.VK_W);
+
+        if(e.getKeyCode() == KeyEvent.VK_W&&velocityY!=1){
             velocityY=-1;
             velocityX=0;
-        } else if (e.getID()== KeyEvent.VK_A) {
+        } else if (e.getKeyCode()== KeyEvent.VK_A&&velocityX!=1) {
             velocityY=0;
             velocityX=-1;
-        } else if (e.getID()== KeyEvent.VK_S) {
+        } else if (e.getKeyCode()== KeyEvent.VK_S&&velocityY!=-1) {
             velocityY=1;
             velocityX=0;
-        } else if (e.getID()== KeyEvent.VK_D) {
+        } else if (e.getKeyCode()== KeyEvent.VK_D&&velocityX!=-1) {
             velocityY=0;
             velocityX=1;
         }
+        //87 == w
+        //65 == a
+        //83 == s
+        //68 == d
     }
 
     //not needed

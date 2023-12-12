@@ -6,22 +6,6 @@ import java.awt.event.WindowEvent;
 public class App extends Frame{
 
     public static void main(String[] args) {
-        //new App();
-
-    //public App (){
-
-            //setVisible(true);
-            //setSize(300, 300);
-
-/*
-        // Creating a panel to add
-        JFrame f = new JFrame();
-        f.setSize(400,400);
-        // Setting the size of frame
-        Graphics g =f.getGraphics();
-
-        g.drawLine(0,0,100,100);
-        f.show();*/
         int boardWidth = 2000;
         int boardHeight = boardWidth;
 
@@ -35,8 +19,4 @@ public class App extends Frame{
         frame.add(snake);
         snake.requestFocus();
     }
-    //public void paint(Graphics g)
-    //{
-        //g.drawLine(0, 0, 200, 200);
-    //}
 }
