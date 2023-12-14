@@ -1,15 +1,15 @@
-import com.sun.tools.jconsole.JConsolePlugin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Snake extends JPanel implements ActionListener, KeyListener  {
+import static java.awt.Font.SANS_SERIF;
+
+public class Snake extends JPanel implements ActionListener, KeyListener {
+
+
     private class Tile{
         int x;
         int y;
@@ -29,7 +29,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
 
     //food
     Tile food;
-    Random rng;
+    Random rng=new Random();
 
     //game logic
     public int velocityX=1;
@@ -47,31 +47,35 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         setFocusable(true);
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<Tile>();
-        setVisible(true);
 
-
+        Apple();
         gameLoop = new Timer(100,this);
         gameLoop.start();
     }
+    public void Apple(){
+        //food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight/tileSize));
+        food = new Tile(rng.nextInt(500/tileSize), rng.nextInt(500/tileSize));
+    }
     public void Move(){
+        if(Intersection(snakeHead,food)) {
+            Apple();
+            snakeBody.add(new Tile( tileSize, tileSize));
+        }
         //move snake body
-        for (int i = snakeBody.size()-1; i >= 0; i--) {
+        for (int i = snakeBody.size() - 1; i >= 0; i--) {
             Tile snakePart = snakeBody.get(i);
             if (i == 0) { //right before the head
                 snakePart.x = snakeHead.x;
                 snakePart.y = snakeHead.y;
-            }
-            else {
-                Tile prevSnakePart = snakeBody.get(i-1);
+            } else {
+                Tile prevSnakePart = snakeBody.get(i - 1);
                 snakePart.x = prevSnakePart.x;
                 snakePart.y = prevSnakePart.y;
             }
         }
-        
         //move snake head
-        snakeHead.x+=velocityX;
-        snakeHead.y+=velocityY;
-    
+        snakeHead.x += velocityX;
+        snakeHead.y += velocityY;
         //snake body collision
         for(Tile b:snakeBody){
             if(Intersection(snakeHead,b)){
@@ -88,6 +92,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
     }
 
     public void draw(Graphics g) {
+        g.setFont(Font.getFont(SANS_SERIF));
+        g.drawString("Snake",5*tileSize,5*tileSize);
         //Grid Lines
         for(int i = 0; i < boardWidth/tileSize; i++) {
             //(x1, y1, x2, y2)
@@ -96,7 +102,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         }
 
         //Food
-
+        g.setColor(Color.red);
+        g.fill3DRect(food.x*tileSize,food.y*tileSize,tileSize,tileSize,true);
         //Snake Head
         g.setColor(Color.green);
         // g.fillRect(snakeHead.x, snakeHead.y, tileSize, tileSize);
@@ -104,11 +111,11 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         g.fill3DRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize, tileSize, true);
 
         //Snake Body
-        //for (int i = 0; i < snakeBody.size(); i++) {
-            //Tile snakePart = snakeBody.get(i);
-            // g.fillRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize);
-            //g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
-        //}
+        for (int i = 0; i < snakeBody.size(); i++) {
+            Tile snakePart = snakeBody.get(i);
+            g.fillRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize);
+            g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
+        }
 
     }
     @Override
@@ -117,8 +124,10 @@ public class Snake extends JPanel implements ActionListener, KeyListener  {
         repaint();
         if(gameOver){
             gameLoop.stop();
+
         }
     }
+
 
     @Override
     public void keyPressed(KeyEvent e) {
