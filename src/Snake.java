@@ -54,7 +54,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     }
     public void Apple(){
         //food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight/tileSize));
-        food = new Tile(rng.nextInt(500/tileSize), rng.nextInt(500/tileSize));
+        food.x=boardWidth/tileSize;
+        food.y=boardHeight/tileSize;
     }
     public void Move(){
         if(Intersection(snakeHead,food)) {
