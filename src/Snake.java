@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
-
 import static java.awt.Font.SANS_SERIF;
 
 public class Snake extends JPanel implements ActionListener, KeyListener {
@@ -47,16 +46,15 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<Tile>();
-
+        food= new Tile(5,5);
         Apple();
         gameLoop = new Timer(100,this);
         gameLoop.start();
     }
     public void Apple(){
-        //food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight/tileSize));
-        food.x=boardWidth/tileSize;
-        food.y=boardHeight/tileSize;
+        food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight/tileSize));
     }
+
     public void Move(){
         if(Intersection(snakeHead,food)) {
             Apple();
