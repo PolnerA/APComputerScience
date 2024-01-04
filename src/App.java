@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 public class App extends Frame{
 
     public static void main(String[] args) {
-        int boardWidth = 2000;
+        int boardWidth = 500;
         int boardHeight = boardWidth;
 
         JFrame frame = new JFrame("Snake");
