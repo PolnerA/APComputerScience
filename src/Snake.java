@@ -47,12 +47,11 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<Tile>();
         food= new Tile(5,5);
-        Apple();
         gameLoop = new Timer(100,this);
         gameLoop.start();
     }
     public void Apple(){
-        food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight/tileSize));
+        food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight)/tileSize);
     }
 
     public void Move(){
@@ -91,8 +90,12 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     }
 
     public void draw(Graphics g) {
-        g.setFont(Font.getFont(SANS_SERIF));
-        g.drawString("Snake",5*tileSize,5*tileSize);
+        Font font = new Font(SANS_SERIF,1,20);
+        g.setFont(font);
+        if(gameOver) {
+            g.drawString("Game Over",boardWidth/2,boardHeight/2);
+            return;
+        }
         //Grid Lines
         for(int i = 0; i < boardWidth/tileSize; i++) {
             //(x1, y1, x2, y2)
