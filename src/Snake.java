@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
-import static java.awt.Font.SANS_SERIF;
 
 public class Snake extends JPanel implements ActionListener, KeyListener {
 
@@ -20,14 +19,12 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     }
     int boardWidth;
     int boardHeight;
-    int tileSize = 1;
+    int tileSize = 25;
 
     //snake
     Tile snakeHead;
     ArrayList<Tile> snakeBody;
-    enum directions {up,down,left,right};
-
-    directions SnakeDirection=directions.right;
+    boolean hasmoved=false;
     //food
     Tile food;
     Random rng=new Random();
@@ -35,6 +32,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     //game logic
     public int velocityX=1;
     public int velocityY=0;
+    public int Score=0;
     Timer gameLoop;
 
     boolean gameOver = false;
@@ -49,17 +47,18 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<Tile>();
         food= new Tile(5,5);
-        gameLoop = new Timer(50,this);
+        gameLoop = new Timer(100,this);
         gameLoop.start();
     }
     public void Apple(){
-        food = new Tile(rng.nextInt(boardWidth/tileSize), rng.nextInt(boardHeight)/tileSize);
+        food = new Tile(rng.nextInt(boardWidth / tileSize), rng.nextInt(boardHeight) / tileSize);
     }
 
     public void Move(){
         if(Intersection(snakeHead,food)) {
             Apple();
             snakeBody.add(new Tile( tileSize, tileSize));
+            Score++;
         }
         //move snake body
         for (int i = snakeBody.size() - 1; i >= 0; i--) {
@@ -76,15 +75,11 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         //move snake head
         snakeHead.x += velocityX;
         snakeHead.y += velocityY;
-        if(velocityX == 1){
-            SnakeDirection=directions.right;
-        }else if(velocityX == -1){
-            SnakeDirection=directions.left;
-        }else if(velocityY == 1){
-            SnakeDirection =directions.up;
-        }else if(velocityY == -1){
-            SnakeDirection = directions.down;
+
+        if(snakeHead.x<0||snakeHead.y<0||boardWidth<snakeHead.x||boardHeight< snakeHead.y){
+            gameOver=true;
         }
+        hasmoved=false;
         //snake body collision
         for(Tile b:snakeBody){
             if(Intersection(snakeHead,b)){
@@ -133,8 +128,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) { //called every x milliseconds by gameLoop timer
-        repaint();
         Move();
+        repaint();
         if(gameOver){
             gameLoop.stop();
 
@@ -146,19 +141,24 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         //System.out.println("KeyEvent: " + e.getKeyCode());
         //System.out.println(KeyEvent.VK_W);
-
-        if(e.getKeyCode() == KeyEvent.VK_W&&velocityY!=1){//add boolean has moved
-            velocityY=-1;
-            velocityX=0;
-        } else if (e.getKeyCode()== KeyEvent.VK_A&&velocityX!=1) {
-            velocityY=0;
-            velocityX=-1;
-        } else if (e.getKeyCode()== KeyEvent.VK_S&&velocityY!=-1) {
-            velocityY=1;
-            velocityX=0;
-        } else if (e.getKeyCode()== KeyEvent.VK_D&&velocityX!=-1) {
-            velocityY=0;
-            velocityX=1;
+        if(!hasmoved) {
+            if (e.getKeyCode() == KeyEvent.VK_W && velocityY != 1) {//add boolean has moved
+                velocityY = -1;
+                velocityX = 0;
+                hasmoved = true;
+            } else if (e.getKeyCode() == KeyEvent.VK_A && velocityX != 1) {
+                velocityY = 0;
+                velocityX = -1;
+                hasmoved = true;
+            } else if (e.getKeyCode() == KeyEvent.VK_S && velocityY != -1) {
+                velocityY = 1;
+                velocityX = 0;
+                hasmoved = true;
+            } else if (e.getKeyCode() == KeyEvent.VK_D && velocityX != -1) {
+                velocityY = 0;
+                velocityX = 1;
+                hasmoved = true;
+            }
         }
         //87 == w
         //65 == a
