@@ -26,12 +26,10 @@ import java.util.Random;
 public class Snake extends JPanel implements ActionListener, KeyListener {
     int tileSize = 25;
 
-    //tile class allows to program in terms of the snake tiles instead of pixels
-    private class Tile{
+    //tile class allows to program in terms of the snake tiles instead of pixels | just multiply by tilesize for pixels
+    private static class Tile{
         int x;
         int y;
-        int pixelX=x*tileSize;
-        int pixelY=y*tileSize;
         Tile(int x, int y){
             this.x=x;
             this.y=y;
@@ -72,7 +70,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         //sets the snake head at (5,5) and the snakeBody at a new empty list
         snakeHead = new Tile(5, 5);
         snakeBody = new ArrayList<>();
-        food= new Tile(15,5);//sets the food to (15,5)
+        food= new Tile(15, 5);//sets the food to (15,5)
         //gameLoop calls event every 100 milliseconds
         gameLoop = new Timer(100,this);
         gameLoop.start();
@@ -98,7 +96,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     public void Move(){
         //detects if the head is where the food is if so, changes the food and adds to the body
         if(Intersection(snakeHead,food)) {
-            snakeBody.add(new Tile( food.x, food.y));
+            snakeBody.add(new Tile(food.x, food.y));
             Apple();
         }
         //move snake body
@@ -119,8 +117,8 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         snakeHead.y += velocityY;
         //if it moves out of the border
         if(snakeHead.x<0||snakeHead.y<0
-                ||boardWidth-tileSize<snakeHead.pixelX
-                ||boardHeight-tileSize< snakeHead.pixelY){
+                ||boardWidth-tileSize<snakeHead.x*tileSize
+                ||boardHeight-tileSize< snakeHead.y*tileSize){
             gameOver=true;
         }
         //as move is completed sets the all clear for the next move
@@ -160,15 +158,15 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         //Food
         g.setColor(Color.red);
         //3D rect is used to make it raised, so it shades the edge giving it a more distinct look
-        g.fill3DRect(food.pixelX,food.pixelY,tileSize,tileSize,true);
+        g.fill3DRect(food.x*tileSize,food.y*tileSize,tileSize,tileSize,true);
 
         //Snake Head
         g.setColor(Color.green);
-        g.fill3DRect(snakeHead.pixelX, snakeHead.pixelY, tileSize, tileSize, true);
+        g.fill3DRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize, tileSize, true);
 
         //Snake Body
         for (Tile snakePart:snakeBody) {
-            g.fill3DRect(snakePart.pixelX, snakePart.pixelY, tileSize, tileSize, true);
+            g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
         }
 
     }
@@ -209,7 +207,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
                 gameLoop.start();
                 snakeHead = new Tile(5, 5);
                 snakeBody = new ArrayList<>();
-                food= new Tile(15,5);
+                food= new Tile(15, 5);
                 velocityX=1;
                 velocityY=0;
                 gameOver=false;
