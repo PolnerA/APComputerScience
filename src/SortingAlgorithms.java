@@ -6,7 +6,7 @@ public class SortingAlgorithms {
     static Random rng = new Random();
     public static void main(String[] args) {//bubble, quick, double selection sort
             int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8};
-            DoubleSelectionSort(list);
+            BubbleSort(list);
     }
     public static void MergeSort(int[] list){//O(N Log N) performance
         if(1<list.length){
@@ -52,7 +52,7 @@ public class SortingAlgorithms {
             Swap(list,i,largest);
         }
     }
-    public static void DoubleSelectionSort(int[] list){
+    public static void DoubleSelectionSort(int[] list){//in progress
         int bottomindex = 0;
         for(int i=list.length-1;i<list.length;i--){
             int largest=i;
@@ -75,6 +75,20 @@ public class SortingAlgorithms {
         while(!isSorted(list)){
             Shuffle(list);
             iterations++;
+        }
+    }
+    public static void BubbleSort(int[] list){//O(N^2) performance
+        for (int i=0;i< list.length-1;i++){
+            boolean swapped = false;
+            for(int j=0;j< list.length-i-1;j++){
+                if(list[j+1]<list[j]){
+                    Swap(list,j,j+1);
+                    swapped=true;
+                }
+            }
+            if(!swapped){
+                break;
+            }
         }
     }
     public static void Shuffle(int[] list){
