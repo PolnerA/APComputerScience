@@ -7,8 +7,8 @@ public class App extends Frame{//an extension of Frame (a window)
 
     public static void main(String[] args) {
         //sets the width and height, height has to be slightly less to keep squares equal
-        int boardWidth = 615;
-        int boardHeight = 614;
+        int boardWidth = 600;
+        int boardHeight = 625;
 
         //name of the window is set to snake, makes it visible and sets the size
         JFrame frame = new JFrame("Snake");
