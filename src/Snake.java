@@ -140,20 +140,22 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
     }
 
     public void draw(Graphics g) {
-        //sets the color of the text to white
+        if(!gameOver) {
+            //sets the color to dark gray and draws the grid lines
+            g.setColor(Color.DARK_GRAY);
+            //Grid Lines
+            for (int i = 0; i < boardWidth / tileSize; i++) {
+                g.drawLine(i * tileSize, 0, i * tileSize, boardHeight);
+                g.drawLine(0, i * tileSize, boardWidth, i * tileSize);
+            }
+        }
         g.setColor(Color.WHITE);
-        g.drawString("Score: "+snakeBody.size(),20,20);
         if(gameOver) {
             g.drawString("Game Over, press enter to try again",boardWidth/2,boardHeight/2);
+            g.drawString("Score: "+snakeBody.size(),20,20);
             return;//returns as all that needs to be written is the score and game over (snake doesn't move)
         }
-        //sets the color to dark gray and draws the grid lines
-        g.setColor(Color.DARK_GRAY);
-        //Grid Lines
-        for(int i = 0; i < boardWidth/tileSize; i++) {
-            g.drawLine(i*tileSize, 0, i*tileSize, boardHeight);
-            g.drawLine(0, i*tileSize, boardWidth, i*tileSize);
-        }
+
 
         //Food
         g.setColor(Color.red);
@@ -168,6 +170,9 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         for (Tile snakePart:snakeBody) {
             g.fill3DRect(snakePart.x*tileSize, snakePart.y*tileSize, tileSize, tileSize, true);
         }
+        //sets the color of the text to white
+        g.setColor(Color.WHITE);
+        g.drawString("Score: "+snakeBody.size(),20,20);
 
     }
     @Override
