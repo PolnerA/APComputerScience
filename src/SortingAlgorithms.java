@@ -6,9 +6,9 @@ public class SortingAlgorithms {
     static Random rng = new Random();
     public static void main(String[] args) {//bubble, quick, double selection sort
             int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8};
-            BubbleSort(list);
+            InsertionSort(list);
     }
-    public static void MergeSort(int[] list){//O(N Log N) performance
+    public static void MergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
             int[] left = Arrays.copyOfRange(list,0,list.length/2);
             int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
@@ -19,7 +19,7 @@ public class SortingAlgorithms {
              Merge(list,left,right);
         }
     }
-    public static void ModifiedMergeSort(int[] list){//O(N Log N) performance
+    public static void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
             int[] left = Arrays.copyOfRange(list,0,list.length/2);
             int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
@@ -30,7 +30,7 @@ public class SortingAlgorithms {
             Merge(list,left,right);
         }
     }
-    public static void SelectionSort(int[] list){//O(N^2) performance
+    public static void SelectionSort(int[] list){//O(N^2) worst-case complexity
         for(int i=0;i< list.length-1;i++){
             int smallest=i;
             for(int j=i+1;j<list.length;j++){
@@ -41,7 +41,7 @@ public class SortingAlgorithms {
             Swap(list,i,smallest);
         }
     }
-    public static void ModifiedSelectionSort(int[] list){//O(N^2) performance runs faster
+    public static void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
         for(int i=0;i< list.length-1;i++){
             int largest=i;
             for(int j=i+1;j<list.length;j++){
@@ -71,13 +71,13 @@ public class SortingAlgorithms {
             bottomindex++;
         }
     }
-    public static void BogoSort(int[] list){//O(2^N)
+    public static void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
         while(!isSorted(list)){
             Shuffle(list);
             iterations++;
         }
     }
-    public static void BubbleSort(int[] list){//O(N^2) performance
+    public static void BubbleSort(int[] list){//O(N^2) worst-case complexity
         for (int i=0;i< list.length-1;i++){
             boolean swapped = false;
             for(int j=0;j< list.length-i-1;j++){
@@ -90,6 +90,44 @@ public class SortingAlgorithms {
                 break;
             }
         }
+    }
+    public static void InsertionSort(int[] list){//O(N^2) worst-case complexity
+        for(int i=1;i< list.length;i++){
+            int j = i-1;
+            int key = list[i];
+
+            while(0 <= j && key<list[j]){
+                list[j+1]=list[j];//swaps the two values
+                j--;
+            }
+            list[j+1]=key;
+        }
+    }
+
+    public static void QuickSort(int[] list){//method to only input a list, instead of high and low index
+        quickSort(list,0, list.length);// as high and low index would be the same, but can't keep list.length
+        //as the low and list.length would change through the program
+    }
+    public static void quickSort(int[] list, int low, int high){//O(N2) worst-case complexity
+        if(low<high){                                           //Ω(N log(N)) best-case complexity
+            int pivot = partition(list,low,high);               //θ(N log(N)) average-case
+
+            quickSort(list, low, pivot - 1);
+            quickSort(list, pivot + 1, high);
+        }
+    }
+    public static int partition(int[] list, int low, int high){
+        int pivot = list[high];
+
+        int i= (low -1);
+        for(int j= low;j<=high;j++){
+            if(list[j]< pivot){
+                i++;
+                Swap(list,i,j);
+            }
+        }
+        Swap(list, i+1,high);
+        return(i+1);
     }
     public static void Shuffle(int[] list){
         for(int i=0;i< list.length;i++){
