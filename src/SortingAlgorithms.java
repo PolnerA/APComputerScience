@@ -108,7 +108,7 @@ public class SortingAlgorithms {
         quickSort(list,0, list.length);// as high and low index would be the same, but can't keep list.length
         //as the low and list.length would change through the program
     }
-    public static void quickSort(int[] list, int low, int high){//O(N2) worst-case complexity
+    public static void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
         if(low<high){                                           //Ω(N log(N)) best-case complexity
             int pivot = partition(list,low,high);               //θ(N log(N)) average-case
 
