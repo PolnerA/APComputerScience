@@ -72,7 +72,7 @@ public class SortingAlgorithms {
         }
     }
     public static void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
-        while(!isSorted(list)){
+        while(!isSorted(list)){             //O(N*N!) average-case complexity
             shuffle(list);
             iterations++;
         }
@@ -126,6 +126,27 @@ public class SortingAlgorithms {
 
             heapify(list,i,0);
         }
+    }
+    public static void CountingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
+        int m=0;
+        for(int i=0;i<list.length;i++){
+            m=Math.max(m,list[i]);
+        }
+
+        int[] countArray = new int[m+1];
+
+        for(int i=0;i < list.length; i++){
+            countArray[list[i]]++;
+        }
+
+        int[] outputArray = new int[list.length];
+
+        for(int i= list.length-1; 0<=i;i--){
+            outputArray[countArray[list[i]]-1]= list[i];
+            countArray[list[i]]--;
+        }
+
+        list= outputArray;
     }
     public static void heapify(int[] list, int n, int i){
         int largest = i;
