@@ -6,7 +6,7 @@ public class SortingAlgorithms {
     static Random rng = new Random();
     public static void main(String[] args) {//bubble, quick, double selection sort
             int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8};
-            InsertionSort(list);
+            HeapSort(list);
     }
     public static void MergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
@@ -16,7 +16,7 @@ public class SortingAlgorithms {
             MergeSort(left);
             MergeSort(right);
             //merge sorted halves into one sorted array
-             Merge(list,left,right);
+             merge(list,left,right);
         }
     }
     public static void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -27,7 +27,7 @@ public class SortingAlgorithms {
             ModifiedMergeSort(right);
             ModifiedMergeSort(left);
             //merge sorted halves into one sorted array
-            Merge(list,left,right);
+            merge(list,left,right);
         }
     }
     public static void SelectionSort(int[] list){//O(N^2) worst-case complexity
@@ -73,7 +73,7 @@ public class SortingAlgorithms {
     }
     public static void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
         while(!isSorted(list)){
-            Shuffle(list);
+            shuffle(list);
             iterations++;
         }
     }
@@ -116,6 +116,35 @@ public class SortingAlgorithms {
             quickSort(list, pivot + 1, high);
         }
     }
+    public static void HeapSort (int[] list){//O(N Log N) worst-case complexity
+        for (int i= list.length/2-1;0<=i;i--){
+            heapify(list, list.length,i);
+        }
+
+        for(int i= list.length-1;0<i;i--){
+            Swap(list,i,0);
+
+            heapify(list,i,0);
+        }
+    }
+    public static void heapify(int[] list, int n, int i){
+        int largest = i;
+        int l = 2*i+1;
+        int r = 2*i+2;
+
+        if(l<n && list[largest]<list[l]) {
+            largest = l;
+        }
+
+        if(r < n && list[largest]<list[r]){
+            largest=r;
+        }
+
+    if(largest != i){
+        Swap(list,i,largest);
+        heapify(list,n,largest);
+    }
+    }
     public static int partition(int[] list, int low, int high){
         int pivot = list[high];
 
@@ -129,7 +158,7 @@ public class SortingAlgorithms {
         Swap(list, i+1,high);
         return(i+1);
     }
-    public static void Shuffle(int[] list){
+    public static void shuffle(int[] list){
         for(int i=0;i< list.length;i++){
             Swap(list,list[i+rng.nextInt(list.length-i)],i);
         }
@@ -139,7 +168,7 @@ public class SortingAlgorithms {
         list[i]=list[j];
         list[j]=temp;
     }
-    public static void Merge(int[] result, int[] left, int[] right){
+    public static void merge(int[] result, int[] left, int[] right){
         int i1=0; // left array index
         int i2=0; // right array index
         for(int i=0;i< result.length;i++){
