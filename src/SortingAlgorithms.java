@@ -4,7 +4,7 @@ import java.util.Random;
 public class SortingAlgorithms {
     static int iterations =0;
     static Random rng = new Random();
-    public static void main(String[] args) {//bubble, quick, double selection sort
+    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort
             int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8};
             HeapSort(list);
     }
