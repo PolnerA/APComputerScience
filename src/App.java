@@ -12,7 +12,6 @@ public class App extends Frame{//an extension of Frame (a window)
 
         //name of the window is set to snake, makes it visible and sets the size
         JFrame frame = new JFrame("Snake");
-        frame.setVisible(true);
         frame.setSize(boardWidth, boardHeight);
         //doesn't keep the boards location relative to a component
         frame.setLocationRelativeTo(null);
@@ -24,5 +23,6 @@ public class App extends Frame{//an extension of Frame (a window)
         Snake snake = new Snake(boardWidth, boardHeight);
         frame.add(snake);
         snake.requestFocus();
+        frame.setVisible(true);
     }
 }
