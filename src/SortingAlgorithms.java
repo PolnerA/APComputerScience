@@ -4,9 +4,9 @@ import java.util.Random;
 public class SortingAlgorithms {
     static int iterations =0;
     static Random rng = new Random();
-    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort
-            int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8};
-            HeapSort(list);
+    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort, radix sort, Tim sort
+            int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8,0};
+            CountingSort(list);
     }
     public static void MergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
@@ -105,7 +105,7 @@ public class SortingAlgorithms {
     }
 
     public static void QuickSort(int[] list){//method to only input a list, instead of high and low index
-        quickSort(list,0, list.length);// as high and low index would be the same, but can't keep list.length
+        quickSort(list,0, list.length-1);// as high and low index would be the same, but can't keep list.length
         //as the low and list.length would change through the program
     }
     public static void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
@@ -127,26 +127,32 @@ public class SortingAlgorithms {
             heapify(list,i,0);
         }
     }
-    public static void CountingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
+    public static void CountingSort(int[] list){
+        list=countingSort(list);//changes the list value from a void method, by calling the int[] method
+    }
+    public static int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
         int m=0;
-        for(int i=0;i<list.length;i++){
+        int n= list.length;
+        for(int i=0;i<n;i++){
             m=Math.max(m,list[i]);
         }
 
         int[] countArray = new int[m+1];
 
-        for(int i=0;i < list.length; i++){
+        for(int i=0;i < n; i++){
             countArray[list[i]]++;
         }
 
-        int[] outputArray = new int[list.length];
+        for(int i=1;i<=m;i++){
+            countArray[i] += countArray[i-1];
+        }
+        int[] outputArray = new int[n];
 
-        for(int i= list.length-1; 0<=i;i--){
+        for(int i= n-1; 0<=i;i--){
             outputArray[countArray[list[i]]-1]= list[i];
             countArray[list[i]]--;
         }
-
-        list= outputArray;
+        return outputArray;
     }
     public static void heapify(int[] list, int n, int i){
         int largest = i;
@@ -160,11 +166,10 @@ public class SortingAlgorithms {
         if(r < n && list[largest]<list[r]){
             largest=r;
         }
-
-    if(largest != i){
-        Swap(list,i,largest);
-        heapify(list,n,largest);
-    }
+        if(largest != i){
+            Swap(list,i,largest);
+            heapify(list,n,largest);
+        }
     }
     public static int partition(int[] list, int low, int high){
         int pivot = list[high];
