@@ -4,9 +4,9 @@ import java.util.Random;
 public class SortingAlgorithms {
     static int iterations =0;
     static Random rng = new Random();
-    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort, radix sort, Tim sort
+    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort, Tim sort
             int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8,0};
-            CountingSort(list);
+            RadixSort(list);
     }
     public static void MergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
@@ -127,11 +127,8 @@ public class SortingAlgorithms {
             heapify(list,i,0);
         }
     }
-    public static void CountingSort(int[] list){
-        list=countingSort(list);//changes the list value from a void method, by calling the int[] method
-    }
     public static int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
-        int m=0;
+        int m=0;                                  //only works by returning an int[]
         int n= list.length;
         for(int i=0;i<n;i++){
             m=Math.max(m,list[i]);
@@ -153,6 +150,40 @@ public class SortingAlgorithms {
             countArray[list[i]]--;
         }
         return outputArray;
+    }
+    public static void countSort(int[] list, int n, int exp){//for radix sort uses the current digit (exp) to sort
+        int[] output = new int[n];
+        int i;
+        int count[] = new int[10];
+
+        for(i=0;i<n;i++){
+            count[(list[i]/exp) % 10]++;
+        }
+        for(i=1;i<10;i++){
+            count[i] += count[i-1];
+        }
+        for(i=n-1;0<=i;i--){
+            output[count[(list[i]/exp)%10]-1]=list[i];
+            count[(list[i]/exp)%10]--;
+        }
+        for(i=0;i<n;i++){
+            list[i]=output[i];
+        }
+    }
+    public static void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits
+        int m = getMax(list);                //N is the number of elements, B is the base of number system used
+        for(int exp=1;0<m/exp;exp *=10){
+            countSort(list,list.length,exp);
+        }
+    }
+    public static int getMax(int[] list){
+        int mx=list[0];
+        for(int i=1;i< list.length;i++){
+            if (mx<list[i]){
+                mx=list[i];
+            }
+        }
+        return mx;
     }
     public static void heapify(int[] list, int n, int i){
         int largest = i;
