@@ -8,10 +8,10 @@ public class App extends Frame{//an extension of Frame (a window)
     public static void main(String[] args) {
         //sets the width and height, height has to be slightly less to keep squares equal
         int boardWidth = 600;
-        int boardHeight = 625;
+        int boardHeight = 600;
 
         //name of the window is set to snake, makes it visible and sets the size
-        JFrame frame = new JFrame("Snake");
+        JFrame frame = new JFrame("Sorting Algorithms");
         frame.setSize(boardWidth, boardHeight);
         //doesn't keep the boards location relative to a component
         frame.setLocationRelativeTo(null);
@@ -20,9 +20,10 @@ public class App extends Frame{//an extension of Frame (a window)
         //sets the window to exit on close
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Creates an instance of the snake-game through the snake class, and adds it to the window giving focus to it
-        Snake snake = new Snake(boardWidth, boardHeight);
-        frame.add(snake);
-        snake.requestFocus();
+        SortingAlgorithms sorting = new SortingAlgorithms(boardWidth, boardHeight);
+        frame.add(sorting);
+        frame.pack();
+        sorting.requestFocus();
         frame.setVisible(true);
     }
 }

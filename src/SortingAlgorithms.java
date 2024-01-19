@@ -1,14 +1,47 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.Random;
 
-public class SortingAlgorithms {
-    static int iterations =0;
+public class SortingAlgorithms extends JPanel implements ActionListener, KeyListener {
+    int iterations =0;
+    int boardwidth;
+    int boardheight;
+    int[] originallist;
+    Timer frames;
     static Random rng = new Random();
-    public static void main(String[] args) {//double selection sort, bitonic sort, 3 way merge sort, Tim sort
-            int[] list = new int[]{5, 3, 2, 1, 4, 7, 6, 0, 9, 8,0};
-            RadixSort(list);
+    public SortingAlgorithms(int boardwidth, int boardheight){
+        this.boardwidth=boardwidth;
+        this.boardheight=boardheight;
+        setPreferredSize(new Dimension(this.boardwidth, this.boardheight));
+        setBackground(Color.black);
+        addKeyListener(this);
+        setFocusable(true);
+        frames = new Timer(10,this);
+        frames.start();
     }
-    public static void MergeSort(int[] list){//O(N Log N) worst-case complexity
+    public void populatelist(){
+        int [] list= new int[boardwidth];
+        for(int i=0;i<boardwidth;i++){
+        }
+    }
+    public void paintComponent(Graphics g) {//overrides other paintComponent in component, uses the graphics in its own
+        //draw function and supers the previous paint Component in JComponent.java (javax.swing)
+        super.paintComponent(g);
+        draw(g);
+    }
+    public void draw(Graphics g) {
+        g.setColor(Color.white);
+        g.fillRect(0,originallist[0],20,boardheight-originallist[0]);
+        for(int i=1;i<originallist.length;i++){
+            g.fillRect(i*20,originallist[i]*20,20,boardheight-originallist[i]);
+        }
+    }
+    public void MergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
             int[] left = Arrays.copyOfRange(list,0,list.length/2);
             int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
@@ -19,7 +52,7 @@ public class SortingAlgorithms {
              merge(list,left,right);
         }
     }
-    public static void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
+    public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
             int[] left = Arrays.copyOfRange(list,0,list.length/2);
             int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
@@ -30,7 +63,7 @@ public class SortingAlgorithms {
             merge(list,left,right);
         }
     }
-    public static void SelectionSort(int[] list){//O(N^2) worst-case complexity
+    public void SelectionSort(int[] list){//O(N^2) worst-case complexity
         for(int i=0;i< list.length-1;i++){
             int smallest=i;
             for(int j=i+1;j<list.length;j++){
@@ -41,7 +74,7 @@ public class SortingAlgorithms {
             Swap(list,i,smallest);
         }
     }
-    public static void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
+    public void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
         for(int i=0;i< list.length-1;i++){
             int largest=i;
             for(int j=i+1;j<list.length;j++){
@@ -52,7 +85,7 @@ public class SortingAlgorithms {
             Swap(list,i,largest);
         }
     }
-    public static void DoubleSelectionSort(int[] list){//in progress
+    public void DoubleSelectionSort(int[] list){//in progress
         int bottomindex = 0;
         for(int i=list.length-1;i<list.length;i--){
             int largest=i;
@@ -71,13 +104,13 @@ public class SortingAlgorithms {
             bottomindex++;
         }
     }
-    public static void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
+    public void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
         while(!isSorted(list)){             //O(N*N!) average-case complexity
             shuffle(list);
             iterations++;
         }
     }
-    public static void BubbleSort(int[] list){//O(N^2) worst-case complexity
+    public void BubbleSort(int[] list){//O(N^2) worst-case complexity
         for (int i=0;i< list.length-1;i++){
             boolean swapped = false;
             for(int j=0;j< list.length-i-1;j++){
@@ -91,7 +124,7 @@ public class SortingAlgorithms {
             }
         }
     }
-    public static void InsertionSort(int[] list){//O(N^2) worst-case complexity
+    public void InsertionSort(int[] list){//O(N^2) worst-case complexity
         for(int i=1;i< list.length;i++){
             int j = i-1;
             int key = list[i];
@@ -104,11 +137,11 @@ public class SortingAlgorithms {
         }
     }
 
-    public static void QuickSort(int[] list){//method to only input a list, instead of high and low index
+    public void QuickSort(int[] list){//method to only input a list, instead of high and low index
         quickSort(list,0, list.length-1);// as high and low index would be the same, but can't keep list.length
         //as the low and list.length would change through the program
     }
-    public static void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
+    public void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
         if(low<high){                                           //Ω(N log(N)) best-case complexity
             int pivot = partition(list,low,high);               //θ(N log(N)) average-case
 
@@ -116,7 +149,7 @@ public class SortingAlgorithms {
             quickSort(list, pivot + 1, high);
         }
     }
-    public static void HeapSort (int[] list){//O(N Log N) worst-case complexity
+    public void HeapSort (int[] list){//O(N Log N) worst-case complexity
         for (int i= list.length/2-1;0<=i;i--){
             heapify(list, list.length,i);
         }
@@ -127,7 +160,7 @@ public class SortingAlgorithms {
             heapify(list,i,0);
         }
     }
-    public static int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
+    public int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
         int m=0;                                  //only works by returning an int[]
         int n= list.length;
         for(int i=0;i<n;i++){
@@ -151,7 +184,7 @@ public class SortingAlgorithms {
         }
         return outputArray;
     }
-    public static void countSort(int[] list, int n, int exp){//for radix sort uses the current digit (exp) to sort
+    public void countSort(int[] list, int n, int exp){//for radix sort uses the current digit (exp) to sort
         int[] output = new int[n];
         int i;
         int count[] = new int[10];
@@ -170,13 +203,13 @@ public class SortingAlgorithms {
             list[i]=output[i];
         }
     }
-    public static void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits
+    public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits
         int m = getMax(list);                //N is the number of elements, B is the base of number system used
         for(int exp=1;0<m/exp;exp *=10){
             countSort(list,list.length,exp);
         }
     }
-    public static int getMax(int[] list){
+    public int getMax(int[] list){
         int mx=list[0];
         for(int i=1;i< list.length;i++){
             if (mx<list[i]){
@@ -185,7 +218,7 @@ public class SortingAlgorithms {
         }
         return mx;
     }
-    public static void heapify(int[] list, int n, int i){
+    public void heapify(int[] list, int n, int i){
         int largest = i;
         int l = 2*i+1;
         int r = 2*i+2;
@@ -202,7 +235,7 @@ public class SortingAlgorithms {
             heapify(list,n,largest);
         }
     }
-    public static int partition(int[] list, int low, int high){
+    public int partition(int[] list, int low, int high){
         int pivot = list[high];
 
         int i= (low -1);
@@ -215,17 +248,17 @@ public class SortingAlgorithms {
         Swap(list, i+1,high);
         return(i+1);
     }
-    public static void shuffle(int[] list){
+    public void shuffle(int[] list){
         for(int i=0;i< list.length;i++){
             Swap(list,list[i+rng.nextInt(list.length-i)],i);
         }
     }
-    public static void Swap(int[] list,int i, int j){
+    public void Swap(int[] list,int i, int j){
         int temp = list[i];
         list[i]=list[j];
         list[j]=temp;
     }
-    public static void merge(int[] result, int[] left, int[] right){
+    public void merge(int[] result, int[] left, int[] right){
         int i1=0; // left array index
         int i2=0; // right array index
         for(int i=0;i< result.length;i++){
@@ -239,7 +272,7 @@ public class SortingAlgorithms {
             }
         }
     }
-    public static boolean isSorted(int[] list){
+    public boolean isSorted(int[] list){
         for(int i=1;i< list.length;i++){
             int num=list[i-1];
             if(list[i] <num){
@@ -247,5 +280,25 @@ public class SortingAlgorithms {
             }
         }
         return true;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }
