@@ -21,13 +21,17 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         setBackground(Color.black);
         addKeyListener(this);
         setFocusable(true);
+        populatelist();
         frames = new Timer(10,this);
         frames.start();
     }
     public void populatelist(){
         int [] list= new int[boardwidth];
-        for(int i=0;i<boardwidth;i++){
+        for(int i=0;i<boardheight;i++){
+            list[i]=boardheight-i;
         }
+        shuffle(list);
+        originallist=list;
     }
     public void paintComponent(Graphics g) {//overrides other paintComponent in component, uses the graphics in its own
         //draw function and supers the previous paint Component in JComponent.java (javax.swing)
@@ -36,9 +40,9 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void draw(Graphics g) {
         g.setColor(Color.white);
-        g.fillRect(0,originallist[0],20,boardheight-originallist[0]);
+        g.fillRect(0,originallist[0], 1,1);
         for(int i=1;i<originallist.length;i++){
-            g.fillRect(i*20,originallist[i]*20,20,boardheight-originallist[i]);
+            g.fillRect(i*1,originallist[i]*1,1,boardheight-originallist[i]);
         }
     }
     public void MergeSort(int[] list){//O(N Log N) worst-case complexity
