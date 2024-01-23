@@ -5,7 +5,7 @@ import java.awt.event.WindowEvent;
 //set up with JFrame for the snake application
 public class App extends Frame{//an extension of Frame (a window)
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //sets the width and height, height has to be slightly less to keep squares equal
         int boardWidth = 600;
         int boardHeight = 600;

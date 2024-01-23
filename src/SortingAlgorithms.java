@@ -12,9 +12,10 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     int boardwidth;
     int boardheight;
     int[] originallist;
+    boolean listdrawn;
     Timer frames;
     static Random rng = new Random();
-    public SortingAlgorithms(int boardwidth, int boardheight){
+    public SortingAlgorithms(int boardwidth, int boardheight){//draw a frame when an action is preformed (ie swap, merge, etc)
         this.boardwidth=boardwidth;
         this.boardheight=boardheight;
         setPreferredSize(new Dimension(this.boardwidth, this.boardheight));
@@ -22,13 +23,13 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         addKeyListener(this);
         setFocusable(true);
         populatelist();
-        frames = new Timer(10,this);
-        frames.start();
+        //frames = new Timer(0,this);
+        //BubbleSort(originallist);
     }
     public void populatelist(){
         int [] list= new int[boardwidth];
-        for(int i=0;i<boardheight;i++){
-            list[i]=boardheight-i;
+        for(int i=0;i<boardwidth;i++){
+            list[i]=i;
         }
         shuffle(list);
         originallist=list;
@@ -36,13 +37,18 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     public void paintComponent(Graphics g) {//overrides other paintComponent in component, uses the graphics in its own
         //draw function and supers the previous paint Component in JComponent.java (javax.swing)
         super.paintComponent(g);
-        draw(g);
+        try {
+            draw(g);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public void draw(Graphics g) {
+    public void draw(Graphics g) throws InterruptedException {
+        Thread.sleep(10);
         g.setColor(Color.white);
         g.fillRect(0,originallist[0], 1,1);
         for(int i=1;i<originallist.length;i++){
-            g.fillRect(i*1,originallist[i]*1,1,boardheight-originallist[i]);
+            g.fillRect(boardheight-i,originallist[i]*1,1,boardheight-originallist[i]);
         }
     }
     public void MergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -53,7 +59,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             MergeSort(left);
             MergeSort(right);
             //merge sorted halves into one sorted array
-             merge(list,left,right);
+             merge(list,left,right);//action
         }
     }
     public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -75,7 +81,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                     smallest=j;
                 }
             }
-            Swap(list,i,smallest);
+            Swap(list,i,smallest);//action
         }
     }
     public void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
@@ -110,7 +116,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
         while(!isSorted(list)){             //O(N*N!) average-case complexity
-            shuffle(list);
+            shuffle(list);//action
             iterations++;
         }
     }
@@ -119,7 +125,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             boolean swapped = false;
             for(int j=0;j< list.length-i-1;j++){
                 if(list[j+1]<list[j]){
-                    Swap(list,j,j+1);
+                    Swap(list,j,j+1);//action
+                    repaint();
                     swapped=true;
                 }
             }
@@ -135,9 +142,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
             while(0 <= j && key<list[j]){
                 list[j+1]=list[j];//swaps the two values
+                //action
                 j--;
             }
             list[j+1]=key;
+            //action
         }
     }
 
@@ -159,7 +168,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
 
         for(int i= list.length-1;0<i;i--){
-            Swap(list,i,0);
+            Swap(list,i,0);//action
 
             heapify(list,i,0);
         }
@@ -172,7 +181,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
 
         int[] countArray = new int[m+1];
-
+        //special (needs to draw count array once populated)
         for(int i=0;i < n; i++){
             countArray[list[i]]++;
         }
@@ -181,7 +190,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             countArray[i] += countArray[i-1];
         }
         int[] outputArray = new int[n];
-
+        //output array replaces original array while getting rid of count array
         for(int i= n-1; 0<=i;i--){
             outputArray[countArray[list[i]]-1]= list[i];
             countArray[list[i]]--;
@@ -190,11 +199,12 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void countSort(int[] list, int n, int exp){//for radix sort uses the current digit (exp) to sort
         int[] output = new int[n];
-        int i;
-        int count[] = new int[10];
+        int i;//variation of counting sort, count should be made and list should be replaced by output
+        int[] count = new int[10];
 
         for(i=0;i<n;i++){
             count[(list[i]/exp) % 10]++;
+            //action
         }
         for(i=1;i<10;i++){
             count[i] += count[i-1];
@@ -205,6 +215,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
         for(i=0;i<n;i++){
             list[i]=output[i];
+            //action
         }
     }
     public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits
@@ -247,9 +258,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             if(list[j]< pivot){
                 i++;
                 Swap(list,i,j);
+                //action
             }
         }
         Swap(list, i+1,high);
+        //action
         return(i+1);
     }
     public void shuffle(int[] list){
@@ -261,6 +274,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         int temp = list[i];
         list[i]=list[j];
         list[j]=temp;
+        repaint();
     }
     public void merge(int[] result, int[] left, int[] right){
         int i1=0; // left array index
