@@ -19,7 +19,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     int[] drawlist;
     Timer frames;
     static Random rng = new Random();
-    public SortingAlgorithms(int boardwidth, int boardheight){//insertion, counting, merge, radix
+    public SortingAlgorithms(int boardwidth, int boardheight){//counting, radix
         this.boardwidth=boardwidth;
         this.boardheight=boardheight;
         setPreferredSize(new Dimension(this.boardwidth, this.boardheight));
@@ -49,9 +49,16 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void draw(Graphics g) {
         g.setColor(Color.white);
-        g.fillRect(0,drawlist[0], 1,1);
-        for(int i=1;i<drawlist.length;i++){
-            g.fillRect(boardheight-i,drawlist[i]*1,1,boardheight-drawlist[i]);
+        int[] templist = new int[];
+        if(lists.size==0){ templist=drawlist;} 
+        else 
+        {
+            templist=lists.get(0);
+            lists.remove(0);
+        }
+        g.fillRect(0,templist[0], 1,boardheight-templist[0]);
+        for(int i=1;i<templist.length;i++){
+            g.fillRect(boardheight-i,templist[i],1,boardheight-templist[i]);
         }
     }
     public void MergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -62,7 +69,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             MergeSort(left);
             MergeSort(right);
             //merge sorted halves into one sorted array
-             merge(list,left,right);//action
+             merge(list,left,right);
+            lists.add(list);
         }
     }
     public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -144,11 +152,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
             while(0 <= j && key<list[j]){
                 list[j+1]=list[j];//swaps the two values
-                //action
+                lists.add(list);
                 j--;
             }
             list[j+1]=key;
-            //action
+            lists.add(list);
         }
     }
 
@@ -287,15 +295,12 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         for(int i=0;i< result.length;i++){
             if(right.length<=i2||(i1< left.length&&left[i1]<=right[i2])){
                 result[i]=left[i1]; //take from left
-                indexes.add(i1);
                 i1++;
             }
             else{
                 result[i]=right[i2]; //take from right
-                indexes.add(i2);
                 i2++;
             }
-            indexes.add(i);
         }
     }
     public boolean isSorted(int[] list){
@@ -310,9 +315,9 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        updatedrawlist();
+        if(indexes.size() !=0){updatedrawlist();}
         repaint();
-        if(indexes.size()==0){
+        if(indexes.size()==0&&lists.size()==0){
             frames.stop();
         }
     }
