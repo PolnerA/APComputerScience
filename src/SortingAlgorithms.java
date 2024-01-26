@@ -144,7 +144,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     public void InsertionSort(int[] list){//O(N^2) worst-case complexity
         for(int i=1;i< list.length;i++){
             int j = i-1;
-            int key = list[i];
+            int key = list[i];//find where to put the indexes
 
             while(0 <= j && key<list[j]){
                 list[j+1]=list[j];//swaps the two values
@@ -331,6 +331,31 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if(e.getKeyCode()==KeyEvent.VK_Q) {
+            indexes.clear();
+            listtosort = originallist.clone();
+            drawlist = originallist.clone();
+            QuickSort(listtosort);
+        }else if(e.getKeyCode()==KeyEvent.VK_B){
+            indexes.clear();
+            listtosort = originallist.clone();
+            drawlist = originallist.clone();
+            BubbleSort(listtosort);
+        }else if(e.getKeyCode()==KeyEvent.VK_H){
+            indexes.clear();
+            listtosort = originallist.clone();
+            drawlist = originallist.clone();
+            HeapSort(listtosort);
+        }else if(e.getKeyCode()==KeyEvent.VK_S){
+            indexes.clear();
+            listtosort = originallist.clone();
+            drawlist = originallist.clone();
+            SelectionSort(listtosort);
+        }else if(e.getKeyCode()==KeyEvent.VK_F1){
+            indexes.clear();
+            listtosort = originallist.clone();
+            drawlist = originallist.clone();
+            BogoSort(listtosort);
+        }
     }
 }
