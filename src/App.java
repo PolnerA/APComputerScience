@@ -7,8 +7,8 @@ public class App extends Frame{//an extension of Frame (a window)
 
     public static void main(String[] args) throws InterruptedException {
         //sets the width and height, height has to be slightly less to keep squares equal
-        int boardWidth = 600;
-        int boardHeight = 600;
+        int boardWidth = 1000;
+        int boardHeight = boardWidth;
 
         //name of the window is set to snake, makes it visible and sets the size
         JFrame frame = new JFrame("Sorting Algorithms");
