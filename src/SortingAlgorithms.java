@@ -13,7 +13,6 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     int boardwidth;
     int boardheight;
     ArrayList<Integer> indexes= new ArrayList<>();
-    ArrayList<Integer[]> lists = new ArrayList<>();
     int[] originallist;
     int[] listtosort;
     int[] drawlist;
@@ -29,8 +28,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         populatelist();
         listtosort=originallist.clone();
         drawlist=originallist.clone();
-        MergeSort(listtosort);
-        frames = new Timer(0,this);
+        QuickSort(listtosort);
+        frames = new Timer(10,this);
         frames.start();
 
     }
@@ -49,16 +48,14 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void draw(Graphics g) {
         g.setColor(Color.white);
-        int[] templist = new int[];
-        if(lists.size==0){ templist=drawlist;} 
-        else 
+        ArrayList<Integer> templist = new ArrayList<>();
+        for(int i=0;i<drawlist.length;i++)
         {
-            templist=lists.get(0);
-            lists.remove(0);
+                templist.add(drawlist[i]);
         }
-        g.fillRect(0,templist[0], 1,boardheight-templist[0]);
-        for(int i=1;i<templist.length;i++){
-            g.fillRect(boardheight-i,templist[i],1,boardheight-templist[i]);
+        g.fillRect(0, templist.get(0), 1, boardheight - templist.get(0));
+        for (int i = 1; i < templist.size(); i++) {
+            g.fillRect(boardheight - i, templist.get(i), 1, boardheight - templist.get(i));
         }
     }
     public void MergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -70,7 +67,6 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             MergeSort(right);
             //merge sorted halves into one sorted array
              merge(list,left,right);
-            lists.add(list);
         }
     }
     public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -152,11 +148,9 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
             while(0 <= j && key<list[j]){
                 list[j+1]=list[j];//swaps the two values
-                lists.add(list);
                 j--;
             }
             list[j+1]=key;
-            lists.add(list);
         }
     }
 
@@ -317,9 +311,6 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     public void actionPerformed(ActionEvent e) {
         if(indexes.size() !=0){updatedrawlist();}
         repaint();
-        if(indexes.size()==0&&lists.size()==0){
-            frames.stop();
-        }
     }
     public void updatedrawlist(){
         Swap(drawlist, indexes.get(1),indexes.get(0),false );
