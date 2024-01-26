@@ -13,6 +13,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     int boardwidth;
     int boardheight;
     ArrayList<Integer> indexes= new ArrayList<>();
+    ArrayList<int[]> lists=new ArrayList<>();
     int[] originallist;
     int[] listtosort;
     int[] drawlist;
@@ -28,7 +29,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         populatelist();
         listtosort=originallist.clone();
         drawlist=originallist.clone();
-        QuickSort(listtosort);
+        SelectionSort(listtosort);
         frames = new Timer(0,this);
         frames.start();
 
@@ -51,7 +52,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         ArrayList<Integer> templist = new ArrayList<>();
         for(int i=0;i<drawlist.length;i++)
         {
-                templist.add(drawlist[i]);
+            templist.add(drawlist[i]);
         }
         g.fillRect(boardwidth, templist.get(0), 1, boardheight - templist.get(0));
         for (int i = 1; i < templist.size(); i++) {
@@ -81,7 +82,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
     }
     public void SelectionSort(int[] list){//O(N^2) worst-case complexity
-        for(int i=0;i< list.length-1;i++){
+        for(int i=0;i<list.length-1;i++){
             int smallest=i;
             for(int j=i+1;j<list.length;j++){
                 if(list[j]<list[smallest]){
@@ -159,8 +160,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         //as the low and list.length would change through the program
     }
     public void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
-        if(low<high){                                           //Ω(N log(N)) best-case complexity
-            int pivot = partition(list,low,high);               //θ(N log(N)) average-case
+        if(low<high){                                    //Ω(N log(N)) best-case complexity
+            int pivot = partition(list,low,high);        //θ(N log(N)) average-case
 
             quickSort(list, low, pivot - 1);
             quickSort(list, pivot + 1, high);
