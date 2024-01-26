@@ -88,8 +88,9 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 if(list[j]<list[smallest]){
                     smallest=j;
                 }
+                lists.add(list);
             }
-            Swap(list,i,smallest,true);//action
+            Swap(list,i,smallest,false);//action
         }
     }
     public void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
