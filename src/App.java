@@ -14,7 +14,7 @@ public class App extends Frame{//an extension of Frame (a window)
         JFrame frame = new JFrame("Sorting Algorithms");
         frame.setSize(boardWidth, boardHeight);
         //doesn't keep the boards location relative to a component
-        frame.setLocationRelativeTo(null);
+        frame.setLocation(500,0);
         //snake doesn't need to be resized
         frame.setResizable(false);
         //sets the window to exit on close
