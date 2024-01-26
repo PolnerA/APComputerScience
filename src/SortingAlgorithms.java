@@ -29,7 +29,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         listtosort=originallist.clone();
         drawlist=originallist.clone();
         QuickSort(listtosort);
-        frames = new Timer(10,this);
+        frames = new Timer(0,this);
         frames.start();
 
     }
@@ -53,7 +53,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         {
                 templist.add(drawlist[i]);
         }
-        g.fillRect(0, templist.get(0), 1, boardheight - templist.get(0));
+        g.fillRect(boardwidth, templist.get(0), 1, boardheight - templist.get(0));
         for (int i = 1; i < templist.size(); i++) {
             g.fillRect(boardheight - i, templist.get(i), 1, boardheight - templist.get(i));
         }
