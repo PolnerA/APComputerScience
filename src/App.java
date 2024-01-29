@@ -16,7 +16,7 @@ public class App extends Frame{//an extension of Frame (a window)
         //doesn't keep the boards location relative to a component
         frame.setLocation(500,0);
         //snake doesn't need to be resized
-        frame.setResizable(false);
+        frame.setResizable(true);
         //sets the window to exit on close
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Creates an instance of the snake-game through the snake class, and adds it to the window giving focus to it
