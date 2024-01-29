@@ -1,13 +1,11 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class SortingAlgorithms extends JPanel implements ActionListener, KeyListener {
     int iterations =0;
@@ -30,7 +28,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     int[] originallist;
     int[] list;
-    int[] drawlist;
+    int[] list2;
     Timer frames;
     static Random rng = new Random();
     public SortingAlgorithms(int boardwidth, int boardheight){//counting, radix
@@ -42,8 +40,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         setFocusable(true);
         populatelist();
         list=originallist.clone();
-        drawlist=originallist.clone();
-        MergeSort(list);
+        list2=originallist.clone();
+        countingSort(list);
         frames = new Timer(0,this);
         frames.start();
 
@@ -105,10 +103,10 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
              merge(list,left,right);
         }
         for(int i=0;i<list.length;i++){
-            for(int j=0;j<originallist.length;j++){
-                if(list[i]==originallist[j]){
+            for(int j = 0; j< originallist.length; j++) {
+                if (list[i] == list2[j]) {
                     //og index of i is j
-                    Swap(originallist,i,j,true);
+                    Swap(list2, i, j, true);
                 }
             }
         }
@@ -253,22 +251,25 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         int n= list.length;
         for(int i=0;i<n;i++){
             m=Math.max(m,list[i]);
+            lists.add(new DrawLists(list.clone(),new ArrayList<>()));
         }
-
         int[] countArray = new int[m+1];
         //special (needs to draw count array once populated)
         for(int i=0;i < n; i++){
             countArray[list[i]]++;
+            lists.add(new DrawLists(countArray.clone(),new ArrayList<>()));
         }
 
         for(int i=1;i<=m;i++){
             countArray[i] += countArray[i-1];
+            lists.add(new DrawLists(countArray.clone(),new ArrayList<>()));
         }
         int[] outputArray = new int[n];
         //output array replaces original array while getting rid of count array
         for(int i= n-1; 0<=i;i--){
             outputArray[countArray[list[i]]-1]= list[i];
             countArray[list[i]]--;
+            lists.add(new DrawLists(outputArray.clone(),new ArrayList<>()));
         }
         return outputArray;
     }
@@ -410,28 +411,38 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         if(e.getKeyCode()==KeyEvent.VK_Q) {
             lists.clear();
             list = originallist.clone();
-            drawlist = originallist.clone();
+            list2 = originallist.clone();
             QuickSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_B){
             lists.clear();
             list= originallist.clone();
-            drawlist = originallist.clone();
+            list2 = originallist.clone();
             BubbleSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_H){
             lists.clear();
             list = originallist.clone();
-            drawlist = originallist.clone();
+            list2 = originallist.clone();
             HeapSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_S){
             lists.clear();
             list = originallist.clone();
-            drawlist = originallist.clone();
+            list2 = originallist.clone();
             SelectionSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_F1){
             lists.clear();
             list = originallist.clone();
-            drawlist = originallist.clone();
+            list2 = originallist.clone();
             BogoSort(list);
+        }else if(e.getKeyCode()==KeyEvent.VK_M){
+            lists.clear();
+            list= originallist.clone();
+            list2 = originallist.clone();
+            MergeSort(list);
+        }else if(e.getKeyCode()==KeyEvent.VK_I){
+            lists.clear();
+            list= originallist.clone();
+            list2 = originallist.clone();
+            InsertionSort(list);
         }
     }
 }
