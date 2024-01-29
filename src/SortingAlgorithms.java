@@ -6,16 +6,30 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public class SortingAlgorithms extends JPanel implements ActionListener, KeyListener {
     int iterations =0;
     int boardwidth;
     int boardheight;
-    ArrayList<Integer> indexes= new ArrayList<>();
-    ArrayList<int[]> lists=new ArrayList<>();
+    int listsize;
+
+    ArrayList<DrawLists> lists= new ArrayList<>();
+    private static class DrawLists{
+        int[] list;
+        boolean indexed;
+        ArrayList<Integer> indices;
+        DrawLists(int[] list, ArrayList<Integer> indices){
+            this.list=list;
+            this.indices=indices;
+            if(indices.size() == 0){
+                indexed=false;
+            }else{indexed=true;}
+        }
+    }
     int[] originallist;
-    int[] listtosort;
+    int[] list;
     int[] drawlist;
     Timer frames;
     static Random rng = new Random();
@@ -27,9 +41,9 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         addKeyListener(this);
         setFocusable(true);
         populatelist();
-        listtosort=originallist.clone();
+        list=originallist.clone();
         drawlist=originallist.clone();
-        SelectionSort(listtosort);
+        MergeSort(list);
         frames = new Timer(0,this);
         frames.start();
 
@@ -49,14 +63,35 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void draw(Graphics g) {
         g.setColor(Color.white);
-        ArrayList<Integer> templist = new ArrayList<>();
-        for(int i=0;i<drawlist.length;i++)
-        {
-            templist.add(drawlist[i]);
+        DrawLists drawarray= lists.get(0);
+        int index = -1;
+        if(drawarray.indexed){
+            ReverseBubbleSort(drawarray.indices);
+            if(drawarray.indices.size()!=0){
+                index=drawarray.indices.get(0);
+            }
         }
-        g.fillRect(boardwidth, templist.get(0), 1, boardheight - templist.get(0));
-        for (int i = 1; i < templist.size(); i++) {
-            g.fillRect(boardheight - i, templist.get(i), 1, boardheight - templist.get(i));
+        for (int i = 0; i < drawarray.list.length; i++) {
+            if(i==index) {
+                g.setColor(Color.red);
+                g.fillRect(boardwidth - i, 0, 1, boardheight );
+                g.setColor(Color.white);
+                drawarray.indices.remove(0);
+                if(drawarray.indices.size()!=0){
+                    index=drawarray.indices.get(0);
+                }
+            }
+            else{
+                g.fillRect(boardwidth - i, drawarray.list[i], 1, boardheight - drawarray.list[i]);
+            }
+        }
+        if(1<lists.size()) {
+            lists.remove(0);
+        }
+        if(drawarray.indexed){
+            if(0<drawarray.indices.size()) {
+                drawarray.indices.remove(0);
+            }
         }
     }
     public void MergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -68,6 +103,14 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             MergeSort(right);
             //merge sorted halves into one sorted array
              merge(list,left,right);
+        }
+        for(int i=0;i<list.length;i++){
+            for(int j=0;j<originallist.length;j++){
+                if(list[i]==originallist[j]){
+                    //og index of i is j
+                    Swap(originallist,i,j,true);
+                }
+            }
         }
     }
     public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
@@ -82,15 +125,18 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
     }
     public void SelectionSort(int[] list){//O(N^2) worst-case complexity
-        for(int i=0;i<list.length-1;i++){
+        for(int i=0;i< list.length-1;i++){
             int smallest=i;
             for(int j=i+1;j<list.length;j++){
+                ArrayList<Integer> indices= new ArrayList<>();
+                indices.add(smallest);
+                indices.add(j);
+                lists.add(new DrawLists(list.clone(),indices));
                 if(list[j]<list[smallest]){
                     smallest=j;
                 }
-                lists.add(list);
             }
-            Swap(list,i,smallest,false);//action
+            Swap(list,i,smallest,true);//action
         }
     }
     public void ModifiedSelectionSort(int[] list){//O(N^2) worst-case complexity runs faster
@@ -134,7 +180,26 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             boolean swapped = false;
             for(int j=0;j< list.length-i-1;j++){
                 if(list[j+1]<list[j]){
-                    Swap(list,j,j+1,true);//action
+                    Swap(list,j,j+1,false);//action
+                    swapped=true;
+                }
+                ArrayList<Integer> indexes=new ArrayList<>();
+                indexes.add(j);
+                indexes.add(j+1);
+                DrawLists a = new DrawLists(list.clone(),indexes);
+                lists.add(a);
+            }
+            if(!swapped){
+                break;
+            }
+        }
+    }
+    public void ReverseBubbleSort(ArrayList<Integer> list){//O(N^2) worst-case complexity
+        for (int i=0;i< list.size()-1;i++){
+            boolean swapped = false;
+            for(int j=0;j< list.size()-i-1;j++){
+                if(list.get(j)<list.get(j+1)){
+                    ListSwap(list,j,j+1);//action
                     swapped=true;
                 }
             }
@@ -147,9 +212,13 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         for(int i=1;i< list.length;i++){
             int j = i-1;
             int key = list[i];//find where to put the indexes
-
+            ArrayList<Integer> a = new ArrayList<>();
+            a.add(i);
             while(0 <= j && key<list[j]){
                 list[j+1]=list[j];//swaps the two values
+                a.add(j);
+                a.add(j+1);
+                lists.add(new DrawLists(list.clone(),a));
                 j--;
             }
             list[j+1]=key;
@@ -161,8 +230,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         //as the low and list.length would change through the program
     }
     public void quickSort(int[] list, int low, int high){//O(N^2) worst-case complexity
-        if(low<high){                                    //Ω(N log(N)) best-case complexity
-            int pivot = partition(list,low,high);        //θ(N log(N)) average-case
+        if(low<high){                                           //Ω(N log(N)) best-case complexity
+            int pivot = partition(list,low,high);               //θ(N log(N)) average-case
 
             quickSort(list, low, pivot - 1);
             quickSort(list, pivot + 1, high);
@@ -180,7 +249,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
     }
     public int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
-        int m=0;                                  //only works by returning an int[]
+        int m=0;                                  //only works by returning an int[]//TODO
         int n= list.length;
         for(int i=0;i<n;i++){
             m=Math.max(m,list[i]);
@@ -224,7 +293,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             //action
         }
     }
-    public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits
+    public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits//TODO
         int m = getMax(list);                //N is the number of elements, B is the base of number system used
         for(int exp=1;0<m/exp;exp *=10){
             countSort(list,list.length,exp);
@@ -243,7 +312,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         int largest = i;
         int l = 2*i+1;
         int r = 2*i+2;
-
+        ArrayList<Integer> a= new ArrayList<>();
         if(l<n && list[largest]<list[l]) {
             largest = l;
         }
@@ -251,23 +320,32 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         if(r < n && list[largest]<list[r]){
             largest=r;
         }
+        a.add(r);
+        a.add(largest);
+        a.add(l);
         if(largest != i){
-            Swap(list,i,largest,true);
+            Swap(list,i,largest,false);
+            lists.add(new DrawLists(list.clone(),a));
             heapify(list,n,largest);
         }
     }
     public int partition(int[] list, int low, int high){
         int pivot = list[high];
-
+        ArrayList<Integer> indices=new ArrayList<>();
+        indices.add(pivot);
         int i= (low -1);
         for(int j= low;j<=high;j++){
+            indices.add(j);
             if(list[j]< pivot){
                 i++;
-                Swap(list,i,j,true);
+                Swap(list,i,j,false);
+                lists.add(new DrawLists(list.clone(),indices));
+
                 //action
             }
         }
-        Swap(list, i+1,high,true);
+        Swap(list, i+1,high,false);
+        lists.add(new DrawLists(list.clone(),indices));
         //action
         return(i+1);
     }
@@ -276,18 +354,21 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             Swap(list,list[i+rng.nextInt(list.length-i)],i,recordindexes);
         }
     }
-    public void Swap(int[] list,int i, int j,boolean Recordindexes){
-        if(Recordindexes) {
-            indexes.add(i);
-            indexes.add(j);
-        }
+    public void Swap(int[] list,int i, int j,boolean RecordSwap){
         int temp = list[i];
         list[i]=list[j];
         list[j]=temp;
+        if(RecordSwap) {
+            lists.add(new DrawLists(list.clone(),new ArrayList<>()));
+        }
+    }
+    public void ListSwap(ArrayList<Integer> list,int i, int j){
+        Collections.swap(list, i, j);
     }
     public void merge(int[] result, int[] left, int[] right){
         int i1=0; // left array index
         int i2=0; // right array index
+
         for(int i=0;i< result.length;i++){
             if(right.length<=i2||(i1< left.length&&left[i1]<=right[i2])){
                 result[i]=left[i1]; //take from left
@@ -311,14 +392,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(indexes.size() !=0){updatedrawlist();}
         repaint();
-    }
-    public void updatedrawlist(){
-        Swap(drawlist, indexes.get(1),indexes.get(0),false );
-        for(int i=0;i<2;i++) {
-            indexes.remove(0);
-        }
     }
 
     @Override
@@ -334,30 +408,30 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     @Override
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode()==KeyEvent.VK_Q) {
-            indexes.clear();
-            listtosort = originallist.clone();
+            lists.clear();
+            list = originallist.clone();
             drawlist = originallist.clone();
-            QuickSort(listtosort);
+            QuickSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_B){
-            indexes.clear();
-            listtosort = originallist.clone();
+            lists.clear();
+            list= originallist.clone();
             drawlist = originallist.clone();
-            BubbleSort(listtosort);
+            BubbleSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_H){
-            indexes.clear();
-            listtosort = originallist.clone();
+            lists.clear();
+            list = originallist.clone();
             drawlist = originallist.clone();
-            HeapSort(listtosort);
+            HeapSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_S){
-            indexes.clear();
-            listtosort = originallist.clone();
+            lists.clear();
+            list = originallist.clone();
             drawlist = originallist.clone();
-            SelectionSort(listtosort);
+            SelectionSort(list);
         }else if(e.getKeyCode()==KeyEvent.VK_F1){
-            indexes.clear();
-            listtosort = originallist.clone();
+            lists.clear();
+            list = originallist.clone();
             drawlist = originallist.clone();
-            BogoSort(listtosort);
+            BogoSort(list);
         }
     }
 }
