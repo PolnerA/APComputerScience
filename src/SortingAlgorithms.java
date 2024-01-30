@@ -41,7 +41,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         populatelist();
         list=originallist.clone();
         list2=originallist.clone();
-        countingSort(list);
+        RadixSort(list);
         frames = new Timer(0,this);
         frames.start();
 
@@ -247,22 +247,22 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
     }
     public int[] countingSort (int[] list){//O(N+M) Worst-case complexity where N and M are the size of the input array and the count array
-        int m=0;                                  //only works by returning an int[]//TODO
+        int m=0;                                  //only works by returning an int[]
         int n= list.length;
         for(int i=0;i<n;i++){
             m=Math.max(m,list[i]);
-            lists.add(new DrawLists(list.clone(),new ArrayList<>()));
         }
         int[] countArray = new int[m+1];
         //special (needs to draw count array once populated)
         for(int i=0;i < n; i++){
             countArray[list[i]]++;
-            lists.add(new DrawLists(countArray.clone(),new ArrayList<>()));
+            ArrayList<Integer> a = new ArrayList<>();
+            a.add(list[i]);
+            lists.add(new DrawLists(list.clone(),a));
         }
 
         for(int i=1;i<=m;i++){
             countArray[i] += countArray[i-1];
-            lists.add(new DrawLists(countArray.clone(),new ArrayList<>()));
         }
         int[] outputArray = new int[n];
         //output array replaces original array while getting rid of count array
@@ -277,10 +277,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         int[] output = new int[n];
         int i;//variation of counting sort, count should be made and list should be replaced by output
         int[] count = new int[10];
-
+        ArrayList<Integer> a = new ArrayList<>();
         for(i=0;i<n;i++){
             count[(list[i]/exp) % 10]++;
-            //action
+            a.add(list[i]);
+            lists.add(new DrawLists(list.clone(),a));
         }
         for(i=1;i<10;i++){
             count[i] += count[i-1];
@@ -291,10 +292,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
         for(i=0;i<n;i++){
             list[i]=output[i];
+            lists.add(new DrawLists(list.clone(),new ArrayList<>()));
             //action
         }
     }
-    public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits//TODO
+    public void RadixSort(int[] list){//O(D*(N+B)) time complexity, D is number of digits//
         int m = getMax(list);                //N is the number of elements, B is the base of number system used
         for(int exp=1;0<m/exp;exp *=10){
             countSort(list,list.length,exp);
@@ -443,6 +445,16 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             list= originallist.clone();
             list2 = originallist.clone();
             InsertionSort(list);
+        }else if(e.getKeyCode()==KeyEvent.VK_C){
+            lists.clear();
+            list= originallist.clone();
+            list2 = originallist.clone();
+            countingSort(list);
+        }else if(e.getKeyCode()==KeyEvent.VK_R){
+            lists.clear();
+            list= originallist.clone();
+            list2 = originallist.clone();
+            RadixSort(list);
         }
     }
 }
