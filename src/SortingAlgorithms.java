@@ -8,30 +8,38 @@ import java.awt.event.KeyListener;
 import java.util.*;
 
 public class SortingAlgorithms extends JPanel implements ActionListener, KeyListener {
-    int iterations =0;
+    int iterations =0;//iterations for bogo sort
+    //board dimensions for drawing lists
     int boardwidth;
     int boardheight;
-    int listsize;
-
+    //lists of drawlists to be able to draw lists along with an array list of indices for indexing
     ArrayList<DrawLists> lists= new ArrayList<>();
     private static class DrawLists{
-        int[] list;
+        int[] list;//class stores the original list whether its indexed as a boolean and the indices it has
         boolean indexed;
-        ArrayList<Integer> indices;
-        DrawLists(int[] list, ArrayList<Integer> indices){
+        ArrayList<Integer> indices;//stores indices to highlight
+        DrawLists(int[] list, ArrayList<Integer> indices){//be able to add indices
             this.list=list;
             this.indices=indices;
-            if(indices.size() == 0){
-                indexed=false;
-            }else{indexed=true;}
+            indexed = true;
+        }
+        DrawLists(int[] list){//just storing the list (for just swaps)
+            this.list=list;
+            this.indices = new ArrayList<>();
+            indexed=false;
         }
     }
     int[] originallist;
+    //original list kept to keep sorting the same list when a button is pressed to do another one
     int[] list;
+    //list that is sorted with its copies stored in lists
     int[] list2;
+    //list2 is for swapping values with the original array for visualizing merge sort
     Timer frames;
+    //frames get updated as fast as the timer can call
     static Random rng = new Random();
-    public SortingAlgorithms(int boardwidth, int boardheight){//counting, radix
+    public SortingAlgorithms(int boardwidth, int boardheight){
+        //initializes everything
         this.boardwidth=boardwidth;
         this.boardheight=boardheight;
         setPreferredSize(new Dimension(this.boardwidth, this.boardheight));
@@ -39,10 +47,12 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         addKeyListener(this);
         setFocusable(true);
         populatelist();
+        //populates both the list to sort (list) and list 2 as original list
         list=originallist.clone();
         list2=originallist.clone();
-        RadixSort(list);
+        RadixSort(list);//boots up with radix sort but can be changed with button input
         frames = new Timer(0,this);
+        //draws a new list with a swap and/or index every frame updates as fast as swing can keep up
         frames.start();
 
     }
@@ -51,8 +61,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         for(int i=0;i<boardwidth;i++){
             templist[i]=i;
         }
+        //populates the list with all board width values
         shuffle(templist,false);
+        //shuffles the templist not recording the swaps
         originallist=templist;
+        //original list has the domain and range of board width with randomized values at each x
     }
     public void paintComponent(Graphics g) {//overrides other paintComponent in component, uses the graphics in its own
         //draw function and supers the previous paint Component in JComponent.java (javax.swing)
@@ -60,23 +73,24 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         draw(g);
     }
     public void draw(Graphics g) {
+        //sets the color to white
         g.setColor(Color.white);
         DrawLists drawarray= lists.get(0);
-        int index = -1;
-        if(drawarray.indexed){
+        int index = -1;//sets index to one as the list starts at 0 so index shouldn't ever be used unless overridden
+        if(drawarray.indexed){//if it is indexed then it reverse bubble sorts the array of indices and get at 0
             ReverseBubbleSort(drawarray.indices);
             if(drawarray.indices.size()!=0){
                 index=drawarray.indices.get(0);
             }
         }
-        for (int i = 0; i < drawarray.list.length; i++) {
-            if(i==index) {
+        for (int i = 0; i < drawarray.list.length; i++) {//goes through the entire draw array list
+            if(i==index) {//if the index is the same as the one it wants
                 g.setColor(Color.red);
-                g.fillRect(boardwidth - i, 0, 1, boardheight );
+                g.fillRect(boardwidth - i, 0, 1, boardheight );//colors the segment red
                 g.setColor(Color.white);
                 drawarray.indices.remove(0);
-                if(drawarray.indices.size()!=0){
-                    index=drawarray.indices.get(0);
+                if(drawarray.indices.size()!=0){//removes the current one in the queue and if there is still more it moves on
+                    index=drawarray.indices.get(0);//as it was reverse sorted it should be in increasing number meaning
                 }
             }
             else{
@@ -146,25 +160,6 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 }
             }
             Swap(list,i,largest,true);
-        }
-    }
-    public void DoubleSelectionSort(int[] list){//in progress
-        int bottomindex = 0;
-        for(int i=list.length-1;i<list.length;i--){
-            int largest=i;
-            int smallest=bottomindex;
-            for(int j=i-1;list.length<j;j--){
-                if(0<=j){
-                if(list[j]<list[smallest]){
-                    smallest=j;
-                } else if (list[largest]<list[j]) {
-                    largest=j;
-                }
-                }
-            }
-            Swap(list,bottomindex,smallest,true);
-            Swap(list,i,largest,true);
-            bottomindex++;
         }
     }
     public void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
