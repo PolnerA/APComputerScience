@@ -1,3 +1,17 @@
+/*
+Name: Adam Polner
+Problem:
+Psuedocode: Pass through a sorting algorithm with a list, after every change to the list add it to an array list,
+keep reading off this array list in sequence drawing every list
+Notes: big O() notation doesn't show everything it is because of this that other sorts like radix sort and
+heap sort although having a good big O() aren't widely used, this is because radix sort only works with integers
+and heap sort you have to create a whole new data structure of a heap so it just isn't worth it. Also since the array list
+of lists also needs to know where it has indexes it is instead a custom class called draw list which uses the int array
+adn has an array list of integers with all of its indices.
+Maintenance log:
+Date:        Done:
+
+*/
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
@@ -191,7 +205,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         for (int i=0;i< list.size()-1;i++){
             boolean swapped = false;
             for(int j=0;j< list.size()-i-1;j++){
-                if(list.get(j)<list.get(j+1)){
+                if(list.get(j+1)<list.get(j)){
                     ListSwap(list,j,j+1);//action
                     swapped=true;
                 }
