@@ -96,7 +96,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             else{
                 g.fillRect(boardwidth - i, drawarray.list[i], 1, boardheight - drawarray.list[i]);
             }
-        }
+        }//?? review draw logic for lists
         if(1<lists.size()) {
             lists.remove(0);
         }
