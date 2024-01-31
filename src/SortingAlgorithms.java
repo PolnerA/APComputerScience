@@ -1,6 +1,6 @@
 /*
 Name: Adam Polner
-Problem:
+Problem: Create a program with a couple of sorting algorithms and visualize the changes to the lists 
 Psuedocode: Pass through a sorting algorithm with a list, after every change to the list add it to an array list,
 keep reading off this array list in sequence drawing every list
 Notes: big O() notation doesn't show everything it is because of this that other sorts like radix sort and
@@ -91,8 +91,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         g.setColor(Color.white);
         DrawLists drawarray= lists.get(0);
         int index = -1;//sets index to one as the list starts at 0 so index shouldn't ever be used unless overridden
-        if(drawarray.indexed){//if it is indexed then it reverse bubble sorts the array of indices and get at 0
-            ReverseBubbleSort(drawarray.indices);
+        if(drawarray.indexed){//if it is indexed then it bubble sorts the array of indices 
+            ListBubbleSort(drawarray.indices);// (usually not more than 10 and bubble is easy to impliment) and get at 0
             if(drawarray.indices.size()!=0){
                 index=drawarray.indices.get(0);
             }
@@ -104,11 +104,14 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 g.setColor(Color.white);
                 drawarray.indices.remove(0);
                 if(drawarray.indices.size()!=0){//removes the current one in the queue and if there is still more it moves on
-                    index=drawarray.indices.get(0);//as it was reverse sorted it should be in increasing number meaning
-                }
+                    index=drawarray.indices.get(0);//as it was sorted it should be in increasing number meaning as it goes 
+                }                        //across it should print all on one array
             }
             else{
                 g.fillRect(boardwidth - i, drawarray.list[i], 1, boardheight - drawarray.list[i]);
+                //draws a rectangle starting from right for the list to be smallest on the left (personal preferance)
+                //draws the y as the value of the current array segment width of one (each pixel shows a spot on the array)
+                //then the length subtracts the y value from the board height as y=0 is at the top of the screen
             }
         }//?? review draw logic for lists
         if(1<lists.size()) {
@@ -130,18 +133,19 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             //merge sorted halves into one sorted array
              merge(list,left,right);
         }
-        for(int i=0;i<list.length;i++){
-            for(int j = 0; j< originallist.length; j++) {
-                if (list[i] == list2[j]) {
-                    //og index of i is j
+        for(int i=0;i<list.length;i++){//slow way to get original spots but it works, as the list
+            for(int j = 0; j< originallist.length; j++) {//is sorted fast, but it stores the indexes 
+                if (list[i] == list2[j]) {//and the visualization occurs only after Merge sort has finished 
+                    //orignal index of i is j
                     Swap(list2, i, j, true);
+                    //swaps on a secondary array to show what merge sort is doing
                 }
             }
         }
     }
     public void ModifiedMergeSort(int[] list){//O(N Log N) worst-case complexity
         if(1<list.length){
-            int[] left = Arrays.copyOfRange(list,0,list.length/2);
+            int[] left = Arrays.copyOfRange(list,0,list.length/2);//same thing but does the right first, then left
             int[] right = Arrays.copyOfRange(list,list.length/2, list.length);
             //recursively sort both halves
             ModifiedMergeSort(right);
@@ -178,7 +182,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     }
     public void BogoSort(int[] list){//O(?) worst-case complexity no upper bound
         while(!isSorted(list)){             //O(N*N!) average-case complexity
-            shuffle(list,true);//action
+            shuffle(list,true);
             iterations++;
         }
     }
@@ -187,7 +191,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             boolean swapped = false;
             for(int j=0;j< list.length-i-1;j++){
                 if(list[j+1]<list[j]){
-                    Swap(list,j,j+1,false);//action
+                    Swap(list,j,j+1,false);
                     swapped=true;
                 }
                 ArrayList<Integer> indexes=new ArrayList<>();
@@ -201,7 +205,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             }
         }
     }
-    public void ReverseBubbleSort(ArrayList<Integer> list){//O(N^2) worst-case complexity
+    public void ListBubbleSort(ArrayList<Integer> list){//O(N^2) worst-case complexity
         for (int i=0;i< list.size()-1;i++){
             boolean swapped = false;
             for(int j=0;j< list.size()-i-1;j++){
@@ -371,7 +375,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         list[i]=list[j];
         list[j]=temp;
         if(RecordSwap) {
-            lists.add(new DrawLists(list.clone(),new ArrayList<>()));
+            lists.add(new DrawLists(list.clone()));
         }
     }
     public void ListSwap(ArrayList<Integer> list,int i, int j){
@@ -381,8 +385,12 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         int i1=0; // left array index
         int i2=0; // right array index
 
-        for(int i=0;i< result.length;i++){
+        for(int i=0;i< result.length;i++){//goes through the result array
             if(right.length<=i2||(i1< left.length&&left[i1]<=right[i2])){
+            //if the right array index is last on the list, or greater than the list it will grab fromt the left,
+            //if the index on the left isn't yet over the left array, 
+            //and that the value at the left index is less than the value at the right index, 
+            //then take from left, else right
                 result[i]=left[i1]; //take from left
                 i1++;
             }
@@ -393,6 +401,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         }
     }
     public boolean isSorted(int[] list){
+        //goes through the list, and if something is out of order, it returns false, if everything goes well, true
         for(int i=1;i< list.length;i++){
             int num=list[i-1];
             if(list[i] <num){
@@ -404,6 +413,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        //every time the timer fires it repaints the scene which calls the draw function
+        //delay of 0 ms means that it draws frames as fast as it can
         repaint();
     }
 
@@ -419,47 +430,49 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode()==KeyEvent.VK_Q) {
+        //event based key detection with java's key listener
+        if(e.getKeyCode()==KeyEvent.VK_Q) {//if q is pressed it starts quick sort
+            //resets the conditions and takes from the saved original list
             lists.clear();
             list = originallist.clone();
             list2 = originallist.clone();
             QuickSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_B){
+        }else if(e.getKeyCode()==KeyEvent.VK_B){//if b is pressed: starts bubble sort
             lists.clear();
             list= originallist.clone();
             list2 = originallist.clone();
             BubbleSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_H){
+        }else if(e.getKeyCode()==KeyEvent.VK_H){//if h is pressed: starts heap sort
             lists.clear();
             list = originallist.clone();
             list2 = originallist.clone();
             HeapSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_S){
+        }else if(e.getKeyCode()==KeyEvent.VK_S){//if s is pressed: starts selection sort
             lists.clear();
             list = originallist.clone();
             list2 = originallist.clone();
             SelectionSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_F1){
+        }else if(e.getKeyCode()==KeyEvent.VK_F1){//if f1 is pressed: starts bogo sort
             lists.clear();
             list = originallist.clone();
             list2 = originallist.clone();
             BogoSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_M){
+        }else if(e.getKeyCode()==KeyEvent.VK_M){//if m is pressed: starts merge sort
             lists.clear();
             list= originallist.clone();
             list2 = originallist.clone();
             MergeSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_I){
+        }else if(e.getKeyCode()==KeyEvent.VK_I){//if i is pressed: starts insertion sort
             lists.clear();
             list= originallist.clone();
             list2 = originallist.clone();
             InsertionSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_C){
+        }else if(e.getKeyCode()==KeyEvent.VK_C){//if c is pressed: starts counting sort
             lists.clear();
             list= originallist.clone();
             list2 = originallist.clone();
             countingSort(list);
-        }else if(e.getKeyCode()==KeyEvent.VK_R){
+        }else if(e.getKeyCode()==KeyEvent.VK_R){//if r is pressed: starts radix sort
             lists.clear();
             list= originallist.clone();
             list2 = originallist.clone();
