@@ -121,7 +121,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             }
             else{
                 g.fillRect(boardwidth - i, drawarray.list[i], 1, boardheight - drawarray.list[i]);
-                //draws a rectangle starting from right for the list to be smallest on the left (personal preference)
+                //draws a rectangle starting from right for the list to be the smallest on the left (personal preference)
                 //draws the y as the value of the current array segment width of one (each pixel shows a spot on the array)
                 //then the length subtracts the y value from the board height as y=0 is at the top of the screen
             }
