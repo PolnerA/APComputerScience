@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 //set up with JFrame for the sorting algorithm application
 public class App extends Frame{//an extension of Frame (a window)
 
