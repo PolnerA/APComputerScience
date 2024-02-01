@@ -5,9 +5,10 @@ Pseudocode: Pass through a sorting algorithm with a list, after every change to 
 keep reading off this array list in sequence drawing every list
 Notes: big O() notation doesn't show everything it is because of this that other sorts like radix sort and
 heap sort although having a good big O() aren't widely used, this is because radix sort only works with integers
-and heap sort you have to create a whole new data structure of a heap, so it just isn't worth it. Also since the array list
-of lists also needs to know where it has indexes it is instead a custom class called draw list which uses the int array
-adn has an array list of integers with all of its indices.
+and heap sort you have to create a whole new data structure of a heap, so it just isn't worth it.
+Since the array list of lists also needs to know where it has indexes it is instead a custom class called draw list
+which uses the int array and an array list of integers for indices. So instead it is an Array list of the custom class
+known as draw list
 Maintenance log:
 Date:        Done:
 1/4/2024    programmed selection sort, bogo sort
@@ -120,7 +121,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             }
             else{
                 g.fillRect(boardwidth - i, drawarray.list[i], 1, boardheight - drawarray.list[i]);
-                //draws a rectangle starting from right for the list to be smallest on the left (personal preferance)
+                //draws a rectangle starting from right for the list to be smallest on the left (personal preference)
                 //draws the y as the value of the current array segment width of one (each pixel shows a spot on the array)
                 //then the length subtracts the y value from the board height as y=0 is at the top of the screen
             }
@@ -145,10 +146,10 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             //merge sorted halves into one sorted array
              merge(list,left,right);
         }
-        for(int i=0;i<list.length;i++){//slow way to get original spots but it works, as the list
+        for(int i=0;i<list.length;i++){//slow way to get original spots, but it works, as the list
             for(int j = 0; j< originallist.length; j++) {//is sorted fast, but it stores the indexes 
                 if (list[i] == list2[j]) {//and the visualization occurs only after Merge sort has finished 
-                    //orignal index of i is j
+                    //original index of i is j
                     Swap(list2, i, j, true);
                     //swaps on a secondary array to show what merge sort is doing
                 }
@@ -414,7 +415,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
 
         for(int i=0;i< result.length;i++){//goes through the result array
             if(right.length<=i2||(i1< left.length&&left[i1]<=right[i2])){
-            //if the right array index is last on the list, or greater than the list it will grab fromt the left,
+            //if the right array index is last on the list, or greater than the list it will grab from the left,
             //if the index on the left isn't yet over the left array, 
             //and that the value at the left index is less than the value at the right index, 
             //then take from left, else right
