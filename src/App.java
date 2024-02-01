@@ -9,7 +9,7 @@ public class App extends Frame{//an extension of Frame (a window)
         int boardHeight = boardWidth;
 
         //name of the window is set to sorting algorithms, makes it visible and sets the size
-        JFrame frame = new JFrame("Sorting Algorithms");
+        JFrame frame = new JFrame("Life");
         frame.setSize(boardWidth, boardHeight);
         //sets the location to about the middle of the screen
         frame.setLocation(500,0);
@@ -17,10 +17,10 @@ public class App extends Frame{//an extension of Frame (a window)
         //sets the window to exit on close
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Creates an instance of the Sorting algorithms through the Sorting algorithms class, and adds it to the window giving focus to it
-        SortingAlgorithms sorting = new SortingAlgorithms(boardWidth, boardHeight);
-        frame.add(sorting);
+        Life life = new Life(boardWidth, boardHeight);
+        frame.add(life);
         frame.pack();
-        sorting.requestFocus();
+        life.requestFocus();
         frame.setVisible(true);
     }
 }
