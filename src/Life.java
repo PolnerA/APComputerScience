@@ -39,7 +39,7 @@ public class Life extends JPanel implements ActionListener{
         setBackground(Color.black);
         setFocusable(true);
         GenerateCells();
-        frames = new Timer(5,this);
+        frames = new Timer(0,this);
         frames.start();
     }
     public void GenerateCells(){
@@ -71,40 +71,10 @@ public class Life extends JPanel implements ActionListener{
         }
     }
     public void CalculateNeighbors(){//N^2 Cell one and two don't need to be looked entirely through
-        for (int i = 0; i < cells.length; i++) {
-            Cell cell1 = cells[i];
-            cell1.setNeighbors(0);
-            int x = cell1.position.x;
-            int y = cell1.position.y;
-            for (int j = 0; j < cells.length; j++) {
-                Cell cell2 = cells[j];
-                if(cell2.alive) {
-                    int x2 = cell2.position.x;
-                    int y2 = cell2.position.y;
-                    if (x == x2 + 1) {//cell two is to the left
-                        if (y == y2 + 1) {//cell two is to the bottom left
-                            cell1.neighbors++;
-                        } else if (y == y2) {//cell two is to the left
-                            cell1.neighbors++;
-                        } else if (y == y2 - 1) {//cell two is to the top left
-                            cell1.neighbors++;
-                        }
-                    } else if (x == x2) {//cell two is in line with cell one
-                        if (y == y2 + 1) {//cell two is on the bottom
-                            cell1.neighbors++;
-                        } else if (y == y2 - 1) {//cell two is above
-                            cell1.neighbors++;
-                        }
-                    } else if (x == x2 - 1) {//cell two is on the right
-                        if (y == y2 + 1) {//cell two is to the bottom right
-                            cell1.neighbors++;
-                        } else if (y == y2) {//cell two is to the right
-                            cell1.neighbors++;
-                        } else if (y == y2 - 1) {//cell two is to the top right
-                            cell1.neighbors++;
-                        }
-                    }
-                }
+        for (int i = 0; i < cells.length; i++) {//goes through cells 0-10,000 first 0-99 are the first column
+            Cell cell = cells[i];              //100-200 is the second column etc... //above -1, below +1 |left -101,-100,-99|right +101,+100,+99
+            cell.setNeighbors(0);
+            if(0<=(i-1)){//subtractions check v. zero additions check against cells.length
             }
         }
     }
