@@ -5,8 +5,8 @@ public class App extends Frame{//an extension of Frame (a window)
 
     public static void main(String[] args) throws InterruptedException {
         //sets the width and height
-        int boardWidth = 1000;
-        int boardHeight = boardWidth;
+        int boardWidth = 2042;
+        int boardHeight = 1148;
 
         //name of the window is set to sorting algorithms, makes it visible and sets the size
         JFrame frame = new JFrame("Life");
