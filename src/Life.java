@@ -4,7 +4,8 @@ import java.awt.event.*;
 import java.util.Random;
 
 
-public class Life extends JPanel implements ActionListener{
+public class Life extends JPanel implements ActionListener,KeyListener{
+
     private static class Tile{
         int x;
         int y;
@@ -13,7 +14,7 @@ public class Life extends JPanel implements ActionListener{
             this.y=y;
         }
     }
-    int tilesize=10;
+    int tilesize=1;
     private static class Cell{
         Tile position;
         Boolean alive;
@@ -39,7 +40,8 @@ public class Life extends JPanel implements ActionListener{
         setBackground(Color.black);
         setFocusable(true);
         GenerateCells();
-        frames = new Timer(0,this);
+        addKeyListener(this);
+        frames = new Timer(100,this);
         frames.start();
     }
     public void GenerateCells(){
@@ -54,6 +56,8 @@ public class Life extends JPanel implements ActionListener{
                 index++;
             }
         }
+        CalculateNeighbors();
+        updateConditions();
     }
 
     @Override
@@ -62,10 +66,10 @@ public class Life extends JPanel implements ActionListener{
         draw(g);
     }
     public void draw(Graphics g){
-        g.setColor(new Color(255,255,255));
         for (int i = 0; i < cells.length; i++) {
             Cell cell= cells[i];
             if(cell.alive) {
+                g.setColor(new Color(0,Math.max(0,255-(cell.neighbors*60)),0+(Math.min(cell.neighbors*60,255))));
                 g.fillRect(cell.position.x * tilesize, cell.position.y * tilesize, tilesize, tilesize);
             }
         }
@@ -74,7 +78,46 @@ public class Life extends JPanel implements ActionListener{
         for (int i = 0; i < cells.length; i++) {//goes through cells 0-10,000 first 0-99 are the first column
             Cell cell = cells[i];              //100-200 is the second column etc... //above -1, below +1 |left -101,-100,-99|right +101,+100,+99
             cell.setNeighbors(0);
-            if(0<=(i-1)){//subtractions check v. zero additions check against cells.length
+            int HeightOfTiles=BoardHeight/tilesize;
+            //if on the top or bottom don't check for up or down respectively
+            if(0<=(i-1)&&0<cell.position.y){//up
+                if(cells[i-1].alive){
+                    cell.neighbors++;
+                }
+            }
+            if(0<=(i-HeightOfTiles+1)&&cell.position.y<HeightOfTiles){//bottom left
+                if(cells[i-HeightOfTiles+1].alive){
+                    cell.neighbors++;
+                }
+            }if(0<=(i-HeightOfTiles)){//left
+                if(cells[i-HeightOfTiles].alive){
+                    cell.neighbors++;
+                }
+            }
+            if(0<=(i-HeightOfTiles-1)&&0<cell.position.y){//top left
+                if(cells[i-HeightOfTiles-1].alive){
+                    cell.neighbors++;
+                }
+            }
+            if(i+1<cells.length&&cell.position.y<HeightOfTiles){//down
+                if(cells[i+1].alive) {
+                    cell.neighbors++;
+                }
+            }
+            if((i+HeightOfTiles-1)< cells.length&&0<cell.position.y){//up right
+                if(cells[i+HeightOfTiles-1].alive) {
+                    cell.neighbors++;
+                }
+            }
+            if((i+HeightOfTiles)< cells.length){//right
+                if(cells[i+HeightOfTiles].alive){
+                    cell.neighbors++;
+                }
+            }
+            if((i+HeightOfTiles+1)< cells.length&&cell.position.y<HeightOfTiles){//down right
+                if(cells[i+HeightOfTiles+1].alive){
+                    cell.neighbors++;
+                }
             }
         }
     }
@@ -106,6 +149,19 @@ public class Life extends JPanel implements ActionListener{
         //update the board
         repaint();
         //repaint
+
+    }
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
 
     }
 }
