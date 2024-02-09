@@ -17,10 +17,12 @@ public class Life extends JPanel implements ActionListener,KeyListener{
     int tilesize=1;
     private static class Cell{
         Tile position;
+        Tile RelativePos;
         Boolean alive;
         int neighbors;
         Cell(Tile position){
             this.position=position;
+            RelativePos=new Tile(position.x, position.y);
             alive=true;
         }
 
@@ -31,17 +33,21 @@ public class Life extends JPanel implements ActionListener,KeyListener{
     Random rng = new Random();
     int BoardWidth;
     int BoardHeight;
+    int BorderX;
+    int BorderY;
     Cell[] cells;
     Timer frames;
     public Life(int boardwidth,int boardheight){
         BoardHeight=boardheight;
         BoardWidth=boardwidth;
+        BorderX=0;
+        BorderY=0;
         setPreferredSize(new Dimension(BoardWidth,BoardHeight));
         setBackground(Color.black);
         setFocusable(true);
         GenerateCells();
         addKeyListener(this);
-        frames = new Timer(100,this);
+        frames = new Timer(0,this);
         frames.start();
     }
     public void GenerateCells(){
@@ -66,11 +72,13 @@ public class Life extends JPanel implements ActionListener,KeyListener{
         draw(g);
     }
     public void draw(Graphics g){
+        g.setColor(Color.WHITE);
+        g.drawRect(BorderX,BorderY,BoardWidth,BoardHeight);
         for (int i = 0; i < cells.length; i++) {
             Cell cell= cells[i];
             if(cell.alive) {
                 g.setColor(new Color(0,Math.max(0,255-(cell.neighbors*60)),0+(Math.min(cell.neighbors*60,255))));
-                g.fillRect(cell.position.x * tilesize, cell.position.y * tilesize, tilesize, tilesize);
+                g.fillRect(cell.RelativePos.x * tilesize, cell.RelativePos.y * tilesize, tilesize, tilesize);
             }
         }
     }
@@ -80,7 +88,7 @@ public class Life extends JPanel implements ActionListener,KeyListener{
             cell.setNeighbors(0);
             int HeightOfTiles=BoardHeight/tilesize;
             //if on the top or bottom don't check for up or down respectively
-            if(0<=(i-1)&&0<cell.position.y){//up
+            if(0<=(i-1)&&0<cell.position.y){//up and it isn't on the top
                 if(cells[i-1].alive){
                     cell.neighbors++;
                 }
@@ -153,11 +161,31 @@ public class Life extends JPanel implements ActionListener,KeyListener{
     }
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode()==KeyEvent.VK_W) {
+            for (Cell cell : cells) {
+                cell.RelativePos.y+=2;
+            }
+            BorderY+=tilesize*2;
+        }else if(e.getKeyCode()==KeyEvent.VK_A) {
+            for (Cell cell : cells) {
+                cell.RelativePos.x+=2;
+            }
+            BorderX+=tilesize*2;
+        }else if(e.getKeyCode()==KeyEvent.VK_S) {
+            for (Cell cell : cells) {
+                cell.RelativePos.y-=2;
+            }
+            BorderY-=tilesize*2;
+        }else if(e.getKeyCode()==KeyEvent.VK_D) {
+            for (Cell cell : cells) {
+                cell.RelativePos.x-=2;
+            }
+            BorderX-=tilesize*2;
+        }
     }
 
     @Override
