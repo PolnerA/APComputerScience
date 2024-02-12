@@ -15,6 +15,7 @@ public class Life extends JPanel implements ActionListener,KeyListener{
         }
     }
     int tilesize=1;
+    float ViewSize=1;
     private static class Cell{
         Tile position;
         Tile RelativePos;
@@ -73,12 +74,12 @@ public class Life extends JPanel implements ActionListener,KeyListener{
     }
     public void draw(Graphics g){
         g.setColor(Color.WHITE);
-        g.drawRect(BorderX,BorderY,BoardWidth,BoardHeight);
+        g.drawRect((int) (Math.max(1,BorderX*ViewSize)), (int) (Math.max(1,BorderY*ViewSize)), (int) (Math.max(1,BoardWidth*ViewSize)), (int) (BoardHeight*ViewSize));
         for (int i = 0; i < cells.length; i++) {
             Cell cell= cells[i];
             if(cell.alive) {
                 g.setColor(new Color(0,Math.max(0,255-(cell.neighbors*60)),0+(Math.min(cell.neighbors*60,255))));
-                g.fillRect(cell.RelativePos.x * tilesize, cell.RelativePos.y * tilesize, tilesize, tilesize);
+                g.fillRect((int) (Math.max(cell.RelativePos.x * tilesize*ViewSize,1)), (int) (Math.max(cell.RelativePos.y * tilesize*ViewSize,1)), (int) (Math.max(tilesize*ViewSize,1)), (int) (Math.max(1,tilesize*ViewSize)));
             }
         }
     }
@@ -87,6 +88,7 @@ public class Life extends JPanel implements ActionListener,KeyListener{
             Cell cell = cells[i];              //100-200 is the second column etc... //above -1, below +1 |left -101,-100,-99|right +101,+100,+99
             cell.setNeighbors(0);
             int HeightOfTiles=BoardHeight/tilesize;
+            //subtract the lower bound of the board height along with the upper bound for both x and y
             //if on the top or bottom don't check for up or down respectively
             if(0<=(i-1)&&0<cell.position.y){//up and it isn't on the top
                 if(cells[i-1].alive){
@@ -165,7 +167,13 @@ public class Life extends JPanel implements ActionListener,KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode()==KeyEvent.VK_W) {
+        if(e.getKeyCode()==KeyEvent.VK_SHIFT){
+            ViewSize*=1.1f;
+            Math.round(ViewSize);
+        }else if(e.getKeyCode()==KeyEvent.VK_CONTROL){
+            ViewSize*=0.9f;
+            Math.round(ViewSize);
+        }else if(e.getKeyCode()==KeyEvent.VK_W) {
             for (Cell cell : cells) {
                 cell.RelativePos.y+=2;
             }
