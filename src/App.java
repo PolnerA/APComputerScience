@@ -12,7 +12,7 @@ public class App extends Frame{//an extension of Frame (a window)
         JFrame frame = new JFrame("Life");
         frame.setSize(boardWidth, boardHeight);
         //sets the location to about the middle of the screen
-        frame.setLocation(500,0);
+        frame.setLocation(0,0);
         frame.setResizable(true);
         //sets the window to exit on close
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
