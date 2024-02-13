@@ -74,12 +74,15 @@ public class Life extends JPanel implements ActionListener,KeyListener{
     }
     public void draw(Graphics g){
         g.setColor(Color.WHITE);
-        g.drawRect((int) (Math.max(1,BorderX*ViewSize)), (int) (Math.max(1,BorderY*ViewSize)), (int) (Math.max(1,BoardWidth*ViewSize)), (int) (BoardHeight*ViewSize));
+        g.drawRect((int)(BorderX*ViewSize), (int) (BorderY*ViewSize), (int) (BoardWidth*ViewSize), (int) (BoardHeight*ViewSize));
         for (int i = 0; i < cells.length; i++) {
             Cell cell= cells[i];
             if(cell.alive) {
                 g.setColor(new Color(0,Math.max(0,255-(cell.neighbors*60)),0+(Math.min(cell.neighbors*60,255))));
-                g.fillRect((int) (Math.max(cell.RelativePos.x * tilesize*ViewSize,1)), (int) (Math.max(cell.RelativePos.y * tilesize*ViewSize,1)), (int) (Math.max(tilesize*ViewSize,1)), (int) (Math.max(1,tilesize*ViewSize)));
+                if(0<=cell.RelativePos.x&&0<=cell.RelativePos.y){
+                    g.fillRect((int) (Math.max(cell.RelativePos.x * tilesize*ViewSize,1)), (int) (Math.max(cell.RelativePos.y * tilesize*ViewSize,1)), (int) (Math.max(tilesize*ViewSize,1)), (int) (Math.max(1,tilesize*ViewSize)));
+                }
+
             }
         }
     }
@@ -170,29 +173,29 @@ public class Life extends JPanel implements ActionListener,KeyListener{
         if(e.getKeyCode()==KeyEvent.VK_SHIFT){
             ViewSize*=1.1f;
             Math.round(ViewSize);
-        }else if(e.getKeyCode()==KeyEvent.VK_CONTROL){
+        }if(e.getKeyCode()==KeyEvent.VK_CONTROL){
             ViewSize*=0.9f;
             Math.round(ViewSize);
-        }else if(e.getKeyCode()==KeyEvent.VK_W) {
+        }if(e.getKeyCode()==KeyEvent.VK_W) {
             for (Cell cell : cells) {
-                cell.RelativePos.y+=2;
+                cell.RelativePos.y+=10;
             }
-            BorderY+=tilesize*2;
-        }else if(e.getKeyCode()==KeyEvent.VK_A) {
+            BorderY+=tilesize*10;
+        }if(e.getKeyCode()==KeyEvent.VK_A) {
             for (Cell cell : cells) {
-                cell.RelativePos.x+=2;
+                cell.RelativePos.x+=10;
             }
-            BorderX+=tilesize*2;
-        }else if(e.getKeyCode()==KeyEvent.VK_S) {
+            BorderX+=tilesize*10;
+        }if(e.getKeyCode()==KeyEvent.VK_S) {
             for (Cell cell : cells) {
-                cell.RelativePos.y-=2;
+                cell.RelativePos.y-=10;
             }
-            BorderY-=tilesize*2;
-        }else if(e.getKeyCode()==KeyEvent.VK_D) {
+            BorderY-=tilesize*10;
+        }if(e.getKeyCode()==KeyEvent.VK_D) {
             for (Cell cell : cells) {
-                cell.RelativePos.x-=2;
+                cell.RelativePos.x-=10;
             }
-            BorderX-=tilesize*2;
+            BorderX-=tilesize*10;
         }
     }
 
