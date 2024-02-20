@@ -2,7 +2,7 @@ package Recursion;
 
 public class GS11_02 {
     public static void main(String[] args) {
-        writeNums(10);
+        writeNums(5);//done
     }
     public static void writeNums(int n){
         if(n==0){return;}
