@@ -7,15 +7,15 @@ public class GS11_01 {
         System.out.print("\n"+m);
     }
     public static void starString(int n){
-        for(int i=0;i<n;i++){
-            System.out.print("*");
-            m++;
-            starString(--n);
-            if(n<0){return;}
+        m++;
+        System.out.print("*");
+        if(n<=0){
+            return;
         }
+        starString((--n));
     }
     public static void starStringLoop(int n){
-        for(int i=0;i<n*n;i++){
+        for(int i=0;i<Math.pow(2,n);i++){
             System.out.print("*");
             m++;
         }
