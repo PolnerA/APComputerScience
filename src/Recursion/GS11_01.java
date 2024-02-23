@@ -6,16 +6,13 @@ public class GS11_01 {
         starString(2);
         System.out.print("\n"+m);
     }
-    public static void starString(int n){
-        m++;
-        System.out.print("*");
-        if(n<=0){
-            return;
+    public static int starString(int n){
+        if(n==0){
+            return 1;
+        }else{
+            return (int) (2* Math.pow(2,n-1));
         }
-        n--;
-        starString(n);
-        if(n<=0){return;}
-        starString(n);
+
     }
     public static void starStringLoop(int n){
         for(int i=0;i<Math.pow(2,n);i++){
