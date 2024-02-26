@@ -7,7 +7,8 @@ public class GS11_03 {
     public static void writeSequence(int n){
         if(n<1){throw new IllegalArgumentException();}
         if(n%2==1){
-            System.out.print(Math.round((float) n/2));
+            if(Math.round((float) n/2)!=1){
+            System.out.print(Math.round((float) n/2));}
         }
         n--;
         if(n<=0){return;}
