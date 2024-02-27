@@ -1,18 +1,22 @@
 package Recursion;
 
 public class GS11_05 {
+    static int m=0;
     public static void main(String[] args) {
-        System.out.print(fibonacci(3));
+        System.out.println(fib(5));
     }
-    public static int fibonacci(int n){
+    public static void fibonacci(int n){//make more efficient version
         if(n<=2){
-            return 1;
+            m++;
+            //returns 1 the amount of times one occurs in the fibonacci num.
         } else{
-          return fibonacci(n-1)+fibonacci(n-2);
+          fibonacci(n-1);
+          fibonacci(n-2);
         }
     }
-    public static int fib(int a,int b){//stores previous numbers
-
-        return a;
+    public static int fib(int a){
+        m=0;
+        fibonacci(a);
+        return m;
     }
 }
