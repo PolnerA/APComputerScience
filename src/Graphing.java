@@ -32,15 +32,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public void draw(Graphics g){
         g.setColor(Color.GRAY);
-        g.drawLine(0+CameraX,0,BoardWidth+CameraX,0);
-        g.drawLine(0+CameraX,0,-BoardWidth+CameraX,0);
-        g.drawLine(0+CameraX,0,0+CameraX,-BoardHeight);
-        g.drawLine(0+CameraX,0,0+CameraX,BoardHeight);
+        g.drawLine(CameraX,CameraY,BoardWidth+CameraX,CameraY);
+        g.drawLine(CameraX,CameraY,-BoardWidth+CameraX,CameraY);
+        g.drawLine(CameraX,CameraY,CameraX,-BoardHeight+CameraY);
+        g.drawLine(CameraX,CameraY,CameraX,BoardHeight+CameraY);
         g.setColor(Color.white);
-        g.drawRect(0-CameraX,BoardHeight-test(0)+CameraY,1,1);
+        g.drawRect(0-CameraX*ViewSize,BoardHeight-test(0)+CameraY*ViewSize,Math.max(1,ViewSize),Math.max(1,ViewSize));
         for (int i = 1+CameraX; i < BoardHeight-CameraX; i++) {
-            g.drawLine(i-1-CameraX,BoardHeight - test(i-1)+CameraY,i-CameraX,BoardHeight-test(i)+CameraY);
-            g.drawRect(i-CameraX,BoardHeight-test(i)+CameraY,1,1);
+            g.drawLine(i-1-CameraX*ViewSize,BoardHeight - test(i-1)+CameraY*ViewSize,ViewSize*(i-CameraX),(int)ViewSize*(BoardHeight-test(i)+CameraY));
+            g.drawRect(i-CameraX*ViewSize,ViewSize*(BoardHeight-test(i)+CameraY),Math.max(ViewSize,1),Math.max(ViewSize,1));
         }
     }
     @Override
