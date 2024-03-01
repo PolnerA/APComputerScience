@@ -10,6 +10,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardHeight;
     Timer frames;
     float ViewSize=1f;
+    int tilesize=1;
     int CameraX=0;
     int CameraY=0;
     public Graphing(int Boardwidth,int Boardheight){
@@ -30,17 +31,24 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public int test(int x){
         return (int)Math.pow(x,2);
     }
+    public int test2(int x){
+        return -x;
+    }
     public void draw(Graphics g){
         g.setColor(Color.GRAY);
-        g.drawLine(CameraX,CameraY,BoardWidth+CameraX,CameraY);
-        g.drawLine(CameraX,CameraY,-BoardWidth+CameraX,CameraY);
-        g.drawLine(CameraX,CameraY,CameraX,-BoardHeight+CameraY);
-        g.drawLine(CameraX,CameraY,CameraX,BoardHeight+CameraY);
+        //first point at origin
+        g.drawLine((int)(BoardHeight*ViewSize),(int)((BoardHeight+CameraY)*ViewSize),0,(int)((BoardHeight+CameraY)*ViewSize));
+        g.drawLine((int)(-CameraX*ViewSize),0,(int)(-CameraX*ViewSize),(int)(BoardHeight*ViewSize));
         g.setColor(Color.white);
-        g.drawRect(0-CameraX*ViewSize,BoardHeight-test(0)+CameraY*ViewSize,Math.max(1,ViewSize),Math.max(1,ViewSize));
-        for (int i = 1+CameraX; i < BoardHeight-CameraX; i++) {
-            g.drawLine(i-1-CameraX*ViewSize,BoardHeight - test(i-1)+CameraY*ViewSize,ViewSize*(i-CameraX),(int)ViewSize*(BoardHeight-test(i)+CameraY));
-            g.drawRect(i-CameraX*ViewSize,ViewSize*(BoardHeight-test(i)+CameraY),Math.max(ViewSize,1),Math.max(ViewSize,1));
+        g.drawRect((int)(0-CameraX),(int)(BoardHeight-test(0)+CameraY),(int)ViewSize,(int)ViewSize);
+        for (int i = 1+CameraX; i < BoardWidth-CameraX; i++) {
+            g.drawLine((int)(i-1-CameraX),(int)(BoardHeight - test(i-1)+CameraY),(int)((i-CameraX)),(int)((BoardHeight-test(i)+CameraY)));
+            g.drawRect((int)i-CameraX,(int)(BoardHeight-test(i)+CameraY),(int)1,(int)1);
+        }
+        g.drawRect((int)(0-CameraX),(int)(BoardHeight-test2(0)+CameraY),(int)1,(int)1);
+        for (int i = 1+CameraX; i < BoardWidth-CameraX; i++) {
+            g.drawLine((int)(i-1-CameraX),(int)(BoardHeight - test2(i-1)+CameraY),(int)((i-CameraX)),(int)((BoardHeight-test2(i)+CameraY)));
+            g.drawRect((int)i-CameraX,(int)(BoardHeight-test2(i)+CameraY),(int)1,(int)1);
         }
     }
     @Override
