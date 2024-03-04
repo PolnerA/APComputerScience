@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,27 +29,27 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         draw(g);
     }
-    public int test(int x){
-        return (int)Math.pow(x,2);
+    public double test(int x){
+        return Math.pow(2,x);
     }
-    public int test2(int x){
-        return -x;
+    public double test2(int x){//returns Nan for negative values of x
+        return Math.sqrt(x);
     }
     public void draw(Graphics g){
         g.setColor(Color.GRAY);
         //first point at origin
-        g.drawLine((int)(BoardHeight*ViewSize),(int)((BoardHeight+CameraY)*ViewSize),0,(int)((BoardHeight+CameraY)*ViewSize));
-        g.drawLine((int)(-CameraX*ViewSize),0,(int)(-CameraX*ViewSize),(int)(BoardHeight*ViewSize));
+        g.drawLine((int)(BoardHeight),(int)((BoardHeight+CameraY)*ViewSize),0,(int)((BoardHeight+CameraY)*ViewSize));//horizontal
+        g.drawLine((int)(-CameraX*ViewSize),0,(int)(-CameraX*ViewSize),(int)(BoardHeight));//vertical
         g.setColor(Color.white);
-        g.drawRect((int)(0-CameraX),(int)(BoardHeight-test(0)+CameraY),(int)ViewSize,(int)ViewSize);
-        for (int i = 1+CameraX; i < BoardWidth-CameraX; i++) {
-            g.drawLine((int)(i-1-CameraX),(int)(BoardHeight - test(i-1)+CameraY),(int)((i-CameraX)),(int)((BoardHeight-test(i)+CameraY)));
-            g.drawRect((int)i-CameraX,(int)(BoardHeight-test(i)+CameraY),(int)1,(int)1);
+        //g.fillRect((int)(0-CameraX),(int)(BoardHeight-test(0)+CameraY),(int)ViewSize,(int)ViewSize);
+        for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
+            g.drawLine((int)((i-1-CameraX)* ViewSize),(int)((BoardHeight - test(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize));
+            g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
-        g.drawRect((int)(0-CameraX),(int)(BoardHeight-test2(0)+CameraY),(int)1,(int)1);
-        for (int i = 1+CameraX; i < BoardWidth-CameraX; i++) {
-            g.drawLine((int)(i-1-CameraX),(int)(BoardHeight - test2(i-1)+CameraY),(int)((i-CameraX)),(int)((BoardHeight-test2(i)+CameraY)));
-            g.drawRect((int)i-CameraX,(int)(BoardHeight-test2(i)+CameraY),(int)1,(int)1);
+        //g.fillRect((int)((0-CameraX)*ViewSize),(int)((BoardHeight-test2(0)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+        for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
+            g.drawLine((int)((i-1-CameraX)*ViewSize),(int)((BoardHeight - test2(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize));
+            g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
     }
     @Override
