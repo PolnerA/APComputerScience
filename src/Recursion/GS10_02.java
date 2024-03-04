@@ -5,7 +5,7 @@ public class GS10_02 {
         writeSquares(8);//done
     }
     public static void writeSquares(int n){
-        if(n%2==1){System.out.print(n*n+",");}
+        if(n%2==1){System.out.print(n*n+" ");}
         n--;
         if(n<=0){return;}
         writeSquares(n);
