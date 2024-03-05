@@ -30,10 +30,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         draw(g);
     }
     public double test(int x){
-        return Math.pow(2,x);
+        if(x==0){return 0;}
+        return 1/x;
     }
     public double test2(int x){//returns Nan for negative values of x
-        return Math.sqrt(x);
+        double number = Math.sqrt(x);
+        if(number==Math.sqrt(-1)){
+            number=-1;
+        }
+        return number;
     }
     public void draw(Graphics g){
         g.setColor(Color.GRAY);
@@ -44,12 +49,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //g.fillRect((int)(0-CameraX),(int)(BoardHeight-test(0)+CameraY),(int)ViewSize,(int)ViewSize);
         for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
             g.drawLine((int)((i-1-CameraX)* ViewSize),(int)((BoardHeight - test(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize));
-            g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+            //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
         //g.fillRect((int)((0-CameraX)*ViewSize),(int)((BoardHeight-test2(0)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
             g.drawLine((int)((i-1-CameraX)*ViewSize),(int)((BoardHeight - test2(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize));
-            g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+            //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
     }
     @Override
