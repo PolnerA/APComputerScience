@@ -1,11 +1,9 @@
 import javax.swing.*;
-import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardWidth;
     int BoardHeight;
@@ -14,6 +12,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int tilesize=1;
     int CameraX=0;
     int CameraY=0;
+    private class Function{
+        String rule;
+        public Function(String rule){
+            this.rule =rule;
+        }
+    }
     public Graphing(int Boardwidth,int Boardheight){
         BoardWidth=Boardwidth;
         BoardHeight=Boardheight;
@@ -29,15 +33,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         draw(g);
     }
-    public double test(int x){
-        if(x==0){return 0;}
+    public double test(double x){
+        if(x==0){return Math.sqrt(-1);}//returns Nan
         return 1/x;
     }
-    public double test2(int x){//returns Nan for negative values of x
+    public double test2(double x){//returns Nan for negative values of x
         double number = Math.sqrt(x);
-        if(number==Math.sqrt(-1)){
-            number=-1;
-        }
         return number;
     }
     public void draw(Graphics g){
@@ -46,16 +47,21 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.drawLine((int)(BoardHeight),(int)((BoardHeight+CameraY)*ViewSize),0,(int)((BoardHeight+CameraY)*ViewSize));//horizontal
         g.drawLine((int)(-CameraX*ViewSize),0,(int)(-CameraX*ViewSize),(int)(BoardHeight));//vertical
         g.setColor(Color.white);
-        //g.fillRect((int)(0-CameraX),(int)(BoardHeight-test(0)+CameraY),(int)ViewSize,(int)ViewSize);
-        for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
-            g.drawLine((int)((i-1-CameraX)* ViewSize),(int)((BoardHeight - test(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize));
-            //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+
+
+        for (int a = 1; a < BoardWidth; a++) {//goes through each pixel
+            double i = (double) (a/ViewSize)+CameraX;
+            double h = (double) ((a-1)/ViewSize)+CameraX;
+            if(!isNan(test(i))&&!isNan(test(h))) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
+                //if((0<i&&0<h)||(i<0&&h<0)) {
+                    g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
+                //}
+                g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
+            }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
-        //g.fillRect((int)((0-CameraX)*ViewSize),(int)((BoardHeight-test2(0)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
-        for (int i = 1+CameraX; i < (BoardWidth/ViewSize)+CameraX; i++) {
-            g.drawLine((int)((i-1-CameraX)*ViewSize),(int)((BoardHeight - test2(i-1)+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize));
-            //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
-        }
+    }
+    public boolean isNan(double v){
+        return (v!=v);//Nan isn't equal to itself
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -74,13 +80,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }if(e.getKeyCode()==KeyEvent.VK_Q){
             ViewSize*=0.9f;//divides the view-size making things smaller
         }if(e.getKeyCode()==KeyEvent.VK_W) {
-            CameraY+=10;
+            CameraY+=5;
         }if(e.getKeyCode()==KeyEvent.VK_A) {//does the same for all WASD keys
-            CameraX-=10;
+            CameraX-=5;
         }if(e.getKeyCode()==KeyEvent.VK_S) {
-            CameraY-=10;
+            CameraY-=5;
         }if(e.getKeyCode()==KeyEvent.VK_D) {
-            CameraX+=10;
+            CameraX+=5;
         }
     }
 
