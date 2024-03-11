@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+
 public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardWidth;
     int BoardHeight;
@@ -12,10 +14,49 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int tilesize=1;
     int CameraX=0;
     int CameraY=0;
+    public class Operations{
+        int id;
+        String Type;
+        public Operations(int id){
+            this.id=id;
+        }
+        public double PerformOperation(double a, double b){
+            if(id==94){
+                return Math.pow(a,b);
+            }if(id==42){
+                return a*b;
+            }if(id==47){
+                return a/b;
+            }if(id==43){
+                return a+b;
+            }if(id==45){
+                return a-b;
+            }
+        }
+    }
     private class Function{
         String rule;
+        ArrayList<Integer> Queue;
+        public Function(){
+
+        }
         public Function(String rule){
             this.rule =rule;
+            CreateQueue(rule);
+        }
+        public void CreateQueue(String rule){
+            char[] array = rule.toCharArray();
+            int i=0;
+            while(true){//loops until the queue is gotten from the rule then breaks
+                //check parentheses  (:40 ):41
+                //Exponents/Radicals ^:94,
+                //Multiplication/Division *:42  /:47
+                //Addition/Subtraction  +:43   -:45
+                i++;
+                if(i== array.length-1){
+                    i=0;
+                }
+            }
         }
     }
     public Graphing(int Boardwidth,int Boardheight){
