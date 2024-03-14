@@ -50,6 +50,13 @@ public class Main {
                 PrevIsInt=true;
                 j++;
             }
+            if(2<=stack.size()){
+                if(isOp(Equation,i)){
+                    int i1 = stack.pop();
+                    int i2 = stack.pop();
+
+                }
+            }
         }
     }
     public static boolean isNumber(char a){
