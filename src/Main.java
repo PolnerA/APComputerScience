@@ -2,6 +2,30 @@ import java.util.Scanner;
 import java.util.Stack;
 
 public class Main {
+    public static class Operation{
+        public int id;
+        //94 is exponents ^
+        //Multiplication and Division is *:42 /:47
+        //Addition and subtraction +:43 -:45
+        //0 means not an op
+        public Operation(int id) {
+            this.id=id;
+        }
+        public int PerformOperation(int a, int b){
+            if(id==94){
+                return (int)Math.pow(a,b);
+            }if(id==42){
+                return a*b;
+            }if(id==47){
+                return a/b;
+            }if(id==43){
+                return a+b;
+            }if(id==45){
+                return a-b;
+            }
+            return a;
+        }
+    }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String Equation = sc.nextLine();
@@ -10,37 +34,25 @@ public class Main {
         int PrevInt=0;
         int Int=0;
         boolean IsInt = false;
-        //have an Integer array with ranges for the integers
-        /*55 52 +
-        if (Equation.charAt(i)=='-') {//checks if negative is an operator (minus) or negative number
-                if(i==Equation.length()-1){
-                    number = false;
-                }else if(!isNumber(Equation.charAt(i+1))){
-                    number=false;
-                }else{
-                    number=true;
-                }
-
-            }
-         */
         int j=0; //level of digit
         boolean intisDone=false;
         boolean intisStarted=false;
         for (int i = 0; i < Equation.length(); i++) {
             char a = Equation.charAt(i);
-            if(isNumber(a)){
+            if(isNumber(Equation,i)){
                 IsInt=true;
                 intisStarted=true;
-                Int = Integer.parseInt(""+a);
+                Int = Integer.parseInt(""+a);//don't parse int
             }else{
-                if(intisStarted){
+                if (intisStarted) {
                     stack.push(PrevInt);
+                    intisDone = true;
                 }
-                IsInt=false;
-                Int=0;
-                PrevInt=0;
-                j=0;
-
+                IsInt = false;
+                intisStarted=false;
+                Int = 0;
+                PrevInt = 0;
+                j = 0;
             }
             if(PrevIsInt&&IsInt){
                 PrevInt*=Math.pow(10,j);
@@ -51,38 +63,56 @@ public class Main {
                 j++;
             }
             if(2<=stack.size()){
-                if(isOp(Equation,i)){
+                Operation op= GiveOp(Equation,i);
+                if(op.id!=0){//if it is an operation
                     int i1 = stack.pop();
                     int i2 = stack.pop();
-
+                    int result = op.PerformOperation(i1,i2);
+                    stack.push(result);
+                    System.out.println(stack);
                 }
             }
         }
     }
-    public static boolean isNumber(char a){
+    public static boolean isNumber(String string,int index){
+        char a = string.charAt(index);
         try{
-            String string =""+a;
-            Integer.parseInt(string);
+            String s =""+a;
+            Integer.parseInt(s);
         }catch (Exception e){
+            if(a=='-'){
+                if(index==string.length()-1) {
+                    return false;
+                }if(isNumber(string,index+1)){
+                    return true;
+                }
+            }
             return false;
         }
         return true;
     }
-    public static boolean isOp(String string,int index){
+    public static Operation GiveOp(String string,int index){
         char character = string.charAt(index);
         if(character=='+'){
-            return true;
+            Operation op = new Operation('+');
+            return op;
+
         }if(character=='*'){
-            return true;
+            Operation op = new Operation('*');
+
+            return op;
         }if(character=='/'){
-            return true;
+            Operation op = new Operation('/');
+            return op;
         }if(character=='-'){
             if(index==string.length()-1) {
-                return true;
-            }if(!isNumber(string.charAt(index+1))){
-                return true;
+                Operation op = new Operation('-');
+                return op;
+            }if(!isNumber(string,index+1)){
+                Operation op = new Operation('-');
+                return op;
             }
         }
-        return false;
+        return new Operation(0);
     }
 }
