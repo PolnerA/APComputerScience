@@ -103,7 +103,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.setColor(Color.GRAY);
         //first point at origin
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
-        g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardWidth/2)),(int)(BoardHeight));//vertical
+        g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
         g.setColor(Color.red);
 
 
@@ -113,11 +113,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
             if(!isNan(test(i))&&!isNan(test(h))) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                 //if((0<i&&0<h)||(i<0&&h<0)) {
-                    g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
+                    g.drawLine((int) ((h - CameraX) * ViewSize)+(BoardHeight/2), (int) ((BoardHeight - test(h) + CameraY) * ViewSize)+(BoardHeight/2), (int) ((i - CameraX) * ViewSize)+(BoardHeight/2), (int) ((BoardHeight - test(i) + CameraY) * ViewSize)+(BoardHeight/2));
                 //}
                 g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
             }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
+    }
+    public double function(double x){
+        return x;//returns the gotten function as applied to x
+    }
+    public Function getUserFunc(){
+        return new Function();
     }
     public boolean isNan(double v){
         return (v!=v);//Nan isn't equal to itself
