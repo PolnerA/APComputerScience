@@ -14,28 +14,34 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int tilesize=1;
     int CameraX=0;
     int CameraY=0;
-    public static class Operations{
-        int id;
-        String Type;
-        public Operations(int id){
-            this.id=id;
-        }
-        public double PerformOperation(double a, double b){
-            if(id==94){
-                return Math.pow(a,b);
-            }if(id==42){
-                return a*b;
-            }if(id==47){
-                return a/b;
-            }if(id==43){
-                return a+b;
-            }if(id==45){
-                return a-b;
-            }
-            return a;
+    public class Function{//acts as a tree, recursively has smaller functions within it abstract to be able to utilize.
+        Function left;
+        Function right;
+        public Function(){
         }
     }
-    public static class Function{
+    public class Operation extends Function {
+    }
+    public class Add extends Operation{
+
+    }
+    public class Sub extends Add{
+
+    }
+    public class Mult extends Operation{
+
+    }
+    public class Div extends Mult{
+
+    }
+    public class Number extends Function{
+        double number;
+        public Number(double a){
+            number=a;
+        }
+
+    }
+    /*public static class Function{
         String rule;
         ArrayList<Integer> Queue;
         public Function(){
@@ -72,7 +78,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
             return rule.substring(start,end);
         }
-    }
+    }*/
     //to get user input use tokenization reverse polish notation, and java bytecode
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations
@@ -92,8 +98,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         draw(g);
     }
     public double test(double x){
-        if(x==0){return Math.sqrt(-1);}//returns Nan
-        return 1/x;
+        //if((int)x==0){return Math.sqrt(-1);}//returns Nan
+        return Math.pow(x,2);
     }
     public double test2(double x){//returns Nan for negative values of x
         double number = Math.sqrt(x);
@@ -108,23 +114,25 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
 
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel
-            double i = (double) (a/ViewSize)+CameraX;
-            double h = (double) ((a-1)/ViewSize)+CameraX;
+            double b=a-(BoardWidth/2);
+            double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;
+            double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
 
             if(!isNan(test(i))&&!isNan(test(h))) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                 //if((0<i&&0<h)||(i<0&&h<0)) {
-                    g.drawLine((int) ((h - CameraX) * ViewSize)+(BoardHeight/2), (int) ((BoardHeight - test(h) + CameraY) * ViewSize)+(BoardHeight/2), (int) ((i - CameraX) * ViewSize)+(BoardHeight/2), (int) ((BoardHeight - test(i) + CameraY) * ViewSize)+(BoardHeight/2));
+                g.drawLine((int)((h-CameraX)*ViewSize)+(BoardWidth/2),(int)((BoardHeight-(test(h)+(BoardHeight/2))+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize)+(BoardWidth/2),(int)(((BoardHeight-(test(i)+(BoardHeight/2)))+CameraY)*ViewSize));
+                //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
                 //}
-                g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
+                //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
             }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
         }
     }
-    public double function(double x){
-        return x;//returns the gotten function as applied to x
-    }
-    public Function getUserFunc(){
-        return new Function();
-    }
+    //public double function(double x){
+    //    return x;//returns the gotten function as applied to x
+    //}
+    //public Function getUserFunc(){
+    //    return new Function();
+    //}
     public boolean isNan(double v){
         return (v!=v);//Nan isn't equal to itself
     }
