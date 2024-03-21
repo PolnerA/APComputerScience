@@ -42,7 +42,7 @@ public class Main {
             if(isNumber(Equation,i)){
                 IsInt=true;
                 intisStarted=true;
-                Int = Integer.parseInt(""+a);//don't parse int
+                Int = Integer.parseInt(""+a);//don't parse int as neg could also return is num
             }else{
                 if (intisStarted) {
                     stack.push(PrevInt);
@@ -63,14 +63,14 @@ public class Main {
                 j++;
             }
             if(2<=stack.size()){
-                Operation op= GiveOp(Equation,i);
-                if(op.id!=0){//if it is an operation
+                //Operation op= GiveOp(Equation,i);
+                //if(op.id!=0){//if it is an operation
                     int i1 = stack.pop();
                     int i2 = stack.pop();
-                    int result = op.PerformOperation(i1,i2);
-                    stack.push(result);
+                    //int result = op.PerformOperation(i1,i2);
+                    //stack.push(result);
                     System.out.println(stack);
-                }
+                //}
             }
         }
     }
@@ -91,28 +91,5 @@ public class Main {
         }
         return true;
     }
-    public static Operation GiveOp(String string,int index){
-        char character = string.charAt(index);
-        if(character=='+'){
-            Operation op = new Operation('+');
-            return op;
 
-        }if(character=='*'){
-            Operation op = new Operation('*');
-
-            return op;
-        }if(character=='/'){
-            Operation op = new Operation('/');
-            return op;
-        }if(character=='-'){
-            if(index==string.length()-1) {
-                Operation op = new Operation('-');
-                return op;
-            }if(!isNumber(string,index+1)){
-                Operation op = new Operation('-');
-                return op;
-            }
-        }
-        return new Operation(0);
-    }
 }
