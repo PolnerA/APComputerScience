@@ -64,6 +64,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public Number(double a){
             number=a;
         }
+        public Number(){
+        }//for variables (prob. a-z) a blank number is created (if a method is called at x like the current functions it searches through the function it has (or list of funcs) to find the null numbers and plugs the argument recieved in)
         public double PerformOperation(){
             return number;
         }
@@ -110,6 +112,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     //to get user input use tokenization reverse polish notation, and java bytecode
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations
+    public ArrayList<Function> Functions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
         //rpn gets 5 10 3 +-== 5-(10+3)
         //for each group of two num at the end grab the first op
@@ -125,6 +128,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         frames = new Timer(0,this);
         frames.start();
+    }
+    public String IFNtoPFN(){//infix notation to postfix notation (rpn)
+        
     }
     public Function parseFunction(){
         Scanner sc = new Scanner(System.in);
@@ -154,12 +160,18 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //the next right 2 take the function of the operation and the next number with the next operand
         //should have a split point function(num) function(op of two nums)| function(op)
 
-        return new Function();
+        return new CreateAFT(nums,ops);
     }
-    public Function CreateAFT(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree
-        for(int i=nums.size();0<i;i--){
-
+    public Function CreateAFT(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree (tree of functions that make up the total function)
+        for(int i=0;i<ops.size();i++){
+            Function op =ops.get(i);
+            op.left=nums.get(i-1);
+            op.right=nums.get(i);
+            nums.remove();
+            nums.remove();
+            nums.add(op);
         }
+        return nums;
     }
     public boolean isOp(String string, int index){
         char a = string.charAt(index);
