@@ -19,108 +19,71 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Function left;
         Function right;
 
-        public double PerformOperation() {
+        public double PerformOperation(double input) {
             return 0;
         }
 
         public Function(){
         }
-        public double Evaluate(){
-            double l=left.PerformOperation();
-            double r=right.PerformOperation();
-            return PerformOperation();
+        public double Evaluate(double input){
+            if(left!=null){
+                double l=left.PerformOperation(input);
+            }if(right!=null) {
+                double r = right.PerformOperation(input);
+            }
+            return PerformOperation(input);
         }
     }
     public class Operation extends Function {
 
     }
     public class Add extends Operation{
-        public double PerformOperation(){
-            return left.PerformOperation()+right.PerformOperation();
+        public double PerformOperation(double input){
+            return left.PerformOperation(input)+right.PerformOperation(input);
         }
     }
     public class Sub extends Operation{
-        public double PerformOperation(){
-            return left.PerformOperation()-right.PerformOperation();
+        public double PerformOperation(double input){
+            return left.PerformOperation(input)-right.PerformOperation(input);
         }
     }
     public class Mult extends Operation{
-        public double PerformOperation(){
-            return left.PerformOperation()*right.PerformOperation();
+        public double PerformOperation(double input){
+            return left.PerformOperation(input)*right.PerformOperation(input);
         }
     }
     public class Div extends Operation{
-        public double PerformOperation() {
-            return left.PerformOperation()/right.PerformOperation();
+        public double PerformOperation(double input) {
+            return left.PerformOperation(input)/right.PerformOperation(input);
         }
     }
     public class Exp extends Operation{
-        public double PerformOperation() {
-            return Math.pow(left.PerformOperation(),right.PerformOperation());
+        public double PerformOperation(double input) {
+            return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
         }
     }
     public class Number extends Function{
         double number;
+        boolean entrance=false;
         public Number(double a){
             number=a;
         }
         public Number(){
+            entrance=true;//if it is a variable it is flagged to return the input instead of the value of nothing
         }//for variables (prob. a-z) a blank number is created (if a method is called at x like the current functions it searches through the function it has (or list of funcs) to find the null numbers and plugs the argument recieved in)
-        public double PerformOperation(){
+        public double PerformOperation(double input){
+            if(entrance){return input;}
             return number;
         }
 
     }
-    /*public static class Function{
-        String rule;
-        ArrayList<Integer> Queue;
-        public Function(){
-
-        }
-        public Function(String rule){
-            this.rule =rule;
-            CreateQueue(rule);
-        }
-        public void CreateQueue(String rule){
-            ArrayList<Character> List = new ArrayList<>();
-            char[] chars = rule.toCharArray();
-            for(int i=0;i<chars.length;i++){
-                List.add(chars[i]);
-            }
-            //120 should mark the start point of the queue
-            int level =0;//first removes all spaces, parenthesis
-            //check parentheses  (:40 ):41
-            //Exponents/Radicals ^:94,
-            //Multiplication/Division *:42  /:47
-            //Addition/Subtraction  +:43   -:45
-            for(int i=0;i<List.size();i++){
-                if (List.get(i)==' '){
-                    List.remove(i);
-                }
-            }
-            for(int i=0;i<List.size();i++){//multiplication/division
-                if(List.get(i)=='('){
-
-                }
-            }
-        }
-        public String partialQueue(String rule, int start, int end){//for parenthesis prob. need a return of an operation queue
-
-            return rule.substring(start,end);
-        }
-    }*/
     //to get user input use tokenization reverse polish notation, and java bytecode
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations
     public ArrayList<Function> Functions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
-        //rpn gets 5 10 3 +-== 5-(10+3)
-        //for each group of two num at the end grab the first op
-        // num1 num2 num3 op1 op2, grab num2 op1 num3
-        //list of operations when parsing, set the numbers/ops to the left and the right
         BoardWidth=Boardwidth;
         BoardHeight=Boardheight;
-        Function a = parseFunction();
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
@@ -128,17 +91,23 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         frames = new Timer(0,this);
         frames.start();
+        parseFunction("0");
     }
-    public String IFNtoPFN(){//infix notation to postfix notation (rpn)
+    //public String IFNtoPFN(){//infix notation to postfix notation (rpn)
         
-    }
-    public Function parseFunction(){
+    //}
+    public void AddFunctionRPN(){
         Scanner sc = new Scanner(System.in);
+        System.out.println("write out equation in rpn, x or X counts as a variable");
+        System.out.print("y=");
         String rule =sc.nextLine();
+        Functions.add(parseFunction(rule));
+    }
+    public Function parseFunction(String rule){
         int rangeend=0;//ranges for integers to parse
         int rangelength=0;
-        ArrayList<Number> nums = new ArrayList<>();
-        ArrayList<Operation> ops = new ArrayList<>();
+        ArrayList<Function> nums = new ArrayList<>();
+        ArrayList<Function> ops = new ArrayList<>();
         for(int i=0;i<rule.length();i++){//puts all the numbers and ops in seperat array lists
             if(isNumber(rule,i)){
                 rangeend =i;
@@ -149,29 +118,39 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 if(rangelength!=0){
                     nums.add(new Number(Double.parseDouble(rule.substring((rangeend+1)-rangelength,rangeend+1))));
                 }
+                if(rule.charAt(i)=='x'||rule.charAt(i)=='X'){
+                    nums.add(new Number());
+                }
                 rangelength=0;
             }
             //char currentchar =rule.charAt(i);
             if(isOp(rule,i)){
-                ops.add(GiveOp(rule,i));
+                if(!isNumber(rule,i)) {//doesn't keep the negative
+                    ops.add(GiveOp(rule, i));
+                }
             }
         }
+        if(rangeend==rule.length()-1&&rule.charAt(rangeend)!='x'&&rule.charAt(rangeend)!='X'){nums.add(new Number(Double.parseDouble(rule.substring(rangeend+1-rangelength,rangeend+1))));}
         //gets from the right 2 from nums and does the operation on the right
         //the next right 2 take the function of the operation and the next number with the next operand
         //should have a split point function(num) function(op of two nums)| function(op)
 
-        return new CreateAFT(nums,ops);
+        return CreateAFT(nums,ops);
     }
     public Function CreateAFT(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree (tree of functions that make up the total function)
         for(int i=0;i<ops.size();i++){
             Function op =ops.get(i);
-            op.left=nums.get(i-1);
-            op.right=nums.get(i);
-            nums.remove();
-            nums.remove();
+            op.left=nums.get(nums.size()-2);
+            op.right=nums.get(nums.size()-1);
+            if(1<=nums.size()){
+                nums.remove(nums.size()-1);
+            }
+            if(1<=nums.size()){
+                nums.remove(nums.size()-1);
+            }
             nums.add(op);
         }
-        return nums;
+        return nums.get(0);
     }
     public boolean isOp(String string, int index){
         char a = string.charAt(index);
@@ -195,15 +174,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             Operation op = new Div();
             return op;
         }
-        //subtraction checks (could also be a negative number)
-        if(index==string.length()-1) {
-            Operation op = new Sub();
-            return op;
-        }if(!isNumber(string,index+1)){
-            Operation op = new Sub();
-            return op;
-        }
-        return new Operation();
+        return new Sub();
 
     }
     public boolean isNumber(String string,int index){
@@ -261,20 +232,23 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
         g.setColor(Color.red);
-
-
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel
             double b=a-(BoardWidth/2);
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
-
-            if(!isNan(test(i))&&!isNan(test(h))) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
-                //if((0<i&&0<h)||(i<0&&h<0)) {
-                g.drawLine((int)((h-CameraX)*ViewSize)+(BoardWidth/2),(int)((BoardHeight-(test(h)+(BoardHeight/2))+CameraY)*ViewSize),(int)((i-CameraX)*ViewSize)+(BoardWidth/2),(int)(((BoardHeight-(test(i)+(BoardHeight/2)))+CameraY)*ViewSize));
-                //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
-                //}
-                //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
-            }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+            if(1<=Functions.size()) {
+                for (Function function : Functions) {
+                    double fi = function.Evaluate(i);
+                    double fh = function.Evaluate(h);
+                    if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
+                        //if((0<i&&0<h)||(i<0&&h<0)) {
+                        g.drawLine((int) ((h - CameraX) * ViewSize) + (BoardWidth / 2), (int) ((BoardHeight - (fh + (BoardHeight / 2)) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize) + (BoardWidth / 2), (int) (((BoardHeight - (fi + (BoardHeight / 2))) + CameraY) * ViewSize));
+                        //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
+                        //}
+                        //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
+                    }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
+                }
+            }
         }
     }
     //public double function(double x){
@@ -315,6 +289,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if(e.getKeyCode()==KeyEvent.VK_R) {
+            AddFunctionRPN();
+        }
     }
 }
