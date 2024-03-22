@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Graphing extends JPanel implements ActionListener, KeyListener {
@@ -17,7 +18,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Function{//acts as a tree, recursively has smaller functions within it abstract to be able to utilize.
         Function left;
         Function right;
-        boolean isOp=true;
 
         public double PerformOperation() {
             return 0;
@@ -54,10 +54,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return left.PerformOperation()/right.PerformOperation();
         }
     }
+    public class Exp extends Operation{
+        public double PerformOperation() {
+            return Math.pow(left.PerformOperation(),right.PerformOperation());
+        }
+    }
     public class Number extends Function{
         double number;
         public Number(double a){
-            isOp=false;
             number=a;
         }
         public double PerformOperation(){
@@ -125,18 +129,42 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public Function parseFunction(){
         Scanner sc = new Scanner(System.in);
         String rule =sc.nextLine();
-        int rangeend;//ranges for integers to parse
+        int rangeend=0;//ranges for integers to parse
         int rangelength=0;
-        for(int i=0;i<rule.length();i++){
-            char currentchar =rule.charAt(i);
+        ArrayList<Number> nums = new ArrayList<>();
+        ArrayList<Operation> ops = new ArrayList<>();
+        for(int i=0;i<rule.length();i++){//puts all the numbers and ops in seperat array lists
             if(isNumber(rule,i)){
                 rangeend =i;
                 rangelength++;
             }else{
-                rangelength
+                if(rangelength==1&&rule.charAt(rangeend)=='.'){rangelength =0;}//ignores period by itself
+                if(rangelength==1&&rule.charAt(rangeend)=='-'){rangelength=0;}//ignores neg by itself as number (checks in op)
+                if(rangelength!=0){
+                    nums.add(new Number(Double.parseDouble(rule.substring((rangeend+1)-rangelength,rangeend+1))));
+                }
+                rangelength=0;
+            }
+            //char currentchar =rule.charAt(i);
+            if(isOp(rule,i)){
+                ops.add(GiveOp(rule,i));
             }
         }
+        //gets from the right 2 from nums and does the operation on the right
+        //the next right 2 take the function of the operation and the next number with the next operand
+        //should have a split point function(num) function(op of two nums)| function(op)
+
         return new Function();
+    }
+    public Function CreateAFT(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree
+        for(int i=nums.size();0<i;i--){
+
+        }
+    }
+    public boolean isOp(String string, int index){
+        char a = string.charAt(index);
+        if(a=='+'||a=='-'||a=='*'||a=='/'||a=='^'){return true;}
+        return false;
     }
     public Operation GiveOp(String string, int index){//check for ops before numbers are removed
         char character = string.charAt(index);//to check for nums check a string of num possibles (each a num) and the consecutive runs
@@ -147,6 +175,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }if(character=='*'){
             Operation op = new Mult();
 
+            return op;
+        }if(character=='^'){
+            Operation op = new Exp();
             return op;
         }if(character=='/') {
             Operation op = new Div();
@@ -167,8 +198,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         char a = string.charAt(index);
         try{
             String s =""+a;
-            Integer.parseInt(s);
+            Double.parseDouble(s);
         }catch (Exception e){
+            if(a=='.'){
+                return true;//returns true for decimal spots ie. 5.2
+            }               //period by itself wouldn't work
+            if(a=='-'){
+                return true;//returns true for negative numbers
+                            //- by itself should be an operation
+            }
             return false;
         }
         return true;
@@ -180,7 +218,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             s+=a;
         }
         try{
-            Integer.parseInt(s);
+            Double.parseDouble(s);
         }catch (Exception e){
             return false;
         }
