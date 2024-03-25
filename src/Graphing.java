@@ -84,6 +84,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
         BoardHeight=Boardheight;
+        Function a = new Exp();
+        a.left=new Number(2);
+        a.right=new Number();
+        Functions.add(a);
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
@@ -233,8 +237,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
         g.setColor(Color.red);
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel
-            double b=a-(BoardWidth/2);
-            double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;
+            double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
+            double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
                 for (Function function : Functions) {
@@ -242,7 +246,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     double fh = function.Evaluate(h);
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
-                        g.drawLine((int) ((h - CameraX) * ViewSize) + (BoardWidth / 2), (int) ((BoardHeight - (fh + (BoardHeight / 2)) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize) + (BoardWidth / 2), (int) (((BoardHeight - (fi + (BoardHeight / 2))) + CameraY) * ViewSize));
+                        double x1;//i & h
+                        double y1;//fi & fh
+                        double x2;
+                        double y2;
+                        x1=doTransformationsX(h);
+                        x2=doTransformationsX(i);
+                        y1=doTransformationsY(fh);
+                        y2=doTransformationsY(fi);
+                        g.drawLine((int) x1, (int) y1, (int)x2, (int) y2);
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
                         //}
                         //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
@@ -250,6 +262,19 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 }
             }
         }
+    }
+    public double doTransformationsX(double X){//takes a double x
+        X-=CameraX;
+        X*=ViewSize;
+        X+=BoardWidth/2;
+        return X;
+    }
+    public double doTransformationsY(double Y){
+        Y-=CameraY;
+        Y*=ViewSize;
+        Y+=BoardHeight/2;
+        Y=BoardHeight-Y;
+        return Y;
     }
     //public double function(double x){
     //    return x;//returns the gotten function as applied to x
@@ -291,6 +316,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode()==KeyEvent.VK_R) {
             AddFunctionRPN();
+        }if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE){
+            Functions.remove(Functions.size()-1);
         }
     }
 }
