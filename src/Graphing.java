@@ -123,7 +123,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public void AddFunctionRPN(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("write out equation in rpn, x or X counts as a variable");
+        System.out.println("Equation "+Functions.size()+" write out equation in rpn, x or X counts as a variable");
         System.out.print("y=");
         String rule =sc.nextLine();
         Functions.add(parseFunction(rule));
@@ -357,6 +357,23 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             AddFunctionRPN();
         }if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE){
             Functions.remove(Functions.size()-1);
+        }if(e.getKeyCode()==KeyEvent.VK_G){
+            GetAt();
         }
+    }
+    public void GetAt(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("answer to get y value at a certain equation number and what x answer in :Equation number,X :");
+        String input = sc.next();
+        String s1="0";
+        String s2="0";
+        for(int i=0;i<input.length();i++){
+            if(input.charAt(i)==','){
+                s1 = input.substring(0,i);
+                s2 = input.substring(i+1);
+            }
+        }
+        Function function = Functions.get(Integer.parseInt(s1));
+        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.Evaluate(Double.parseDouble(s2)));
     }
 }
