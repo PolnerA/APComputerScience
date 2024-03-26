@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Graphing extends JPanel implements ActionListener, KeyListener {
@@ -80,6 +81,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Number extends Function{
         double number;
         boolean entrance=false;
+
         public Number(double a){
             number=a;
         }
@@ -164,6 +166,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public Function Optimize(Function tree){
         //go through until the tree isn't changed if op of 2 numbers it can
+        boolean changed=false;
+        if(tree.left!=null){
+            Optimize(tree.left);
+        }if(tree.right!=null){
+            Optimize(tree.right);
+        }
         return tree;
     }
     public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree (tree of functions that make up the total function)
@@ -272,7 +280,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //first point at origin
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
-        g.setColor(Color.red);
+        g.setColor(Color.WHITE);
         for (int a = 1; a < BoardWidth*100; a++) {//goes through each 1/100th of a pixel
             //check for vertical distance, if it is
             double da= (double)a/100;
