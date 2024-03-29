@@ -101,13 +101,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations
     public ArrayList<Function> Functions = new ArrayList<>();
+    public ArrayList<Function> InvFunctions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
         BoardHeight=Boardheight;
-        Function a=parseFunction("x");
-        //Functions.add(a);
-        Function b = parseFunction("2 eq0 *");
-        //Functions.add(b);
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
@@ -115,7 +112,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         frames = new Timer(0,this);
         frames.start();
-        parseFunction("0");
     }
     public Function Inverse(Function originalFunction){
         //get lists of operations and reverse it
@@ -160,7 +156,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public void AddFunctionIFN(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Equation "+Functions.size()+" write out equation in IFN, x counts as a variable, only whole numbers no decimals :( ");
+        System.out.println("Equation "+Functions.size()+" write out equation in IFN, x counts as a variable");
         System.out.print("y=");
         String rule =sc.nextLine();
         Functions.add(parseFunction(IFNtoRPN(rule)));
@@ -204,7 +200,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //the next right 2 take the function of the operation and the next number with the next operand
         //should have a split point function(num) function(op of two nums)| function(op)
         Function tree =CreateTree(nums,ops);
-        return Optimize(tree);
+        return tree;
     }
     public Function Optimize(Function tree){
         //go through until the tree isn't changed if op of 2 numbers it can
@@ -236,6 +232,11 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             nums.add(op);
         }
         return nums.get(0);
+    }
+    public Operation invOp(Operation a){
+        if(a.getClass()==Add.class){
+            return new Sub();
+        }
     }
     public boolean isOp(String string, int index){
         char a = string.charAt(index);
@@ -348,10 +349,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
         g.setColor(Color.WHITE);
-        for (int a = 1; a < BoardWidth*100; a++) {//goes through each 1/100th of a pixel
+        for (int a = 1; a < BoardWidth; a++) {//goes through each 1/100th of a pixel
             //check for vertical distance, if it is
-            double da= (double)a/100;
-            double b=da-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
+            double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
@@ -360,6 +360,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     double fh = function.PerformOperation(h);
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
+                        //21 22 23
                         double x1;//i & h
                         double y1;//fi & fh
                         double x2;
@@ -370,9 +371,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         y1=doTransformationsY(fh);
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
-                        //if(1<Math.abs(y1-y2)){
-                            //drawsubsections(g,x1,x2);
-                        //}//else{return;}
+                        if(1<Math.abs(y1-y2)){
+                            drawsubsections(g,x1,x2);
+                        }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
@@ -385,9 +386,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }//y=x 2 x % -
     public void drawsubsections(Graphics g,double xstart,double xend){
         double difference =Math.abs(xstart-xend);
-        for (int a = 0; a < 100; a++) {//goes through each 1/100th of a pixel
+        for (int a = 0; a < 1000; a++) {//goes through each 1/1000th of a pixel
             //check for vertical distance, if it is
-            double da= (double)a/100;
+            double da= (double)(difference*a)/100;
             da+=xstart;
             double b=da-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
@@ -408,9 +409,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         y1=doTransformationsY(fh);
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
-                        if(1<Math.abs(y1-y2)){
-                            drawsubsections(g,x1,x2);
-                        }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
