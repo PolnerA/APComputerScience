@@ -81,6 +81,21 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return Math.tan(input);
         }
     }
+    public class ASin extends Operation{
+        public double PerformOperation(double input) {
+            return Math.asin(input);
+        }
+    }
+    public class ACos extends Operation{
+        public double PerformOperation(double input) {
+            return Math.acos(input);
+        }
+    }
+    public class ATan extends Operation{
+        public double PerformOperation(double input) {
+            return Math.atan(input);
+        }
+    }
     public class Number extends Function{
         double number;
         boolean entrance=false;
@@ -104,6 +119,23 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public ArrayList<Function> InvFunctions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
+        ArrayList<Function> nums = new ArrayList<>();
+        nums.add(new Number(10));
+        nums.add(new Number(2));
+        nums.add(new Number());
+        ArrayList<Function> ops = new ArrayList<>();
+        ops.add(new Mult());
+        ops.add(new Add());
+        Functions.add(CreateTree(nums,ops));
+        ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
+        ArrayList<Function> invops = new ArrayList<>();
+        for(int i=0;i<ops.size();i++){//add root left: 10 right: mult, mult right : left num 2, right num x
+            Function op = ops.get(i);
+            //invops.set(invops.size()-(i+1),invOp((Operation) op));//inv
+            invops.add(invOp((Operation) op));
+        }
+        Function invtree=CreateTree(invnums,invops);
+        InvFunctions.add(invtree);
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
@@ -200,6 +232,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //the next right 2 take the function of the operation and the next number with the next operand
         //should have a split point function(num) function(op of two nums)| function(op)
         Function tree =CreateTree(nums,ops);
+        ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
+        ArrayList<Function> invops = (ArrayList<Function>) ops.clone();
+        for(int i=0;i<ops.size();i++){
+            Function op = ops.get(i);
+            invops.set(invops.size()-(i+1),invOp((Operation) op));
+        }
+        Function invtree=CreateTree(invnums,invops);
+        InvFunctions.add(invtree);
         return tree;
     }
     public Function Optimize(Function tree){
@@ -212,7 +252,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
         return tree;
     }
-    public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates an abstract function tree (tree of functions that make up the total function)
+    public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates a function in tree form from the ops read left to right and nums from the right to left
         for(int i=0;i<ops.size();i++){
             Function op =ops.get(i);
             if(0<=nums.size()-2){
@@ -232,11 +272,31 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             nums.add(op);
         }
         return nums.get(0);
-    }
+    }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
+    //read ops right to left and nums right to left after getting invOp()
     public Operation invOp(Operation a){
         if(a.getClass()==Add.class){
             return new Sub();
+        }else if(a.getClass()==Sub.class){
+            return new Add();
+        }else if(a.getClass()==Mult.class){
+            return new Div();
+        }else if(a.getClass()==Div.class){
+            return new Mult();
+        }else if(a.getClass()==Sin.class){
+            return new ASin();
+        }else if(a.getClass()==ASin.class){
+            return new Sin();
+        }else if(a.getClass()==Cos.class){
+            return new ACos();
+        }else if(a.getClass()==ACos.class){
+            return new Cos();
+        }else if(a.getClass()==Tan.class){
+            return new ATan();
+        }else if(a.getClass()==ATan.class){
+            return new Tan();
         }
+        return new Operation();
     }
     public boolean isOp(String string, int index){
         char a = string.charAt(index);
@@ -476,6 +536,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             AddFunctionIFN();
         }if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE){
             Functions.remove(Functions.size()-1);
+            InvFunctions.remove(InvFunctions.size()-1);
         }if(e.getKeyCode()==KeyEvent.VK_G){
             GetAt();
         }
