@@ -119,23 +119,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public ArrayList<Function> InvFunctions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
-        ArrayList<Function> nums = new ArrayList<>();
-        nums.add(new Number(10));
-        nums.add(new Number(2));
-        nums.add(new Number());
-        ArrayList<Function> ops = new ArrayList<>();
-        ops.add(new Mult());
-        ops.add(new Add());
-        Functions.add(CreateTree(nums,ops));
-        ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
-        ArrayList<Function> invops = new ArrayList<>();
-        for(int i=0;i<ops.size();i++){//add root left: 10 right: mult, mult right : left num 2, right num x
-            Function op = ops.get(i);
-            //invops.set(invops.size()-(i+1),invOp((Operation) op));//inv
-            invops.add(invOp((Operation) op));
-        }
-        Function invtree=CreateTree(invnums,invops);
-        InvFunctions.add(invtree);
+        //inv doesn't work as you don't know what is on what side of the mult, so how div?
+        Functions.add(new Number());//eq0 == y=x
+        Function a = parseFunction("10 eq0 +");
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
@@ -200,10 +186,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         String rule =sc.nextLine();
         Functions.add(parseFunction(rule));
     }
-    public Function parseFunction(String rule){
+    public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
         int rangeend=0;//ranges for integers to parse
         int rangelength=0;
-        ArrayList<Function> nums = new ArrayList<>();
+        ArrayList<Function> nums = new ArrayList<>();// 10 eq0 +
         ArrayList<Function> ops = new ArrayList<>();
         rule=rule.toLowerCase();
         for(int i=0;i<rule.length();i++){//puts all the numbers and ops in separate array lists
@@ -213,6 +199,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }else{
                 if(rangelength==1&&rule.charAt(rangeend)=='.'){rangelength =0;}//ignores period by itself
                 if(rangelength==1&&rule.charAt(rangeend)=='-'){rangelength=0;}//ignores neg by itself as number (checks in op)
+                if(2<=rangeend){
+                    if('0'<=rule.charAt(rangeend)&&rule.charAt(rangeend)<='9'&&rule.charAt(rangeend-1)=='q'&&rule.charAt(rangeend-2)=='e'){
+                        rangelength=0;
+                        int number =rule.charAt(rangeend)-'0';
+                        Function eq = Functions.get(number);
+                        nums.add(eq);
+                    }
+                }
                 if(rangelength!=0){
                     nums.add(new Number(Double.parseDouble(rule.substring((rangeend+1)-rangelength,rangeend+1))));
                 }
@@ -227,19 +221,25 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 }
             }
         }
+        //adds nums one last time, doesn't go through the loop on last one so the addition can't be done in the else
         if(rangeend==rule.length()-1&&rule.charAt(rangeend)!='x'){nums.add(new Number(Double.parseDouble(rule.substring(rangeend+1-rangelength,rangeend+1))));}
         //gets from the right 2 from nums and does the operation on the right
         //the next right 2 take the function of the operation and the next number with the next operand
         //should have a split point function(num) function(op of two nums)| function(op)
         Function tree =CreateTree(nums,ops);
-        ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
-        ArrayList<Function> invops = (ArrayList<Function>) ops.clone();
-        for(int i=0;i<ops.size();i++){
-            Function op = ops.get(i);
-            invops.set(invops.size()-(i+1),invOp((Operation) op));
-        }
-        Function invtree=CreateTree(invnums,invops);
-        InvFunctions.add(invtree);
+        //ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
+        //ArrayList<Function> invops = (ArrayList<Function>) ops.clone();
+        //for(int i=0;i<ops.size();i++){
+            //Function op = ops.get(i);
+            //invops.set(invops.size()-(i+1),invOp((Operation) op));
+       //}
+        //Function invtree=CreateTree(invnums,invops);
+        //InvFunctions.add(invtree);
+        //         if(character=='e'&&string.charAt(index+1)=='q'&&'0'<=string.charAt(index+2)&&string.charAt(index+2)<='9'){
+        //            int number =string.charAt(index+2)-'0';
+        //            Function op = Functions.get(number);
+        //            return op;
+        //        }
         return tree;
     }
     public Function Optimize(Function tree){
@@ -253,7 +253,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         return tree;
     }
     public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates a function in tree form from the ops read left to right and nums from the right to left
-        for(int i=0;i<ops.size();i++){
+        for(int i=0;i<ops.size();i++){//shouldn't assume that the function needs a left and right
             Function op =ops.get(i);
             if(0<=nums.size()-2){
                 if(op.left==null) {
@@ -275,7 +275,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
     //read ops right to left and nums right to left after getting invOp()
     public Operation invOp(Operation a){
-        if(a.getClass()==Add.class){
+        if(a.getClass()==Add.class){//for inv func things that happen to x in a list reversed, with the op, {*2,+10} would become {-10,/2}
             return new Sub();
         }else if(a.getClass()==Sub.class){
             return new Add();
@@ -303,11 +303,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         if(a=='+'||a=='-'||a=='*'||a=='/'||a=='^'||a=='s'||a=='c'||a=='t'||a=='%'){return true;}
         //for equation reference use eq#
         //check for three from end
-        if(index<string.length()-3){
-            if(a=='e'&&string.charAt(index+1)=='q'&&isNumber(string,index+2)){
-                return true;//counts as an equation
-            }
-        }
         return false;
     }
     public Function GiveOp(String string, int index){//check for ops before numbers are removed
@@ -320,11 +315,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return op;
         }if(character=='t'){
             Operation op = new Tan();
-            return op;
-        }
-        //only supports 10 equations
-        if(character=='e'&&string.charAt(index+1)=='q'&&'0'<=string.charAt(index+2)&&string.charAt(index+2)<='9'){
-            Function op = Functions.get(index+2);
             return op;
         }
         if(character=='%'){
@@ -353,7 +343,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         char a = string.charAt(index);
         if(2<=index){
             if(string.charAt(index-1)=='q'&&string.charAt(index-2)=='e'){
-                return false;
+                return true;
             }
         }
         try{
@@ -395,14 +385,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         draw(g);
     }
-    public double test(double x){
-        //if((int)x==0){return Math.sqrt(-1);}//returns Nan
-        return Math.pow(x,2);
-    }
-    public double test2(double x){//returns Nan for negative values of x
-        double number = Math.sqrt(x);
-        return number;
-    }
     public void draw(Graphics g){
         g.setColor(Color.GRAY);
         //first point at origin
@@ -432,7 +414,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
                         if(1<Math.abs(y1-y2)){
-                            drawsubsections(g,x1,x2);
+                            //drawsubsections(g,x1,x2);
                         }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
@@ -492,12 +474,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Y=BoardHeight-Y;
         return Y;
     }
-    //public double function(double x){
-    //    return x;//returns the gotten function as applied to x
-    //}
-    //public Function getUserFunc(){
-    //    return new Function();
-    //}
     public boolean isNan(double v){
         return (v!=v);//Nan isn't equal to itself
     }
