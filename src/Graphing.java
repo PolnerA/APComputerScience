@@ -122,6 +122,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //inv doesn't work as you don't know what is on what side of the mult, so how div?
         Functions.add(new Number());//eq0 == y=x
         Function a = parseFunction("10 eq0 +");
+        Functions.add(a);
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
@@ -203,6 +204,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     if('0'<=rule.charAt(rangeend)&&rule.charAt(rangeend)<='9'&&rule.charAt(rangeend-1)=='q'&&rule.charAt(rangeend-2)=='e'){
                         rangelength=0;
                         int number =rule.charAt(rangeend)-'0';
+                        rangeend=0;
                         Function eq = Functions.get(number);
                         nums.add(eq);
                     }
