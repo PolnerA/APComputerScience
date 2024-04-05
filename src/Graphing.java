@@ -10,8 +10,8 @@ import java.util.Scanner;
 import java.util.Stack;
 
 public class Graphing extends JPanel implements ActionListener, KeyListener {
-    static int BoardWidth;
-    static int BoardHeight;
+    int BoardWidth;
+    int BoardHeight;
     Timer frames;
     float ViewSize=1f;
     int tilesize=1;
@@ -375,6 +375,42 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return false;
         }
         return true;
+    }
+    public Function ParseDouble(String string, int rangelength, int rangeend){
+        String numstring = string.substring((rangeend+1)-rangelength,rangeend+1);
+        Function num = new Number();//counts as x
+        double a= 0.0;
+        try {
+            a=Double.parseDouble(numstring);
+        }catch (Exception e){
+            for(int i=0;i<numstring.length();i++){
+                //find neg and make anything after it negative
+                if(numstring.charAt(i)=='-'){
+                    //parse double after neg and make neg
+                    //5-5
+                    //0 1 2
+                    //5 - 3
+                    //after neg 3-2
+                    //22-3
+                    //1 range end same
+                    //beforeneg length-i
+                    //length-length-(i)
+                    //range end i-1
+                    Function afterneg = ParseDouble(string,rangelength-(i+1),rangeend);
+                    Function beforeneg=new Number(0);
+                    if(0<i){
+                        beforeneg= ParseDouble(string,rangelength-(rangelength-i),i-1);
+                    }
+                    Function neg = new Sub();
+                    neg.left=beforeneg;
+                    neg.right= afterneg;
+                    return neg;
+                }
+            }
+            //contains a negative before the number
+        }
+        num=new Number(a);
+        return num;
     }
     public int ParseInt(String string, int indexstart, int indexend){
         String s="";
