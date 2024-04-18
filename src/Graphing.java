@@ -61,41 +61,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
         }
     }
-    public class Mod extends Operation{
-        public double PerformOperation(double input) {
-            return left.PerformOperation(input)%right.PerformOperation(input);
-        }
-    }
-    public class Sin extends Operation{
-        public double PerformOperation(double input) {
-            return Math.sin(input);
-        }
-    }
-    public class Cos extends Operation{
-        public double PerformOperation(double input) {
-            return Math.cos(input);
-        }
-    }
-    public class Tan extends Operation{
-        public double PerformOperation(double input) {
-            return Math.tan(input);
-        }
-    }
-    public class ASin extends Operation{
-        public double PerformOperation(double input) {
-            return Math.asin(input);
-        }
-    }
-    public class ACos extends Operation{
-        public double PerformOperation(double input) {
-            return Math.acos(input);
-        }
-    }
-    public class ATan extends Operation{
-        public double PerformOperation(double input) {
-            return Math.atan(input);
-        }
-    }
     public class Number extends Function{
         double number;
         boolean entrance=false;
@@ -121,7 +86,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         BoardWidth=Boardwidth;
         //inv doesn't work as you don't know what is on what side of the mult, so how div?
         Functions.add(new Number());//eq0 == y=x
-        Function a = parseFunction("10 eq0 +");
+        Function a = parseFunction("10 eq0 *");
         Functions.add(a);
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
@@ -136,43 +101,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //get lists of operations and reverse it
         return originalFunction;
     }
-    public int precedence(char x){
-        if(x=='^'){
-            return 2;
-        }if(x=='*'||x=='/'){
-            return 1;
-        }if(x=='+'||x=='-'){
-            return 0;
-        }
-        return -1;//not an operator
-    }
-    public String IFNtoRPN(String IFN){//infix notation to postfix notation (rpn)
-        Stack<Character> stk = new Stack<>();
-        String ans="";
-        for(int i=0;i<IFN.length();i++){
-            char x=IFN.charAt(i);
-            if(isNumber(IFN,i)){
-                ans+=x;
-            }else if(x=='('){
-                stk.push('(');
-            }else if(x==')'){
-                while(!stk.isEmpty()&&stk.peek()!='('){
-                    ans+=stk.pop();
-                }if(!stk.isEmpty()){
-                    stk.pop();
-                }
-            }else{
-                while(!stk.isEmpty()&&precedence(x)<=precedence(stk.peek())){
-                    ans+=stk.pop();
-                }
-                stk.push(x);
-            }
-        }
-        while(!stk.isEmpty()){
-            ans+= stk.pop();
-        }
-        return ans;
-    }
+
 
     public void AddFunctionRPN(){
         Scanner sc = new Scanner(System.in);
@@ -238,7 +167,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //        }
         return tree;
     }
-    public Function Optimize(Function tree){
+    public Function Optimize(Function tree){//traverse the tree and try to simplify
         //go through until the tree isn't changed if op of 2 numbers it can
         boolean changed=false;
         if(tree.left!=null){
@@ -270,7 +199,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         return nums.get(0);
     }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
     //read ops right to left and nums right to left after getting invOp()
-    public Operation invOp(Operation a){
+    public Operation invOp(Operation a){//for exponents the inverse would be the 1/n of the number that is in the exponent
         if(a.getClass()==Add.class){//for inv func things that happen to x in a list reversed, with the op, {*2,+10} would become {-10,/2}
             return new Sub();
         }else if(a.getClass()==Sub.class){
@@ -279,44 +208,18 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return new Div();
         }else if(a.getClass()==Div.class){
             return new Mult();
-        }else if(a.getClass()==Sin.class){
-            return new ASin();
-        }else if(a.getClass()==ASin.class){
-            return new Sin();
-        }else if(a.getClass()==Cos.class){
-            return new ACos();
-        }else if(a.getClass()==ACos.class){
-            return new Cos();
-        }else if(a.getClass()==Tan.class){
-            return new ATan();
-        }else if(a.getClass()==ATan.class){
-            return new Tan();
         }
         return new Operation();
     }
     public boolean isOp(String string, int index){
         char a = string.charAt(index);
-        if(a=='+'||a=='-'||a=='*'||a=='/'||a=='^'||a=='s'||a=='c'||a=='t'||a=='%'){return true;}
+        if(a=='+'||a=='-'||a=='*'||a=='/'||a=='^'){return true;}
         //for equation reference use eq#
         //check for three from end
         return false;
     }
     public Function GiveOp(String string, int index){//check for ops before numbers are removed
         char character = string.charAt(index);//to check for nums check a string of num possibles (each a num) and the consecutive runs
-        if(character=='s'){
-            Operation op = new Sin();
-            return op;
-        }if(character=='c'){
-            Operation op = new Cos();
-            return op;
-        }if(character=='t'){
-            Operation op = new Tan();
-            return op;
-        }
-        if(character=='%'){
-            Operation op = new Mod();
-            return op;
-        }
         if(character=='+'){
             Operation op = new Add();
             return op;
@@ -349,23 +252,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             if(a=='.'){
                 return true;//returns true for decimal spots ie. 5.2
             }               //period by itself wouldn't work
-            if(a=='-'){
-                return true;//returns true for negative numbers
+            //if(a=='-'){
+                //return true;//returns true for negative numbers
                             //- by itself should be an operation
-            }
-            return false;
-        }
-        return true;
-    }
-    public boolean isNumber(String string,int indexstart,int indexend){
-        String s="";
-        for(int i=indexstart;i<indexend;i++){
-            char a = string.charAt(i);
-            s+=a;
-        }
-        try{
-            Double.parseDouble(s);
-        }catch (Exception e){
+            //}
             return false;
         }
         return true;
@@ -379,7 +269,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }catch (Exception e){
             for(int i=0;i<numstring.length();i++){
                 //find neg and make anything after it negative
-                if(numstring.charAt(i)=='-'){
+                //if(numstring.charAt(i)=='-'){
                     //parse double after neg and make neg
                     //5-5
                     //0 1 2
@@ -390,28 +280,21 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     //beforeneg length-i
                     //length-length-(i)
                     //range end i-1
-                    Function afterneg = ParseDouble(string,rangelength-(i+1),rangeend);
-                    Function beforeneg=new Number(0);
-                    if(0<i){
-                        beforeneg= ParseDouble(string,rangelength-(rangelength-i),i-1);
-                    }
-                    Function neg = new Sub();
-                    neg.left=beforeneg;
-                    neg.right= afterneg;
-                    return neg;
-                }
+                    //Function afterneg = ParseDouble(string,rangelength-(i+1),rangeend);
+                    //Function beforeneg=new Number(0);
+                    //if(0<i){
+                        //beforeneg= ParseDouble(string,rangelength-(rangelength-i),i-1);
+                    //}
+                    //Function neg = new Sub();
+                    //neg.left=beforeneg;
+                    //neg.right= afterneg;
+                    //return neg;
+                //}
             }
             //contains a negative before the number
         }
         num=new Number(a);
         return num;
-    }
-    public int ParseInt(String string, int indexstart, int indexend){
-        String s="";
-        for(int i=indexstart;i<indexend;i++){
-            s+=string.charAt(i);
-        }
-        return Integer.parseInt(s);//integer could just parse a substring
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -422,8 +305,21 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //first point at origin
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
+        for(int i=5; i<=BoardHeight;i+=5){//starts at 10 and increases by 10 until it reaches the boardheight
+            g.setColor(new Color(250,250,250,40));//moves with camera as the camera is aligned to the grid of 5 (Make class constant)
+            g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+        }
+        for(int i=-5; -(BoardHeight)<=i;i-=5){
+            g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+        }
+        for(int i=5; i<=BoardWidth;i+=5){
+            g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2))+i+CameraX,0,(int)((-CameraX*ViewSize)+(BoardHeight/2))+i+CameraX,(int)(BoardHeight));//vertical
+        }
+        for(int i=-5; -(BoardWidth)<=i;i-=5){
+            g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2))+i+CameraX,0,(int)((-CameraX*ViewSize)+(BoardHeight/2))+i+CameraX,(int)(BoardHeight));//vertical
+        }
         g.setColor(Color.WHITE);
-        for (int a = 1; a < BoardWidth; a++) {//goes through each 1/100th of a pixel
+        for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
             //check for vertical distance, if it is
             double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
@@ -446,7 +342,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
                         if(1<Math.abs(y1-y2)){
-                            //drawsubsections(g,x1,x2);
+                            drawsubsections(g,x1,x2,100);
                         }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
@@ -456,13 +352,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
                 }
             }
-        }
+        }//
     }//y=x 2 x % -
-    public void drawsubsections(Graphics g,double xstart,double xend){
-        double difference =Math.abs(xstart-xend);
-        for (int a = 0; a < 1000; a++) {//goes through each 1/1000th of a pixel
-            //check for vertical distance, if it is
-            double da= (double)(difference*a)/100;
+    public void drawsubsections(Graphics g,double xstart,double xend,double subpixelvalue){
+        double difference =Math.abs(xstart-xend);//range of the two x's
+        for (int a = 0; a < subpixelvalue; a++) {//goes through each 1/subpixelvalue of a pixel
+            //gets the range and multiplies it by whatever value tt is supposed to be at and adjusts for the current value
+            double da= (double)(difference*a)/subpixelvalue;
             da+=xstart;
             double b=da-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
@@ -540,18 +436,16 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode()==KeyEvent.VK_R) {
             AddFunctionRPN();
-        }if(e.getKeyCode()==KeyEvent.VK_L){
-            AddFunctionIFN();
         }if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE){
             Functions.remove(Functions.size()-1);
-            InvFunctions.remove(InvFunctions.size()-1);
+            //InvFunctions.remove(InvFunctions.size()-1);
         }if(e.getKeyCode()==KeyEvent.VK_G){
             GetAt();
         }
     }
     public void GetAt(){
         Scanner sc = new Scanner(System.in);
-        System.out.print("answer to get y value at a certain equation number and what x answer in :Equation number,X :");
+        System.out.print("answer to get y value at a certain equation number and what x answer in Equation number,X : ");
         String input = sc.next();
         String s1="0";
         String s2="0";
