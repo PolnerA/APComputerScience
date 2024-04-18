@@ -173,13 +173,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
         return ans;
     }
-    public void AddFunctionIFN(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Equation "+Functions.size()+" write out equation in IFN, x counts as a variable");
-        System.out.print("y=");
-        String rule =sc.nextLine();
-        Functions.add(parseFunction(IFNtoRPN(rule)));
-    }
+
     public void AddFunctionRPN(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Equation "+Functions.size()+" write out equation in rpn, x counts as a variable");
