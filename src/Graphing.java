@@ -13,6 +13,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardWidth;
     int BoardHeight;
     Timer frames;
+    boolean gridlines=true;
     float ViewSize=1f;
     int tilesize=1;
     int CameraX=0;
@@ -305,18 +306,20 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //first point at origin
         g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2)),0,(int)(((CameraY)*ViewSize)+(BoardHeight/2)));//horizontal
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
-        for(int i=5; i<=BoardHeight;i+=5){//starts at 10 and increases by 10 until it reaches the boardheight
+        if(gridlines){
             g.setColor(new Color(250,250,250,40));//moves with camera as the camera is aligned to the grid of 5 (Make class constant)
-            g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
-        }
-        for(int i=-5; -(BoardHeight)<=i;i-=5){
-            g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
-        }
-        for(int i=5; i<=BoardWidth;i+=5){
-            g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2))+i+CameraX,0,(int)((-CameraX*ViewSize)+(BoardHeight/2))+i+CameraX,(int)(BoardHeight));//vertical
-        }
-        for(int i=-5; -(BoardWidth)<=i;i-=5){
-            g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2))+i+CameraX,0,(int)((-CameraX*ViewSize)+(BoardHeight/2))+i+CameraX,(int)(BoardHeight));//vertical
+            for(int i=5; i<=BoardHeight;i+=5){//starts at 10 and increases by 10 until it reaches the boardheight
+                g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+            }
+            for(int i=-5; -(BoardHeight)<=i;i-=5){
+                g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+            }
+            for(int i=5; i<=BoardWidth;i+=5){
+                g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)+i+CameraX*ViewSize),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)+i+CameraX*ViewSize),(int)(BoardHeight));//vertical
+            }
+            for(int i=-5; -(BoardWidth)<=i;i-=5){
+                g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)+i+CameraX*ViewSize),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)+i+CameraX*ViewSize),(int)(BoardHeight));//vertical
+            }
         }
         g.setColor(Color.WHITE);
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
