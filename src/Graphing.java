@@ -13,19 +13,51 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardWidth;
     int BoardHeight;
     Timer frames;
-    boolean gridlines=true;
+    boolean gridlines=false;
     float ViewSize=1f;
     int tilesize=1;
     int CameraX=0;
     int CameraY=0;
+    public class Input{
+        double value;
+        boolean check;
+        public Input(){
+            check=true;
+        }
+        public Input(double a){
+            value=a;
+        }
+    }
     public class Function{//acts as a tree, recursively has smaller functions within it abstract to be able to utilize.
         Function left;
         Function right;
 
-
         public Function(){
         }
-        public double PerformOperation(double input){
+
+        @Override
+        public boolean equals(Object o) {
+            Function other = (Function) o;
+            //checks if the recursively goes through all the branches comparing each class (doesn't return true for 2*x and x*2)
+            if (left != null) {
+                if(left.equals(other.left)&&left.getClass()==other.left.getClass()){
+                    if(right!=null){
+                        if(right.equals(other.right)&&right.getClass()==other.right.getClass()){
+                            return true;
+                        }
+                    }
+                    else if(other.right==null){
+                        return true;
+                    }
+                }
+            }
+            else if(other.left ==null){
+                return true;
+            }
+            return false;
+        }
+
+        public double PerformOperation(Input input){
             if(left!=null){
                 double l=left.PerformOperation(input);
             }if(right!=null) {
@@ -38,27 +70,27 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
     }
     public class Add extends Operation{
-        public double PerformOperation(double input){
+        public double PerformOperation(Input input){
             return left.PerformOperation(input) + right.PerformOperation(input);
         }
     }
     public class Sub extends Operation{
-        public double PerformOperation(double input){
+        public double PerformOperation(Input input){
             return left.PerformOperation(input)-right.PerformOperation(input);
         }
     }
     public class Mult extends Operation{
-        public double PerformOperation(double input){
+        public double PerformOperation(Input input){
             return left.PerformOperation(input)*right.PerformOperation(input);
         }
     }
     public class Div extends Operation{
-        public double PerformOperation(double input) {
+        public double PerformOperation(Input input) {
             return left.PerformOperation(input)/right.PerformOperation(input);
         }
     }
     public class Exp extends Operation{
-        public double PerformOperation(double input) {
+        public double PerformOperation(Input input) {
             return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
         }
     }
@@ -69,11 +101,36 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public Number(double a){
             number=a;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if(super.equals(o)){
+                if(o.getClass()== Number.class){
+                    Number other=(Number)o;
+                    if(!entrance){
+                        if(other.number==number){
+                            return true;
+                        }
+                    }else{
+                        if(other.entrance){
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+
+        }
+
         public Number(){
             entrance=true;//if it is a variable it is flagged to return the input instead of the value of nothing
         }//for variables (prob. a-z) a blank number is created (if a method is called at x like the current functions it searches through the function it has (or list of funcs) to find the null numbers and plugs the argument recieved in)
-        public double PerformOperation(double input){
-            if(entrance){return input;}
+        public double PerformOperation(Input input){
+            if(entrance){
+                if(!input.check){
+                    return input.value;
+                }
+            }
             return number;
         }
 
@@ -86,9 +143,11 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
         //inv doesn't work as you don't know what is on what side of the mult, so how div?
-        Functions.add(new Number());//eq0 == y=x
+        Function b = new Mult();
+        b.left=new Number();
+        b.right=new Number(2);
+        Functions.add(b);//eq0 == y=x
         Function a = parseFunction("10 eq0 *");
-        Functions.add(a);
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
@@ -308,13 +367,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)),(int)(BoardHeight));//vertical
         if(gridlines){
             g.setColor(new Color(250,250,250,40));//moves with camera as the camera is aligned to the grid of 5 (Make class constant)
-            for(int i=5; i<=BoardHeight;i+=5){//starts at 10 and increases by 10 until it reaches the boardheight
-                g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+            for(int i=0; i<=BoardHeight;i+=5){//starts at 10 and increases by 10 until it reaches the boardheight
+                g.drawLine((int)(BoardHeight),(int)((((CameraY))+(BoardHeight/2))+i-CameraY*ViewSize),0,(int)((((CameraY))+(BoardHeight/2))+i-CameraY*ViewSize));//horizontal
             }
             for(int i=-5; -(BoardHeight)<=i;i-=5){
-                g.drawLine((int)(BoardHeight),(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY,0,(int)(((CameraY)*ViewSize)+(BoardHeight/2))+i-CameraY);//horizontal
+                g.drawLine((int)(BoardHeight),(int)((((CameraY))+(BoardHeight/2))+i-CameraY*ViewSize),0,(int)((((CameraY))+(BoardHeight/2))+i-CameraY*ViewSize));//horizontal
             }
-            for(int i=5; i<=BoardWidth;i+=5){
+            for(int i=0; i<=BoardWidth;i+=5){
                 g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)+i+CameraX*ViewSize),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)+i+CameraX*ViewSize),(int)(BoardHeight));//vertical
             }
             for(int i=-5; -(BoardWidth)<=i;i-=5){
@@ -329,8 +388,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
                 for (Function function : Functions) {
-                    double fi = function.PerformOperation(i);
-                    double fh = function.PerformOperation(h);
+                    double fi = function.PerformOperation(new Input(i));
+                    double fh = function.PerformOperation(new Input(h));
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
                         //21 22 23
@@ -345,7 +404,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
                         if(1<Math.abs(y1-y2)){
-                            drawsubsections(g,x1,x2,100);
+                            drawsubsections(g,function,x1,2);
                         }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
@@ -357,38 +416,44 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
         }//
     }//y=x 2 x % -
-    public void drawsubsections(Graphics g,double xstart,double xend,double subpixelvalue){
-        double difference =Math.abs(xstart-xend);//range of the two x's
-        for (int a = 0; a < subpixelvalue; a++) {//goes through each 1/subpixelvalue of a pixel
-            //gets the range and multiplies it by whatever value tt is supposed to be at and adjusts for the current value
-            double da= (double)(difference*a)/subpixelvalue;
-            da+=xstart;
-            double b=da-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
-            double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
-            double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
-            if(1<=Functions.size()) {
-                for (Function function : Functions) {
-                    double fi = function.PerformOperation(i);
-                    double fh = function.PerformOperation(h);
+    public void drawsubsections(Graphics g,Function function,double xstart,double denom){//denom starts at 2 for a 1/2 pixel nad increases by *2 from there
+        g.setColor(Color.red);//fence post easier way to improve performance
+        for(int n=1;n<denom;n++){
+            double b = xstart - (BoardWidth / 2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
+            double i = (double) (b / ViewSize) + CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
+            double h = (double) ((b - (n/denom)) / ViewSize) + CameraX;//((a-1)/ViewSize)+CameraX;
+            if (1 <= Functions.size()) {
+                    double fi = function.PerformOperation(new Input(i));
+                    double fh = function.PerformOperation(new Input(h));
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
+                        //21 22 23
                         double x1;//i & h
                         double y1;//fi & fh
                         double x2;
                         double y2;
 
-                        x1=doTransformationsX(h);
-                        x2=doTransformationsX(i);
-                        y1=doTransformationsY(fh);
-                        y2=doTransformationsY(fi);
+                        x1 = doTransformationsX(h);
+                        x2 = doTransformationsX(i);
+                        y1 = doTransformationsY(fh);
+                        y2 = doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
+                        if (1 < Math.abs(y1 - y2)) {
+                            if(denom<=1){
+                                try{
+                                    drawsubsections(g, function,x1, denom++);
+                                }catch (Exception e){
+                                    System.out.println(e);
+                                    break;
+                                }
+                            }
+                        }
 
                         g.drawRect((int) x1, (int) y1, 1, 1);
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
                         //}
                         //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
                     }//g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test2(i)+CameraY)*ViewSize),(int)ViewSize,(int)ViewSize);
-                }
             }
         }
     }
@@ -459,6 +524,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
         }
         Function function = Functions.get(Integer.parseInt(s1));
-        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.PerformOperation(Double.parseDouble(s2)));
+        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.PerformOperation(new Input(Double.parseDouble(s2))));
     }
 }
