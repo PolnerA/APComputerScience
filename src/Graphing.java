@@ -191,6 +191,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public void AddFunctionRPN(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Equation "+Functions.size()+" write out equation in rpn, x counts as a variable");
+        System.out.println("Separate the operations from the numbers with a space, -number counts as negative,- number is an operation.");
         System.out.print("y=");
         String rule =sc.nextLine();
         Functions.add(parseFunction(rule));
@@ -198,9 +199,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
         int rangeend=0;//ranges for integers to parse
         int rangelength=0;
-        ArrayList<Function> nums = new ArrayList<>();// 10 eq0 +
+        ArrayList<Function> nums = new ArrayList<>();// two list of numbers and operations in input
         ArrayList<Function> ops = new ArrayList<>();
-        rule=rule.toLowerCase();
+        rule=rule.toLowerCase();//doesn't need to check for case
         for(int i=0;i<rule.length();i++){//puts all the numbers and ops in separate array lists
             if(isNumber(rule,i)){
                 rangeend =i;

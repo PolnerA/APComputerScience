@@ -27,52 +27,6 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String Equation = sc.nextLine();
-        Stack<Integer> stack = new Stack<>();
-        boolean PrevIsInt = false;
-        int PrevInt=0;
-        int Int=0;
-        boolean IsInt = false;
-        int j=0; //level of digit
-        boolean intisDone=false;
-        boolean intisStarted=false;
-        for (int i = 0; i < Equation.length(); i++) {
-            char a = Equation.charAt(i);
-            if(isNumber(Equation,i)){
-                IsInt=true;
-                intisStarted=true;
-                Int = Integer.parseInt(""+a);//don't parse int as neg could also return is num
-            }else{
-                if (intisStarted) {
-                    stack.push(PrevInt);
-                    intisDone = true;
-                }
-                IsInt = false;
-                intisStarted=false;
-                Int = 0;
-                PrevInt = 0;
-                j = 0;
-            }
-            if(PrevIsInt&&IsInt){
-                PrevInt*=Math.pow(10,j);
-            }
-            PrevInt+=Int;
-            if(IsInt){
-                PrevIsInt=true;
-                j++;
-            }
-            if(2<=stack.size()){
-                //Operation op= GiveOp(Equation,i);
-                //if(op.id!=0){//if it is an operation
-                    int i1 = stack.pop();
-                    int i2 = stack.pop();
-                    //int result = op.PerformOperation(i1,i2);
-                    //stack.push(result);
-                    System.out.println(stack);
-                //}
-            }
-        }
     }
     public static boolean isNumber(String string,int index){
         char a = string.charAt(index);
