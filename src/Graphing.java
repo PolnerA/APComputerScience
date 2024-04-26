@@ -65,6 +65,11 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
             return PerformOperation(input);
         }
+        public Function getInverse(){
+            if(left!= null){left.getInverse();}
+            if(right!= null){right.getInverse();}
+            return getInverse();
+        }
     }
     public class Operation extends Function {//used to give an operation (not a number) when parsing input
 
@@ -73,26 +78,46 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public double PerformOperation(Input input){
             return left.PerformOperation(input) + right.PerformOperation(input);
         }
+        public Function getInverse(){
+            return new Sub();
+        }
     }
     public class Sub extends Operation{
         public double PerformOperation(Input input){
             return left.PerformOperation(input)-right.PerformOperation(input);
+        }
+        public Function getInverse(){
+            return new Add();
         }
     }
     public class Mult extends Operation{
         public double PerformOperation(Input input){
             return left.PerformOperation(input)*right.PerformOperation(input);
         }
+        public Function getInverse(){
+            return new Div();
+        }
     }
     public class Div extends Operation{
         public double PerformOperation(Input input) {
             return left.PerformOperation(input)/right.PerformOperation(input);
+        }
+        public Function getInverse(){
+            return new Mult();
         }
     }
     public class Exp extends Operation{
         public double PerformOperation(Input input) {
             return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
         }
+        public Function getInverse(){
+            Function inv= new Exp();
+            inv.right.PerformOperation(new Input());
+            return inv;
+        }
+    }
+    public double getReciprocal(double input){
+        return 1/input;
     }
     public class Number extends Function{
         double number;
