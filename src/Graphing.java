@@ -197,61 +197,18 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Functions.add(parseFunction(rule));
     }
     public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
-        int rangeend=0;//ranges for integers to parse
-        int rangelength=0;
-        ArrayList<Function> nums = new ArrayList<>();// two list of numbers and operations in input
+        ArrayList<Function> nums = new ArrayList<>();
         ArrayList<Function> ops = new ArrayList<>();
-        rule=rule.toLowerCase();//doesn't need to check for case
-        for(int i=0;i<rule.length();i++){//puts all the numbers and ops in separate array lists
-            if(isNumber(rule,i)){
-                rangeend =i;
-                rangelength++;
-            }else{
-                if(rangelength==1&&rule.charAt(rangeend)=='.'){rangelength =0;}//ignores period by itself
-                if(rangelength==1&&rule.charAt(rangeend)=='-'){rangelength=0;}//ignores neg by itself as number (checks in op)
-                if(2<=rangeend){
-                    if('0'<=rule.charAt(rangeend)&&rule.charAt(rangeend)<='9'&&rule.charAt(rangeend-1)=='q'&&rule.charAt(rangeend-2)=='e'){
-                        rangelength=0;
-                        int number =rule.charAt(rangeend)-'0';
-                        rangeend=0;
-                        Function eq = Functions.get(number);
-                        nums.add(eq);
-                    }
-                }
-                if(rangelength!=0){
-                    nums.add(new Number(Double.parseDouble(rule.substring((rangeend+1)-rangelength,rangeend+1))));
-                }
-                if(rule.charAt(i)=='x'){
-                    nums.add(new Number());
-                }
-                rangelength=0;
-            }
-            if(isOp(rule,i)){
-                if(!isNumber(rule,i)) {//doesn't keep the negative
-                    ops.add(GiveOp(rule, i));
-                }
+        int NumberFrom = -1;
+        int NumberTo = -1;
+        for(int i=0;i<rule.length();i++){
+            if(rule.charAt(i)==' '){
+                NumberFrom=-1;//resets number if character is a space
+                NumberTo=-1;
             }
         }
-        //adds nums one last time, doesn't go through the loop on last one so the addition can't be done in the else
-        if(rangeend==rule.length()-1&&rule.charAt(rangeend)!='x'){nums.add(new Number(Double.parseDouble(rule.substring(rangeend+1-rangelength,rangeend+1))));}
-        //gets from the right 2 from nums and does the operation on the right
-        //the next right 2 take the function of the operation and the next number with the next operand
-        //should have a split point function(num) function(op of two nums)| function(op)
-        Function tree =CreateTree(nums,ops);
-        //ArrayList<Function> invnums = (ArrayList<Function>) nums.clone();
-        //ArrayList<Function> invops = (ArrayList<Function>) ops.clone();
-        //for(int i=0;i<ops.size();i++){
-            //Function op = ops.get(i);
-            //invops.set(invops.size()-(i+1),invOp((Operation) op));
-       //}
-        //Function invtree=CreateTree(invnums,invops);
-        //InvFunctions.add(invtree);
-        //         if(character=='e'&&string.charAt(index+1)=='q'&&'0'<=string.charAt(index+2)&&string.charAt(index+2)<='9'){
-        //            int number =string.charAt(index+2)-'0';
-        //            Function op = Functions.get(number);
-        //            return op;
-        //        }
-        return tree;
+        return CreateTree(nums,ops);
+
     }
     public Function Optimize(Function tree){//traverse the tree and try to simplify
         //go through until the tree isn't changed if op of 2 numbers it can
