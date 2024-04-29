@@ -172,11 +172,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         b.left=new Number();
         b.right=new Number(2);
         Functions.add(b);//eq0 == y=x
-        Function a = parseFunction("10 eq0 *");
+        //Function a = parseFunction("10 eq0 *");
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
+        parseFunction("5 -2.5 - 5 +");
         Dimension d =getPreferredSize();
         setFocusable(true);
         frames = new Timer(0,this);
@@ -203,13 +204,36 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         int NumberTo = -1;
         for(int i=0;i<rule.length();i++){
             if(rule.charAt(i)==' '){
+                if(NumberFrom!=-1){
+                    if(NumberTo!=-1){
+                        nums.add(ParseDouble(rule,NumberFrom,NumberTo));
+                    }else{
+                        if(rule.charAt(NumberFrom)!='-'){
+                            nums.add(ParseDouble(rule,NumberFrom,NumberFrom));
+                        }
+                    }
+                }
                 NumberFrom=-1;//resets number if character is a space
                 NumberTo=-1;
+            }
+
+            if(rule.charAt(i)=='.'||rule.charAt(i)=='-'){
+                if(NumberFrom==-1){
+                    NumberFrom=i;
+                }else{
+                    NumberTo=i;
+                }
+            }
+            if(isOp(rule,i)){//number in front has to be number or at the edge
+                if(NumberTo==-1){
+                    ops.add(GiveOp(rule,i));
+                }
             }
         }
         return CreateTree(nums,ops);
 
     }
+
     public Function Optimize(Function tree){//traverse the tree and try to simplify
         //go through until the tree isn't changed if op of 2 numbers it can
         boolean changed=false;
@@ -283,34 +307,24 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public boolean isNumber(String string,int index){
         char a = string.charAt(index);
-        if(2<=index){
-            if(string.charAt(index-1)=='q'&&string.charAt(index-2)=='e'){
-                return true;
+        boolean isNumber ='0'<=string.charAt(index)&&string.charAt(index)<='9';
+        if(isNumber||string.charAt(index)=='.'){
+            return true;
+        }else{
+            if(string.charAt(index)=='-'){
+
             }
-        }
-        try{
-            String s =""+a;
-            Double.parseDouble(s);
-        }catch (Exception e){
-            if(a=='.'){
-                return true;//returns true for decimal spots ie. 5.2
-            }               //period by itself wouldn't work
-            //if(a=='-'){
-                //return true;//returns true for negative numbers
-                            //- by itself should be an operation
-            //}
             return false;
         }
-        return true;
     }
-    public Function ParseDouble(String string, int rangelength, int rangeend){
-        String numstring = string.substring((rangeend+1)-rangelength,rangeend+1);
+    public Function ParseDouble(String string, int rangestart, int rangeend){
+        String numstring = string.substring(rangestart,rangeend+1);
         Function num = new Number();//counts as x
         double a= 0.0;
         try {
             a=Double.parseDouble(numstring);
         }catch (Exception e){
-            for(int i=0;i<numstring.length();i++){
+            //for(int i=0;i<numstring.length();i++){
                 //find neg and make anything after it negative
                 //if(numstring.charAt(i)=='-'){
                     //parse double after neg and make neg
@@ -333,7 +347,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     //neg.right= afterneg;
                     //return neg;
                 //}
-            }
+            //}
             //contains a negative before the number
         }
         num=new Number(a);
