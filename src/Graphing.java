@@ -177,7 +177,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
-        parseFunction("5 -2.5 - 5 +");
+        parseFunction("5 -2.5 - 5 +");  
+        /*
+                        +
+                       / \
+                      -   5
+                     / \
+                    5  -2.5
+        */
         Dimension d =getPreferredSize();
         setFocusable(true);
         frames = new Timer(0,this);
@@ -246,9 +253,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates a function in tree form from the ops read left to right and nums from the right to left
         for(int i=0;i<ops.size();i++){//shouldn't assume that the function needs a left and right
-            Function op =ops.get(i);
-            if(0<=nums.size()-2){
-                if(op.left==null) {
+            Function op =ops.get(i);//read the nums left to right and use the operation that comes directly after it 3 4 + 5 6 + *
+            if(0<=nums.size()-2){//this is read as 3 4 5 6 ++*, take 3 and 4 (first 2 nums) and use the first op, and put back into nums, then next two
+                if(op.left==null) {//try and convert so stack works see if some kind of tree traversal (post, in, pre to match the given functions and ops)
                     op.left = nums.get(nums.size() - 2);
                 }
             }
@@ -312,7 +319,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return true;
         }else{
             if(string.charAt(index)=='-'){
-
+                if(isNumber(string,index+1)){
+                    return true;
+                }
             }
             return false;
         }
@@ -350,7 +359,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             //}
             //contains a negative before the number
         }
-        num=new Number(a);
+        num=new Number(a);//a . by itself would create the number 0.0
         return num;
     }
     public void paintComponent(Graphics g) {
