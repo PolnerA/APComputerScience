@@ -171,6 +171,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Function b = new Mult();
         b.left=new Number();
         b.right=new Number(2);
+        Function a = new Mult();
+        Function c = new Number(2);
+        System.out.println(a.getClass()==Mult.class);
         Functions.add(b);//eq0 == y=x
         //Function a = parseFunction("10 eq0 *");
         BoardHeight=Boardheight;
@@ -178,12 +181,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setBackground(Color.black);
         addKeyListener(this);
         parseFunction("5 -2.5 - 5 +");  
-        /*
-                        +
-                       / \
-                      -   5
-                     / \
-                    5  -2.5
+        /*          left-left left-right left  right  top
+                        5         -2.5     -      5    +
+            +
+           / \
+          -   5
+         / \
+        5  -2.5
         */
         Dimension d =getPreferredSize();
         setFocusable(true);
@@ -194,9 +198,34 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //get lists of operations and reverse it
         return originalFunction;
     }
+    public boolean isOperation(Function input){
+        Class<?> a = input.getClass();
+        if(a == Mult.class){
+            return true;
+        }if(a == Div.class){
+            return true;
+        }if(a == Sub.class){
+            return true;
+        }if(a == Add.class){
+            return true;
+        }if(a == Exp.class){
+            return true;
+        }
+        return false;
+    }
 
 
-    public void AddFunctionRPN(){
+    public void AddFunctionRPN(){//get derivatives of functions to get rate of change to know when to lock in and calculate smaller values
+        /*
+        for algebraic functions D(x^n)=nx^(n-1)
+        for trigonometric functions D(sin(x))=cos(x) & D(cos(x))=-sin(x)
+        for exponential functions D(e^x)=e^x
+        to have a general way to derive these functions the chain rule provides a way to differentiate a composite function
+        If f(x) and g(x) are two functions, the composite function f(g(x)) is calculated for a value of x by first evaluating g(x) and then evaluating the function f at this value of g(x); for instance, if f(x) = sin x and g(x) = x2, then f(g(x)) = sin x2, while g(f(x)) = (sin x)2. The chain rule states that the derivative of a composite function is given by a product, as D(f(g(x))) = Df(g(x)) ∙ Dg(x). In words, the first factor on the right, Df(g(x)), indicates that the derivative of Df(x) is first found as usual, and then x, wherever it occurs, is replaced by the function g(x). In the example of sin x2, the rule gives the result D(sin x2) = Dsin(x2) ∙ D(x2) = (cos x2) ∙ 2x.
+
+In the German mathematician Gottfried Wilhelm Leibniz’s notation, which uses d/dx in place of D and thus allows differentiation with respect to different variables to be made explicit, the chain rule takes the more memorable “symbolic cancellation” form:
+d(f(g(x)))/dx = df/dg ∙ dg/dx.
+         */
         Scanner sc = new Scanner(System.in);
         System.out.println("Equation "+Functions.size()+" write out equation in rpn, x counts as a variable");
         System.out.println("Separate the operations from the numbers with a space, -number counts as negative,- number is an operation.");
@@ -205,18 +234,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Functions.add(parseFunction(rule));
     }
     public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
-        ArrayList<Function> nums = new ArrayList<>();
-        ArrayList<Function> ops = new ArrayList<>();
+        ArrayList<Function> treelist = new ArrayList<>();//parse function still doesn't work
         int NumberFrom = -1;
         int NumberTo = -1;
         for(int i=0;i<rule.length();i++){
             if(rule.charAt(i)==' '){
                 if(NumberFrom!=-1){
                     if(NumberTo!=-1){
-                        nums.add(ParseDouble(rule,NumberFrom,NumberTo));
+                        treelist.add(ParseDouble(rule,NumberFrom,NumberTo));
                     }else{
                         if(rule.charAt(NumberFrom)!='-'){
-                            nums.add(ParseDouble(rule,NumberFrom,NumberFrom));
+                            treelist.add(ParseDouble(rule,NumberFrom,NumberFrom));
                         }
                     }
                 }
@@ -224,7 +252,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 NumberTo=-1;
             }
 
-            if(rule.charAt(i)=='.'||rule.charAt(i)=='-'){
+            if(rule.charAt(i)=='.'||rule.charAt(i)=='-'||isNumber(rule,i)){
                 if(NumberFrom==-1){
                     NumberFrom=i;
                 }else{
@@ -233,11 +261,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
             if(isOp(rule,i)){//number in front has to be number or at the edge
                 if(NumberTo==-1){
-                    ops.add(GiveOp(rule,i));
+                    if(!isNumber(rule,i)){
+                        treelist.add(GiveOp(rule,i));
+                    }
                 }
             }
         }
-        return CreateTree(nums,ops);
+        return CreateTree(treelist);
 
     }
 
@@ -251,26 +281,23 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
         return tree;
     }
-    public Function CreateTree(ArrayList<Function> nums,ArrayList<Function> ops){//creates a function in tree form from the ops read left to right and nums from the right to left
-        for(int i=0;i<ops.size();i++){//shouldn't assume that the function needs a left and right
-            Function op =ops.get(i);//read the nums left to right and use the operation that comes directly after it 3 4 + 5 6 + *
-            if(0<=nums.size()-2){//this is read as 3 4 5 6 ++*, take 3 and 4 (first 2 nums) and use the first op, and put back into nums, then next two
-                if(op.left==null) {//try and convert so stack works see if some kind of tree traversal (post, in, pre to match the given functions and ops)
-                    op.left = nums.get(nums.size() - 2);
+    public Function CreateTree(ArrayList<Function> treelist){//creates a function in tree form from the ops read left to right and nums from the right to left
+        ArrayList<Function> nums = new ArrayList<>();
+        Function tree;
+        for(int i=0;i<treelist.size();i++){//shouldn't assume that the function needs a left and right
+            Function node = treelist.get(i);
+            if(isOperation(node)){
+                if(2==nums.size()){
+                    node.left = nums.remove(0);
+                    node.right= nums.remove(0);
                 }
+                nums.add(node);
+            }else{
+                nums.add(node);
             }
-            if(op.right==null){
-                op.right=nums.get(nums.size()-1);
-            }
-            if(1<=nums.size()){
-                nums.remove(nums.size()-1);
-            }
-            if(1<=nums.size()){
-                nums.remove(nums.size()-1);
-            }
-            nums.add(op);
         }
-        return nums.get(0);
+        tree=nums.get(0);
+        return tree;
     }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
     //read ops right to left and nums right to left after getting invOp()
     public Operation invOp(Operation a){//for exponents the inverse would be the 1/n of the number that is in the exponent
@@ -319,12 +346,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return true;
         }else{
             if(string.charAt(index)=='-'){
+                if(index==string.length()-1){
+                    return false;
+                }
                 if(isNumber(string,index+1)){
                     return true;
                 }
             }
+            if(string.charAt(index)=='x')
             return false;
         }
+        return false;
     }
     public Function ParseDouble(String string, int rangestart, int rangeend){
         String numstring = string.substring(rangestart,rangeend+1);
@@ -333,31 +365,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         try {
             a=Double.parseDouble(numstring);
         }catch (Exception e){
-            //for(int i=0;i<numstring.length();i++){
-                //find neg and make anything after it negative
-                //if(numstring.charAt(i)=='-'){
-                    //parse double after neg and make neg
-                    //5-5
-                    //0 1 2
-                    //5 - 3
-                    //after neg 3-2
-                    //22-3
-                    //1 range end same
-                    //beforeneg length-i
-                    //length-length-(i)
-                    //range end i-1
-                    //Function afterneg = ParseDouble(string,rangelength-(i+1),rangeend);
-                    //Function beforeneg=new Number(0);
-                    //if(0<i){
-                        //beforeneg= ParseDouble(string,rangelength-(rangelength-i),i-1);
-                    //}
-                    //Function neg = new Sub();
-                    //neg.left=beforeneg;
-                    //neg.right= afterneg;
-                    //return neg;
-                //}
-            //}
-            //contains a negative before the number
+            //try and catch x
         }
         num=new Number(a);//a . by itself would create the number 0.0
         return num;
