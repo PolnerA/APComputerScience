@@ -17,6 +17,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     float ViewSize=1f;
     int tilesize=1;
     double FunctionAt=0.0;
+    double StepSize=1.0;
+    int Function = 0;
     int CameraX=0;
     int CameraY=0;
     public class Input{
@@ -266,6 +268,19 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 }
             }
         }
+        if(NumberFrom!=-1){//checks digit without a space for the end
+            if(NumberTo!=-1){
+                treelist.add(ParseDouble(rule,NumberFrom,NumberTo));
+            }else{
+                if(rule.charAt(NumberFrom)!='-') {
+                    if(rule.charAt(NumberFrom)=='x'){
+                        treelist.add(new Number());
+                    }else {
+                        treelist.add(ParseDouble(rule, NumberFrom, NumberFrom));
+                    }
+                }
+            }
+        }
         return CreateTree(treelist);
 
     }
@@ -394,17 +409,25 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)+i+CameraX*ViewSize),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)+i+CameraX*ViewSize),(int)(BoardHeight));//vertical
             }
         }
-        g.setColor(Color.WHITE);
-        g.drawString("( "+FunctionAt+" , "+"",0,0);
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
             //check for vertical distance, if it is
             double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
+                if(Function<Functions.size()) {
+                    g.setColor(Color.RED);
+                    double displayX = Math.round(FunctionAt * 1000) / (double) 1000;
+                    double displayY = Math.round(Functions.get(Function).PerformOperation(new Input(FunctionAt)) * 1000) / (double) 1000;
+                    g.drawString("eq" + Function + "  (" + displayX + "," + displayY + ")", 0, 10);
+                    g.drawRect((int) doTransformationsX(FunctionAt)-3, (int) doTransformationsY(Functions.get(Function).PerformOperation(new Input(FunctionAt)))-3 , 6, 6);
+                }
+                g.setColor(Color.WHITE);
                 for (Function function : Functions) {
+
                     double fi = function.PerformOperation(new Input(i));
                     double fh = function.PerformOperation(new Input(h));
+
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
                         //21 22 23
@@ -421,9 +444,8 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                         if(1<Math.abs(y1-y2)){
                             //drawsubsections(g,function,x1,2);
                         }
-                        if(x1==FunctionAt){g.setColor(Color.RED);}
                         g.drawRect((int) x1, (int) y1, 1, 1);
-                        g.setColor(Color.white);
+
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
                         //}
                         //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
@@ -514,9 +536,14 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         }if(e.getKeyCode()==KeyEvent.VK_D) {
             CameraX+=5;
         }if(e.getKeyCode()==KeyEvent.VK_RIGHT){
-            FunctionAt+=1;
+            FunctionAt+=StepSize;
         }if(e.getKeyCode()==KeyEvent.VK_LEFT){
-            FunctionAt-=1;
+            FunctionAt-=StepSize;
+        }if(e.getKeyCode()==KeyEvent.VK_UP){
+            Function++;
+            if(Functions.size()<=Function){
+                Function=0;
+            }
         }
     }
 
@@ -529,6 +556,10 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             //InvFunctions.remove(InvFunctions.size()-1);
         }if(e.getKeyCode()==KeyEvent.VK_G){
             GetAt();
+        }if(e.getKeyCode()==KeyEvent.VK_1){
+            System.out.println("Set step size to what?");
+            Scanner sc = new Scanner(System.in);
+            StepSize = Double.parseDouble(sc.nextLine());
         }
     }
     public void GetAt(){
