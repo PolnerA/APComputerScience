@@ -16,6 +16,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     boolean gridlines=false;
     float ViewSize=1f;
     int tilesize=1;
+    double FunctionAt=0.0;
     int CameraX=0;
     int CameraY=0;
     public class Input{
@@ -168,19 +169,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
         //inv doesn't work as you don't know what is on what side of the mult, so how div?
-        Function b = new Mult();
-        b.left=new Number();
-        b.right=new Number(2);
-        Function a = new Mult();
-        Function c = new Number(2);
-        System.out.println(a.getClass()==Mult.class);
-        Functions.add(b);//eq0 == y=x
         //Function a = parseFunction("10 eq0 *");
         BoardHeight=Boardheight;
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
-        parseFunction("5 -2.5 - 5 +");  
+        parseFunction("5 -2.5 - 5 +");
         /*          left-left left-right left  right  top
                         5         -2.5     -      5    +
             +
@@ -228,7 +222,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
          */
         Scanner sc = new Scanner(System.in);
         System.out.println("Equation "+Functions.size()+" write out equation in rpn, x counts as a variable");
-        System.out.println("Separate the operations from the numbers with a space, -number counts as negative,- number is an operation.");
+        System.out.println("Separate the operations from the numbers with a space (variable is a number)");
         System.out.print("y=");
         String rule =sc.nextLine();
         Functions.add(parseFunction(rule));
@@ -237,14 +231,19 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         ArrayList<Function> treelist = new ArrayList<>();//parse function still doesn't work
         int NumberFrom = -1;
         int NumberTo = -1;
+        rule=rule.toLowerCase();
         for(int i=0;i<rule.length();i++){
             if(rule.charAt(i)==' '){
                 if(NumberFrom!=-1){
                     if(NumberTo!=-1){
                         treelist.add(ParseDouble(rule,NumberFrom,NumberTo));
                     }else{
-                        if(rule.charAt(NumberFrom)!='-'){
-                            treelist.add(ParseDouble(rule,NumberFrom,NumberFrom));
+                        if(rule.charAt(NumberFrom)!='-') {
+                            if(rule.charAt(NumberFrom)=='x'){
+                                treelist.add(new Number());
+                            }else {
+                                treelist.add(ParseDouble(rule, NumberFrom, NumberFrom));
+                            }
                         }
                     }
                 }
@@ -284,7 +283,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
     public Function CreateTree(ArrayList<Function> treelist){//creates a function in tree form from the ops read left to right and nums from the right to left
         ArrayList<Function> nums = new ArrayList<>();
         Function tree;
-        for(int i=0;i<treelist.size();i++){//shouldn't assume that the function needs a left and right
+        for(int i=0;i<treelist.size();i++){
             Function node = treelist.get(i);
             if(isOperation(node)){
                 if(2==nums.size()){
@@ -353,10 +352,11 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                     return true;
                 }
             }
-            if(string.charAt(index)=='x')
+            if(string.charAt(index)=='x'){
+                return true;
+            }
             return false;
         }
-        return false;
     }
     public Function ParseDouble(String string, int rangestart, int rangeend){
         String numstring = string.substring(rangestart,rangeend+1);
@@ -395,6 +395,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             }
         }
         g.setColor(Color.WHITE);
+        g.drawString("( "+FunctionAt+" , "+"",0,0);
         for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
             //check for vertical distance, if it is
             double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
@@ -418,10 +419,11 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
                         if(1<Math.abs(y1-y2)){
-                            drawsubsections(g,function,x1,2);
+                            //drawsubsections(g,function,x1,2);
                         }
-
+                        if(x1==FunctionAt){g.setColor(Color.RED);}
                         g.drawRect((int) x1, (int) y1, 1, 1);
+                        g.setColor(Color.white);
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
                         //}
                         //g.fillRect((int)((i-CameraX)*ViewSize),(int)((BoardHeight-test(i)+CameraY)*ViewSize),1,1);
@@ -511,6 +513,10 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             CameraY-=5;
         }if(e.getKeyCode()==KeyEvent.VK_D) {
             CameraX+=5;
+        }if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+            FunctionAt+=1;
+        }if(e.getKeyCode()==KeyEvent.VK_LEFT){
+            FunctionAt-=1;
         }
     }
 
