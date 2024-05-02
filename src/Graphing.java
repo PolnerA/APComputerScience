@@ -185,6 +185,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
          / \
         5  -2.5
         */
+        /*
+                    ^
+                  /    \
+                 e     ^
+                      /  \
+                      x   2
+                      .containsX should get where the x is
+                      if it is in the left then do a standard x^n to nx^(n-1)
+                      otherwise you can use the exponential return the same function for the derivative
+                      the tree should go down and calculate derivatives then recursively multiply each together
+        */
         Dimension d =getPreferredSize();
         setFocusable(true);
         frames = new Timer(0,this);
