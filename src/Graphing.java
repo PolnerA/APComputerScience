@@ -344,6 +344,10 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 }
             }
         }
+        if(Xindex==0){
+            treelist.remove(0);
+            return treelist;
+        }
         return treelist;
     }
     public Operation invOp(Operation a){//for exponents the inverse would be the 1/n of the number that is in the exponent
