@@ -241,7 +241,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         Functions.add(parseFunction(rule));
     }
     public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
-        ArrayList<Function> treelist = new ArrayList<>();//parse function still doesn't work
+        ArrayList<Function> treelist = new ArrayList<>();//take numbers and flip it reversing their symbols
         int NumberFrom = -1;
         int NumberTo = -1;
         rule=rule.toLowerCase();
@@ -306,11 +306,17 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         }
         return tree;
     }
-    public Function CreateTree(ArrayList<Function> treelist){//creates a function in tree form from the ops read left to right and nums from the right to left
-        ArrayList<Function> nums = new ArrayList<>();
+    public Function CreateTree(ArrayList<Function> treelist){//gets num1 num2 op1 num3 op2 num4 op3  //num2 num3 iop2 num1 iop1
+        ArrayList<Function> nums = new ArrayList<>();       //inv func //num1 num2 op1 num3 op2
+        boolean hasX =false;                                 //2 x * 1 + -> x 1 - 2 /
+        int Xat =0;
         Function tree;
         for(int i=0;i<treelist.size();i++){
             Function node = treelist.get(i);
+            if (node.equals(new Number())){
+                hasX = true;
+                Xat=i;
+            }
             if(isOperation(node)){
                 if(2==nums.size()){
                     node.left = nums.remove(0);
@@ -321,10 +327,25 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 nums.add(node);
             }
         }
+        if(hasX){
+            OperationsToX(treelist, Xat);
+        }
         tree=nums.get(0);
         return tree;
     }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
     //read ops right to left and nums right to left after getting invOp()
+    public ArrayList<Function>  OperationsToX(ArrayList<Function> treelist, int Xindex){
+        for(int i=0;i<treelist.size();i++){//started inverses get operations to x then reverse them
+            if(Xindex==i){
+                if(0<Xindex){
+                    if(isOperation(treelist.get(i-1))){
+
+                    }
+                }
+            }
+        }
+        return treelist;
+    }
     public Operation invOp(Operation a){//for exponents the inverse would be the 1/n of the number that is in the exponent
         if(a.getClass()==Add.class){//for inv func things that happen to x in a list reversed, with the op, {*2,+10} would become {-10,/2}
             return new Sub();
