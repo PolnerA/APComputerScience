@@ -37,25 +37,44 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
         public Function(){
         }
+        public boolean containsX(){
+            if(this.getClass()==Number.class){
+                if(((Number) this).entrance){
+                    return true;
+                }
+            }
+            if(left!=null){
+                if(right!=null){//left & right
+                    return right.containsX()||left.containsX();
+                }else{//only left
+                    return left.containsX();
+                }
+            }else if(right!=null){//only right branch
+                return right.containsX();
+            }
+            return false;
+        }
 
         @Override
         public boolean equals(Object o) {
             Function other = (Function) o;
             //checks if the recursively goes through all the branches comparing each class (doesn't return true for 2*x and x*2)
-            if (left != null) {
-                if(left.equals(other.left)&&left.getClass()==other.left.getClass()){
-                    if(right!=null){
-                        if(right.equals(other.right)&&right.getClass()==other.right.getClass()){
+            if(other.getClass()==this.getClass()){
+                if (left != null) {
+                    if(left.equals(other.left)&&left.getClass()==other.left.getClass()){
+                        if(right!=null){
+                            if(right.equals(other.right)&&right.getClass()==other.right.getClass()){
+                                return true;
+                            }
+                        }
+                        else if(other.right==null){
                             return true;
                         }
                     }
-                    else if(other.right==null){
-                        return true;
-                    }
                 }
-            }
-            else if(other.left ==null){
-                return true;
+                else if(other.left ==null){
+                    return true;
+                }
             }
             return false;
         }
@@ -125,9 +144,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Number extends Function{
         double number;
         boolean entrance=false;
+        boolean negative =false;//number can still be negative and neg bool for double neg for tree changing (1-x) becomes (-x + 1)
 
         public Number(double a){
             number=a;
+        }
+        public void setNegative(){
+            negative=true;
+            number = -number;
         }
 
         @Override
@@ -141,7 +165,11 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         }
                     }else{
                         if(other.entrance){
-                            return true;
+                            if(other.negative==negative) {
+                                return true;
+                            }else{
+                                return false;
+                            }
                         }
                     }
                 }
@@ -156,6 +184,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public double PerformOperation(Input input){
             if(entrance){
                 if(!input.check){
+                    if(negative){
+                        return -input.value;
+                    }
                     return input.value;
                 }
             }
@@ -176,7 +207,19 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setPreferredSize(new Dimension(BoardWidth, BoardHeight));
         setBackground(Color.black);
         addKeyListener(this);
-        parseFunction("5 -2.5 - 5 +");
+        Function a = new Add();
+        a.left=new Number();
+        a.right = new Number(1);
+        Function b = new Add();
+        b.left=new Number(1);
+        b.right = new Number();
+        //before checking for equivalence put in to x order // x on left and shook 1 x + is equal to x 1 +
+        System.out.println(a.right.containsX());
+        /*
+        to get left x operations if mult or add just swap nodes
+        sub change right to negative and sign to add then swap, for divide change sign to power with right being neg 1 and left being swapped div (div swapped nodes)
+        for exponents no change is necessary as
+         */
         /*          left-left left-right left  right  top
                         5         -2.5     -      5    +
             +
@@ -191,6 +234,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                  e     ^
                       /  \
                       x   2
+                      right.containsX true we know the right.right.ContainsX shows x in left and correct pos
                       .containsX should get where the x is
                       if it is in the left then do a standard x^n to nx^(n-1)
                       otherwise you can use the exponential return the same function for the derivative
@@ -296,16 +340,6 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
 
     }
 
-    public Function Optimize(Function tree){//traverse the tree and try to simplify
-        //go through until the tree isn't changed if op of 2 numbers it can
-        boolean changed=false;
-        if(tree.left!=null){
-            Optimize(tree.left);
-        }if(tree.right!=null){
-            Optimize(tree.right);
-        }
-        return tree;
-    }
     public Function CreateTree(ArrayList<Function> treelist){//gets num1 num2 op1 num3 op2 num4 op3  //num2 num3 iop2 num1 iop1
         ArrayList<Function> nums = new ArrayList<>();       //inv func //num1 num2 op1 num3 op2
         boolean hasX =false;                                 //2 x * 1 + -> x 1 - 2 /
@@ -334,6 +368,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         return tree;
     }//2*x+10 inv -> 2 x * 10 + | nums {2,x,10} ops {*, +}
     //read ops right to left and nums right to left after getting invOp()
+
     public ArrayList<Function>  OperationsToX(ArrayList<Function> treelist, int Xindex){
         for(int i=0;i<treelist.size();i++){//started inverses get operations to x then reverse them
             if(Xindex==i){
