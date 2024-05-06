@@ -196,7 +196,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     //to get user input use tokenization reverse polish notation, and java bytecode
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
-    //parse the string to get the tree of operations
+    //parse the string to get the tree of operations s
     public ArrayList<Function> Functions = new ArrayList<>();
     public ArrayList<Function> InvFunctions = new ArrayList<>();
     public Graphing(int Boardwidth, int Boardheight){
