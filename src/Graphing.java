@@ -57,6 +57,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
             if(left!=null){
                 left=left.Simplify();
+                if(left.getClass()==Sub.class){
+                    if(left.left!=null){
+                        if(left.left.containsX()){
+                            if(left.left.negative){
+                                Function Substitute = left.
+                            }
+                        }
+                    }
+                }
             }
             if(right!=null){
                 right=right.Simplify();
@@ -66,7 +75,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     if(right!=null){
                         if(!isOperation(left)&&!isOperation(right)){
                             if(!left.containsX()&&!right.containsX()){
-                                return new Number(this.PerformOperation(0));//input doesn't matter as neither child is an x
+                                return new Number(this.PerformOperation(0));//input doesn't matter as neither child has a variable
                             }
                         }
                     }
@@ -132,7 +141,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Operation extends Function {//used to give an operation (not a number) when parsing input
-
+        private int opnum;//to change the type of operation easily instead of having to mess with classes
+        public double PerformOperation(double input){
+            
+        }
     }
     public class Add extends Operation{
         public double PerformOperation(double input){
@@ -144,8 +156,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Sub extends Operation{
+        boolean ToAdd = false;//to be able to change the function to an addition of a negative
         public double PerformOperation(double input){
             if(negative){ return -(left.PerformOperation(input)-right.PerformOperation(input));}
+            if(ToAdd){return left.PerformOperation(input)+right.PerformOperation(input);}
             return left.PerformOperation(input)-right.PerformOperation(input);
         }
         public Function getInverse(){
@@ -162,8 +176,10 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Div extends Operation{
+        boolean PowNegOne = false;//needs insertion of new things go through and build a new tree, use derivatives post ap test
         public double PerformOperation(double input) {
             if(negative){ return -(left.PerformOperation(input)/right.PerformOperation(input));}
+            if(PowNegOne){ return Math.pow(left.PerformOperation(input),-1);}
             return left.PerformOperation(input)/right.PerformOperation(input);
         }
         public Function getInverse(){
