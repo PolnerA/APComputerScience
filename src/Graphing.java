@@ -21,22 +21,60 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int Function = 0;
     int CameraX=0;
     int CameraY=0;
-    public class Input{
-        double value;
-        boolean check;
-        public Input(){
-            check=true;
-        }
-        public Input(double a){
-            value=a;
-        }
-    }
     public class Function{//acts as a tree, recursively has smaller functions within it abstract to be able to utilize.
         Function left;
         Function right;
-
+        boolean negative =false;//number can still be negative and neg bool for double neg for tree changing (1-x) becomes (-x + 1)
+        public void setNegative(){
+            negative=true;
+        }
         public Function(){
         }
+        public Function Simplify(){
+            if(this.getClass()==Add.class||this.getClass()==Mult.class){
+                if(right!=null){
+                    if(right.containsX()){
+                        Function temp = left;
+                        left=right;//swaps left and right to keep the x on the left with additions and multiplications
+                        right=temp;
+                    }
+                }
+            }if(this.getClass()==Sub.class){//change to add
+                if(right!=null){
+                    if(right.containsX()){
+                        Function temp = left;
+                        left=right;//swaps left and right to keep the x on the left with subtraction sets thing subtracted to neg
+                        right=temp;//changes current one to an add (can't do now, it will if it goes up by recursion)
+                        left.setNegative();
+                    }
+                }
+            }if(this.getClass()==Div.class){//get reciprocal and change current to ^ -1
+                if(right!=null){
+                    if(right.containsX()){
+
+                    }
+                }
+            }
+            if(left!=null){
+                left=left.Simplify();
+            }
+            if(right!=null){
+                right=right.Simplify();
+            }
+            if(isOperation(this)){
+                if(left!=null){
+                    if(right!=null){
+                        if(!isOperation(left)&&!isOperation(right)){
+                            if(!left.containsX()&&!right.containsX()){
+                                return new Number(this.PerformOperation(0));//input doesn't matter as neither child is an x
+                            }
+                        }
+                    }
+                }
+            }
+            return this;
+        }
+        //visitor patterns
         public boolean containsX(){
             if(this.getClass()==Number.class){
                 if(((Number) this).entrance){
@@ -79,7 +117,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return false;
         }
 
-        public double PerformOperation(Input input){
+        public double PerformOperation(double input){
             if(left!=null){
                 double l=left.PerformOperation(input);
             }if(right!=null) {
@@ -97,7 +135,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
 
     }
     public class Add extends Operation{
-        public double PerformOperation(Input input){
+        public double PerformOperation(double input){
+            if(negative){ return -(left.PerformOperation(input)+right.PerformOperation(input));}
             return left.PerformOperation(input) + right.PerformOperation(input);
         }
         public Function getInverse(){
@@ -105,7 +144,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Sub extends Operation{
-        public double PerformOperation(Input input){
+        public double PerformOperation(double input){
+            if(negative){ return -(left.PerformOperation(input)-right.PerformOperation(input));}
             return left.PerformOperation(input)-right.PerformOperation(input);
         }
         public Function getInverse(){
@@ -113,7 +153,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Mult extends Operation{
-        public double PerformOperation(Input input){
+        public double PerformOperation(double input){
+            if(negative){ return -(left.PerformOperation(input)*right.PerformOperation(input));}
             return left.PerformOperation(input)*right.PerformOperation(input);
         }
         public Function getInverse(){
@@ -121,7 +162,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Div extends Operation{
-        public double PerformOperation(Input input) {
+        public double PerformOperation(double input) {
+            if(negative){ return -(left.PerformOperation(input)/right.PerformOperation(input));}
             return left.PerformOperation(input)/right.PerformOperation(input);
         }
         public Function getInverse(){
@@ -129,12 +171,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Exp extends Operation{
-        public double PerformOperation(Input input) {
+        public double PerformOperation(double input) {
+            if(negative){ return -Math.pow(left.PerformOperation(input),right.PerformOperation(input));}
             return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
         }
         public Function getInverse(){
             Function inv= new Exp();
-            inv.right.PerformOperation(new Input());
+            inv.right.PerformOperation(0);
             return inv;
         }
     }
@@ -144,13 +187,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Number extends Function{
         double number;
         boolean entrance=false;
-        boolean negative =false;//number can still be negative and neg bool for double neg for tree changing (1-x) becomes (-x + 1)
 
         public Number(double a){
             number=a;
         }
-        public void setNegative(){
-            negative=true;
+
+        @Override
+        public void setNegative() {
+            super.setNegative();
             number = -number;
         }
 
@@ -181,14 +225,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public Number(){
             entrance=true;//if it is a variable it is flagged to return the input instead of the value of nothing
         }//for variables (prob. a-z) a blank number is created (if a method is called at x like the current functions it searches through the function it has (or list of funcs) to find the null numbers and plugs the argument recieved in)
-        public double PerformOperation(Input input){
+        public double PerformOperation(double input){
             if(entrance){
-                if(!input.check){
+
                     if(negative){
-                        return -input.value;
+                        return -input;
                     }
-                    return input.value;
-                }
+                    return input;
+
             }
             return number;
         }
@@ -211,10 +255,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         a.left=new Number();
         a.right = new Number(1);
         Function b = new Add();
-        b.left=new Number(1);
-        b.right = new Number();
+        b.left=new Add();
+        b.left.right = new Number();
+        b.left.left= new Number(6);
+        b.right = new Number(10);
         //before checking for equivalence put in to x order // x on left and shook 1 x + is equal to x 1 +
-        System.out.println(a.right.containsX());
+        Function g= b.Simplify();
         /*
         to get left x operations if mult or add just swap nodes
         sub change right to negative and sign to add then swap, for divide change sign to power with right being neg 1 and left being swapped div (div swapped nodes)
@@ -264,7 +310,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
         return false;
     }
-
+    public Function Simplify(Function tree){
+        Function simplifiedtree=new Function();
+        while(!simplifiedtree.equals(tree)){
+            simplifiedtree=tree.Simplify();
+        }
+        return simplifiedtree;
+    }
 
     public void AddFunctionRPN(){//get derivatives of functions to get rate of change to know when to lock in and calculate smaller values
         /*
@@ -489,15 +541,15 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 if(Function<Functions.size()) {
                     g.setColor(Color.RED);
                     double displayX = Math.round(FunctionAt * 1000) / (double) 1000;
-                    double displayY = Math.round(Functions.get(Function).PerformOperation(new Input(FunctionAt)) * 1000) / (double) 1000;
+                    double displayY = Math.round(Functions.get(Function).PerformOperation((FunctionAt)) * 1000) / (double) 1000;
                     g.drawString("eq" + Function + "  (" + displayX + "," + displayY + ")", 0, 10);
-                    g.drawRect((int) doTransformationsX(FunctionAt)-3, (int) doTransformationsY(Functions.get(Function).PerformOperation(new Input(FunctionAt)))-3 , 6, 6);
+                    g.drawRect((int) doTransformationsX(FunctionAt)-3, (int) doTransformationsY(Functions.get(Function).PerformOperation(FunctionAt))-3 , 6, 6);
                 }
                 g.setColor(Color.WHITE);
                 for (Function function : Functions) {
 
-                    double fi = function.PerformOperation(new Input(i));
-                    double fh = function.PerformOperation(new Input(h));
+                    double fi = function.PerformOperation(i);
+                    double fh = function.PerformOperation(h);
 
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
@@ -532,8 +584,8 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             double i = (double) (b / ViewSize) + CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b - (n/denom)) / ViewSize) + CameraX;//((a-1)/ViewSize)+CameraX;
             if (1 <= Functions.size()) {
-                    double fi = function.PerformOperation(new Input(i));
-                    double fh = function.PerformOperation(new Input(h));
+                    double fi = function.PerformOperation(i);
+                    double fh = function.PerformOperation(h);
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
                         //21 22 23
@@ -646,6 +698,6 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             }
         }
         Function function = Functions.get(Integer.parseInt(s1));
-        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.PerformOperation(new Input(Double.parseDouble(s2))));
+        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.PerformOperation(Double.parseDouble(s2)));
     }
 }
