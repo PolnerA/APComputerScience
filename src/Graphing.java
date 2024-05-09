@@ -28,6 +28,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         public void setNegative(){
             negative=true;
         }
+
+
+
         public Function(){
         }
         public Function Simplify(){
@@ -252,15 +255,13 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         setBackground(Color.black);
         addKeyListener(this);
         Function a = new Add();
-        a.left=new Number();
-        a.right = new Number(1);
-        Function b = new Add();
-        b.left=new Add();
-        b.left.right = new Number();
-        b.left.left= new Number(6);
-        b.right = new Number(10);
+        a.left=new Mult();
+        a.right=new Number(10);
+        a.left.left= new Number();
+        a.left.right= new Number(2);
+        Functions.add(a);
+        Function b = new Div();
         //before checking for equivalence put in to x order // x on left and shook 1 x + is equal to x 1 +
-        Function g= b.Simplify();
         /*
         to get left x operations if mult or add just swap nodes
         sub change right to negative and sign to add then swap, for divide change sign to power with right being neg 1 and left being swapped div (div swapped nodes)
