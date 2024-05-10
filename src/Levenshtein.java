@@ -23,41 +23,37 @@ public class Levenshtein {
         while(sc2.hasNext()){ //_0_1_2_3_4_
             String word = sc2.nextLine();
             count++;
-            System.out.println(count+"/"+a.size());
             char[] letters=word.toCharArray();
             ArrayList<Character> letter = new ArrayList<>();
+            ArrayList<Character> letter2 = new ArrayList<>();
             for(int i=0;i< letters.length;i++){
                 letter.add(letters[i]);
+                letter2.add(letters[i]);
             }
             writer.write(word);
-            for(int i =0; i<word.length();i++){
+            for(int i =0; i<=word.length();i++){
                 for(int j=0;j<26;j++){
-                    String newWord="";
-                    char g = (char) ('a'+j);
-                    letter.set(i,g);
-                    for(int k=0;k<letter.size();k++){
-                        newWord= newWord + letter.get(k);
-                    }
-                    if(a.contains(newWord)){
-                        if(!word.equals(newWord)){
-                            writer.write("|"+newWord);
+                    char g = (char) ('a' + j);
+                    if(i<word.length()) {
+                        String newWord = "";
+                        letter.set(i, g);
+                        for (int k = 0; k < letter.size(); k++) {
+                            newWord = newWord + letter.get(k);
+                        }
+                        if (a.contains(newWord)) {
+                            if (!word.equals(newWord)) {
+                                writer.write("|" + newWord);
+                            }
                         }
                     }
                     String newWord2="";
-                    char g2 = (char) ('a'+j);
-                    letter.add(i,g2);
-                    for(int k=0;k<letter.size();k++){
-                        newWord2= newWord2 + letter.get(k);
+                    letter2.add(i,g);
+                    for(int k=0;k<letter2.size();k++){
+                        newWord2= newWord2 + letter2.get(k);
                     }
                     if(a.contains(newWord2)){
-                        if(!word.equals(newWord2)){
-                            writer.write("|"+newWord2);
-                        }
+                        writer.write("|"+newWord2);
                     }
-                }
-            }for(int i=0;i<word.length();i++){
-                for(int j=0;j<26;j++){
-
                 }
             }
             writer.write("\n");

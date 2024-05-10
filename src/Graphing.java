@@ -64,7 +64,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                     if(left.left!=null){
                         if(left.left.containsX()){
                             if(left.left.negative){
-                                Function Substitute = left.
+                                //Function Substitute = left.
                             }
                         }
                     }
@@ -146,7 +146,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Operation extends Function {//used to give an operation (not a number) when parsing input
         private int opnum;//to change the type of operation easily instead of having to mess with classes
         public double PerformOperation(double input){
-            
+            return 0.0;
         }
     }
     public class Add extends Operation{

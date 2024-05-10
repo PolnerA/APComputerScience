@@ -27,6 +27,7 @@ public class Main {
         }
     }
     public static void main(String[] args) {
+        //levenshtein check if neighbors in common, if not check if first neighbor has neighbor in  common for both
     }
     public static boolean isNumber(String string,int index){
         char a = string.charAt(index);
