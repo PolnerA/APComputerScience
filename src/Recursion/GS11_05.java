@@ -13,7 +13,6 @@ Date:       Done:
 package Recursion;
 
 public class GS11_05 {
-    static int m=0;
     public static void main(String[] args) {
         System.out.println("\n"+fibonacci(7));
     }
