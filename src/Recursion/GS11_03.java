@@ -18,7 +18,10 @@ package Recursion;
 
 public class GS11_03 {
     public static void main(String[] args) {
-        writeSequence(6);
+        for(int i=1;i<=10;i++){
+            System.out.println();
+            writeSequence(i);
+        }
     }
     public static void writeSequence(int n){
         if(n<1){throw new IllegalArgumentException();}

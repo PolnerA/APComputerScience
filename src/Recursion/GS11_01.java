@@ -14,6 +14,12 @@ package Recursion;
 public class GS11_01 {
     public static void main(String[] args) {
         starString(0);
+        System.out.println();
+        starString(1);
+        System.out.println();
+        starString(2);
+        System.out.println();
+        starString(4);
     }
     public static void starString(int n){
         if(n==0){
