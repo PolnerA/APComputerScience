@@ -14,14 +14,16 @@ package Recursion;
 
 public class GS11_05 {
     public static void main(String[] args) {
-        System.out.println("\n"+fibonacci(7));
+        for(int i=1;i<=92;i++){
+            System.out.println("\n"+fibonacci(i));
+        }
     }
-    public static int fibonacci(int n){
-        int[] PreviousNumbers = new int[n];
+    public static long fibonacci(int n){
+        long[] PreviousNumbers = new long[n];
         fib(n,PreviousNumbers);
         return PreviousNumbers[n-1];
     }
-    public static void fib(int n, int[] prevnums){
+    public static void fib(int n, long[] prevnums){
         if(n==0){
             return;
         }
