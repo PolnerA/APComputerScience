@@ -106,6 +106,17 @@ public class Levenshtein {
         }
         System.out.println("fin");
     }
+    public static void solve(String word1,String word2) throws FileNotFoundException{
+        HashSet<String> neighbors = getNeighborsSet(word1);
+        if(!neighbors.contains(word2)){
+            for(String word:neighbors){
+                solve(word,word2);
+            }
+        }else{
+            System.out.println(word1+"->"+word2);
+            System.out.println("one away");
+        }
+    }
     public static boolean getPath(String word1, String word2, boolean goBack) throws FileNotFoundException{
         HashSet<String> neighbors = getNeighborsSet(word1);
         String[] neighborsArr = getNeighborsArr(word1);
