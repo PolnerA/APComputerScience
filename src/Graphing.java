@@ -29,7 +29,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             negative=true;
         }
 
-
+        public Function getDerivative(){
+            if(this.isExponential()){
+                return this;//if base to power involving x return the operation 2^x is derived to 2^x         op
+            }else{                                                                               //           /\
+                return left;//if not exponential it's algebraic x^n to nx^(n-1) doesn't have implicit 1;    op num
+                //try and shake to a form that I like, 3(2x) 3*x get distributive property, everything has x/\num
+            }
+        }
 
         public Function(){
         }
@@ -85,6 +92,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 }
             }
             return this;
+        }
+        public boolean isExponential(){
+            if(this.getClass()==Exp.class&&right.containsX()){
+                return true; //base to power involving x
+            }
+            return false;
         }
         //visitor patterns
         public boolean containsX(){
@@ -336,10 +349,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
 
     public void AddFunctionRPN(){//get derivatives of functions to get rate of change to know when to lock in and calculate smaller values
-        /*
+        /* reduce tree so 2(x+2) is clearly 2*x and +4 to be able to pass back the rate of change as 2
         for algebraic functions D(x^n)=nx^(n-1)
         for trigonometric functions D(sin(x))=cos(x) & D(cos(x))=-sin(x)
         for exponential functions D(e^x)=e^x
+        algebraic and exponential first. Exp: if ^ and x is on the right return the current tree
+        alg: ^ and
         to have a general way to derive these functions the chain rule provides a way to differentiate a composite function
         If f(x) and g(x) are two functions, the composite function f(g(x)) is calculated for a value of x by first evaluating g(x) and then evaluating the function f at this value of g(x); for instance, if f(x) = sin x and g(x) = x2, then f(g(x)) = sin x2, while g(f(x)) = (sin x)2. The chain rule states that the derivative of a composite function is given by a product, as D(f(g(x))) = Df(g(x)) ∙ Dg(x). In words, the first factor on the right, Df(g(x)), indicates that the derivative of Df(x) is first found as usual, and then x, wherever it occurs, is replaced by the function g(x). In the example of sin x2, the rule gives the result D(sin x2) = Dsin(x2) ∙ D(x2) = (cos x2) ∙ 2x.
 
@@ -549,9 +564,9 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 g.drawLine((int)((-CameraX*ViewSize)+(BoardWidth/2)+i+CameraX*ViewSize),0,(int)((-CameraX*ViewSize)+(BoardHeight/2)+i+CameraX*ViewSize),(int)(BoardHeight));//vertical
             }
         }
-        for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
+        for (int a = 1; a < BoardWidth*75; a++) {//goes through each pixel excluding the last to be able to check ahead.
             //check for vertical distance, if it is
-            double b=a-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
+            double b=((double) a/75)-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
@@ -666,7 +681,9 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         if(e.getKeyCode()==KeyEvent.VK_E){
             ViewSize*=1.1f;//multiplies the view-size making things bigger
         }if(e.getKeyCode()==KeyEvent.VK_Q){
-            ViewSize*=0.9f;//divides the view-size making things smaller
+            if(0.5f<=ViewSize) {
+                ViewSize *= 0.9f;//divides the view-size making things smaller
+            }
         }if(e.getKeyCode()==KeyEvent.VK_W) {
             CameraY+=5;
         }if(e.getKeyCode()==KeyEvent.VK_A) {//does the same for all WASD keys
