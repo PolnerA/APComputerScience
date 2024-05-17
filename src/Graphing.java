@@ -33,8 +33,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             if(this.isExponential()){
                 return this;//if base to power involving x return the operation 2^x is derived to 2^x         op
             }else{                                                                               //           /\
-                return left;//if not exponential it's algebraic x^n to nx^(n-1) doesn't have implicit 1;    op num
+                // urn left;//if not exponential it's algebraic x^n to nx^(n-1) doesn't have implicit 1;    op num
                 //try and shake to a form that I like, 3(2x) 3*x get distributive property, everything has x/\num
+                Function mult= new Mult();
+                mult.left=new Sub();
+                mult.left.left = left;
+                mult.left.right = new Number(1);
+                mult.right = new Exp();
+                mult.right.right= new Sub();
+                mult.right.right.right = new Number(1);
+                mult.right.right.left = right;
+                return mult;//organize the tree
             }
         }
 
@@ -269,7 +278,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return number;
         }
 
-    }
+    }//to change the thing at will change the class to a base operation with different id's for the ops to change at will
     //to get user input use tokenization reverse polish notation, and java bytecode
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations s
