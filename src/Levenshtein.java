@@ -2,9 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 public class Levenshtein {
     static HashSet<String> a = new HashSet<>();
@@ -65,57 +63,76 @@ public class Levenshtein {
     }
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(new File("dictionarySortedLength.txt"));
-        while(sc.hasNext()){
-            String word = sc.nextLine();
-            a.add(word);
-        }
+        //while(sc.hasNext()){
+          //  String word = sc.nextLine();
+           // a.add(word);
+        //}
         //pseudocode: check if the two words have neighbors in common, if no then check if each of their neighbors have neighbors in common
         //repeat with next level of neighbors gets path but not the shortest path
         sc.close();
-        Scanner sc2 = new Scanner(System.in);
-        System.out.println("First word:");
-        String word1 = sc2.nextLine().toLowerCase();
-        System.out.println("Second word");
-        String word2 = sc2.nextLine().toLowerCase();
-        getPath(word1,word2,false);
-        HashSet<String> b = getNeighborsSet(word1);
-        if(!b.contains(word2)){
-            for(String n:b){
-                HashSet<String> c = getNeighborsSet(n);
-                if(!c.contains(word2)){
-                    for(String neighbors:c){
-                        HashSet<String> d = getNeighborsSet(neighbors);
-                        if(!d.contains(word2)){
-                        }else {
-                            System.out.println(word1+"->"+n+"->"+neighbors+"->"+word2);
-                        }
-                    }
-                }else {
-                    System.out.println(word1+"->"+n+"->"+word2);
-
-                }
-            }
-        }else {
-            System.out.println(word1+"->"+word2);
-        }
-        System.out.println("fin");
-        solve(word1,word2,5);
+        //Scanner sc2 = new Scanner(System.in);
+        //System.out.println("First word:");
+        //String word1 = sc2.nextLine().toLowerCase();
+        //System.out.println("Second word");
+        //String word2 = sc2.nextLine().toLowerCase();
+        String word1="puppy";
+        String word2="dog";
+        solve(word1,word2);
+        System.out.println("end");
     }
-    public static void solve(String word1,String word2,int path) throws FileNotFoundException{
-        if(path<=0){
-            return;
-        }
+    public static void solver(String word1,String word2) throws FileNotFoundException{
         HashSet<String> neighbors = getNeighborsSet(word1);
         if(!neighbors.contains(word2)){
             for(String word:neighbors){
 
-                solve(word,word2,path-1);
+                solver(word,word2);
             }
         }else{
-            System.out.println(word1+"->"+word2);
+
 
         }
 
+    }
+    public static void solve(String word1, String word2) throws FileNotFoundException {
+        HashSet<String> neighbors = getNeighborsSet(word1);//gets the neighbors of the first word
+        ArrayList<String> path = new ArrayList<>();
+        Stack<String> stack = new Stack<>();//stack of words in neighbors set
+        stack.addAll(neighbors);//populates
+        int levdist=0;
+        while (!stack.isEmpty()) {//while there are neighbors
+            String wordpath = stack.pop();//current neighbor is assumed
+            String word = getValue(wordpath);
+            //path.add(word);
+            HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
+            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
+                Stack<String> temp = new Stack<>();
+                temp.addAll(stack);
+                stack.clear();
+                for(String neighbor:currentNeighbors){
+                    stack.add(wordpath+"->"+neighbor);
+                }
+                //stack.add(word);
+                stack.addAll(temp);
+            } else {
+                wordpath = wordpath+"->"+word2;
+                if(levdist==0){
+                    levdist=getLevDist(wordpath);
+                }
+                if(levdist<getLevDist(wordpath)){
+                    break;
+                }
+                System.out.println(word1+"->"+wordpath);
+                break;
+            }
+        }
+    }
+    public static int getLevDist(String path){
+        String[] a=path.split("->");
+        return a.length;
+    }
+    public static String getValue(String path){
+        //from the word1 +"->" +neighbors get the last arrow thing
+        return path.substring(path.lastIndexOf(">")+1);
     }
     public static boolean getPath(String word1, String word2, boolean goBack) throws FileNotFoundException{
         HashSet<String> neighbors = getNeighborsSet(word1);
