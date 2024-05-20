@@ -2,12 +2,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.*;
 
 public class Levenshtein {
     static HashSet<String> a = new HashSet<>();
     static ArrayList<ArrayList<String>> paths = new ArrayList<>();
     static int size=0;//reasonable estimate for shortest path
+    static boolean getPaths = false;
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
         File neighbor = new File("dictionaryWithNeighbors");
@@ -67,35 +69,35 @@ public class Levenshtein {
           //  String word = sc.nextLine();
            // a.add(word);
         //}
-        //pseudocode: check if the two words have neighbors in common, if no then check if each of their neighbors have neighbors in common
-        //repeat with next level of neighbors gets path but not the shortest path
         sc.close();
-        //Scanner sc2 = new Scanner(System.in);
-        //System.out.println("First word:");
-        //String word1 = sc2.nextLine().toLowerCase();
-        //System.out.println("Second word");
-        //String word2 = sc2.nextLine().toLowerCase();
-        String word1="puppy";
-        String word2="dog";
+        //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
+        //test 1       24815.761561 ms predicted runtime (about 25 sec)
+        //String word1="cat";
+        //String word2="dog";
+        //test 2       15703.301474 ms predicted runtime (about 16 sec)
+        String word1="dog";
+        String word2="cat";
+        //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
+        //String word1="puppy";
+        //String word2="dog";
+        //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
+        //String word1="dog";
+        //String word2="smart";
+        //test 5     1732498.366852 ms predicted runtime (about 29 min)
+        //String word1="dog";
+        //String word2="quack";
+        //test 6     2814028.051959 ms predicted runtime (about 47 min)
+        //String word1="monkey";
+        //String word2="business";
+        Long pre = System.currentTimeMillis();
         solve(word1,word2);
+        Long post = System.currentTimeMillis();
+        System.out.println("Time: "+(post-pre)+" ms");
         System.out.println("end");
     }
-    public static void solver(String word1,String word2) throws FileNotFoundException{
-        HashSet<String> neighbors = getNeighborsSet(word1);
-        if(!neighbors.contains(word2)){
-            for(String word:neighbors){
-
-                solver(word,word2);
-            }
-        }else{
-
-
-        }
-
-    }
     public static void solve(String word1, String word2) throws FileNotFoundException {
+        HashSet<String> usedWords = new HashSet<>();
         HashSet<String> neighbors = getNeighborsSet(word1);//gets the neighbors of the first word
-        ArrayList<String> path = new ArrayList<>();
         Stack<String> stack = new Stack<>();//stack of words in neighbors set
         stack.addAll(neighbors);//populates
         int levdist=0;
@@ -103,6 +105,9 @@ public class Levenshtein {
             String wordpath = stack.pop();//current neighbor is assumed
             String word = getValue(wordpath);
             //path.add(word);
+            if(usedWords.contains(word)){
+                continue;
+            }
             HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
             if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
                 Stack<String> temp = new Stack<>();
@@ -121,8 +126,10 @@ public class Levenshtein {
                 if(levdist<getLevDist(wordpath)){
                     break;
                 }
-                System.out.println(word1+"->"+wordpath);
-                break;
+                //System.out.println(word1+"->"+wordpath);
+                if(!getPaths){
+                    break;
+                }
             }
         }
     }
