@@ -102,7 +102,7 @@ public class Levenshtein {
         Stack<String> stack = new Stack<>();//stack of words in neighbors set
         Queue<String> queue = null;//queue should replace the stack
         queue.addAll(neighbors);//populates
-        int levdist=0;
+        int levdist=0;//queues read from head and adds to tail, stack would read from head and add to head
         while (!stack.isEmpty()) {//while there are neighbors
             String wordpath = stack.pop();//current neighbor is assumed
             String word = getValue(wordpath);
