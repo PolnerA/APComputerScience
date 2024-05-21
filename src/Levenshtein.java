@@ -9,7 +9,7 @@ public class Levenshtein {
     static HashSet<String> a = new HashSet<>();
     static ArrayList<ArrayList<String>> paths = new ArrayList<>();
     static int size=0;//reasonable estimate for shortest path
-    static boolean getPaths = false;
+    static boolean getPaths = true;
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
         File neighbor = new File("dictionaryWithNeighbors");
@@ -72,11 +72,13 @@ public class Levenshtein {
         sc.close();
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //test 1       24815.761561 ms predicted runtime (about 25 sec)
-        //String word1="cat";
-        //String word2="dog";
+        //              Current time: 6085 ms
+        String word1="cat";
+        String word2="dog";
         //test 2       15703.301474 ms predicted runtime (about 16 sec)
-        String word1="dog";
-        String word2="cat";
+        //              Current time: 1475 ms
+        //String word1="dog";
+        //String word2="cat";
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //String word1="puppy";
         //String word2="dog";
@@ -93,22 +95,23 @@ public class Levenshtein {
         solve(word1,word2);
         Long post = System.currentTimeMillis();
         System.out.println("Time: "+(post-pre)+" ms");
-        System.out.println("end");
     }
     public static void solve(String word1, String word2) throws FileNotFoundException {
         HashSet<String> usedWords = new HashSet<>();
         HashSet<String> neighbors = getNeighborsSet(word1);//gets the neighbors of the first word
         Stack<String> stack = new Stack<>();//stack of words in neighbors set
-        stack.addAll(neighbors);//populates
+        Queue<String> queue = null;//queue should replace the stack
+        queue.addAll(neighbors);//populates
         int levdist=0;
         while (!stack.isEmpty()) {//while there are neighbors
             String wordpath = stack.pop();//current neighbor is assumed
             String word = getValue(wordpath);
             //path.add(word);
             if(usedWords.contains(word)){
-                continue;
+                //continue;
             }
             HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
+            usedWords.add(word);
             if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
                 Stack<String> temp = new Stack<>();
                 temp.addAll(stack);
@@ -126,7 +129,7 @@ public class Levenshtein {
                 if(levdist<getLevDist(wordpath)){
                     break;
                 }
-                //System.out.println(word1+"->"+wordpath);
+                System.out.println(word1+"->"+wordpath);
                 if(!getPaths){
                     break;
                 }
