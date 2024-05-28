@@ -31,12 +31,6 @@ public class Main {
         }
     }
     public static void main(String[] args) throws IOException {
-        //          w o r d - > w o r d s
-        //          0 1 2 3 4 5 6 7 8 9 10
-        String a = "word->words";
-        System.out.println(a.lastIndexOf(">"));
-        //a.substring(a.lastIndexOf(">")+1)
-        System.out.println(a.substring(6));
     }
     public static boolean isNumber(String string,int index){
         char a = string.charAt(index);
