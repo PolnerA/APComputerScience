@@ -72,29 +72,30 @@ public class Levenshtein {
         }
         sc.close();
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
+        //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
         //test 1       24815.761561 ms predicted runtime (about 25 sec)
-        //              Current time: 115 ms run (10000) times : 3ms
-        //              100 times: 12 ms
+        //              Current time: 88 ms run (10000) times : 3ms
+        //              100 times: 12 ms | all paths work
         //String word1="cat";
         //String word2="dog";
         //test 2       15703.301474 ms predicted runtime (about 16 sec)
-        //              Current time: 284 ms run (10000) times : 16 ms
-        //              100 times: 31 ms
+        //              Current time: 284 ms run (10000) times : 4 ms
+        //              100 times: 31 ms | all paths work
         //String word1="dog";
         //String word2="cat";
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //                  current time : 14996 ms
-        //            100 times:
+        //            100 times:   | all paths
         //String word1="puppy";
         //String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 1813 ms
-        //            100 times: 574 ms
+        //            100 times: 574 ms | all paths work without string1->string2 throws out of memory pre finishing
         String word1="dog";
         String word2="smart";
         //test 5     1732498.366852 ms predicted runtime (about 29 min)
         //          current time : 4722 ms
-        //            100 times: 2461 ms
+        //            100 times: 2461 ms | all paths give java.lang.OutOfMemoryError
         //String word1="dog";
         //String word2="quack";
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
@@ -102,9 +103,10 @@ public class Levenshtein {
         //            100 times:
         //String word1="monkey";
         //String word2="business";
+        //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
-            int num = 1;
+            int num = 10000;
             for(int i=0;i<num;i++){
                 Long pre = System.currentTimeMillis();
                 solve(word1,word2);
@@ -116,10 +118,10 @@ public class Levenshtein {
             printsolves(word1,word2);
         }
     }
-    public static void solve(String word1, String word2) throws FileNotFoundException {
+    public static void solve(String word1, String word2)  {
         HashSet<String> usedWords = new HashSet<>();
-        Queue<String> queue = new LinkedList<>();//queue should replace the stack
-        queue.add(word1);//
+        Queue<String> queue = new LinkedList<>();
+        queue.add(word1);
         while (!queue.isEmpty()) {//while there are neighbors
             String word = queue.remove();//current neighbor is assumed
             HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
@@ -128,21 +130,21 @@ public class Levenshtein {
             if (!currentNeighbors.contains(word2)) {
                 queue.addAll(currentNeighbors);
             } else {
-                break;
+                return;
             }
         }
     }
-    public static void printsolves(String word1, String word2) throws FileNotFoundException {
-        Queue<String> queue = new LinkedList<String>();//queue should replace the stack
-        boolean found=false;
-        queue.add(word1);//populates    //w ""
+    public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError
+        Queue<String> queue = new LinkedList<String>();//queue created once and used
+        boolean found=false;//found boolean helps with the final line
+        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
         queue.add("");                  // 1 2 3 4 5 ""
                                         //11 12 13 14 15"" 21 22 23 24 ""
-        while (!queue.isEmpty()) {//while there are neighbors
+        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
             String wordpath = queue.remove();//current neighbor is assumed
-            if(wordpath.equals("")){
-                if(found){break;}
-                queue.add("");
+            if(wordpath.equals("")){//if it hits an end of line and shortest path is found it quits as others are longer
+                if(found){return;}
+                queue.add("");//skips over sentinal otherwise and adds a new one to the end line marking the neighbors end
                 continue;
             }
             String word = getValue(wordpath);
@@ -168,19 +170,7 @@ public class Levenshtein {
         //from the word1 +"->" +neighbors get the last arrow thing
         return path.substring(path.lastIndexOf(">")+1);
     }
-    public static String[] getNeighborsArr(String word) throws FileNotFoundException{
-        Scanner sc = new Scanner(new File("dictionaryWithNeighbors"));
-        HashSet<String> Neighbors = new HashSet<>();
-        while(sc.hasNext()){
-            String line =sc.nextLine();
-            String [] results =line.split("-");
-            if(results[0].equals(word)){
-                return results;
-            }
-        }
-        return null;
-    }
-    public static HashSet<String> getNeighborsSet(String word) throws FileNotFoundException{
+    public static HashSet<String> getNeighborsSet(String word) {
         ArrayList<Character> letter = new ArrayList<>();
         ArrayList<Character> letter2 = new ArrayList<>();
         char[] letters = word.toCharArray();
