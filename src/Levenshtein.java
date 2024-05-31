@@ -6,10 +6,18 @@ import java.util.*;
 
 public class Levenshtein {
     static HashSet<String> Dictionary = new HashSet<>();
+    public static class Neighbors{
+        public HashSet<Neighbors> neighbors;
+        public int[] OutsideNeighbors;
+        public String word;
+        public Neighbors(String word){
+            this.word=word;
+        }
+    }
+    static Neighbors[] neighborsArray;
     static int paths=0;//reasonable estimate for shortest path
-    static final boolean getPaths = true;
+    static final boolean getPaths = false;
     ArrayList<String> from = new ArrayList<>();
-    int index;
 
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
@@ -64,6 +72,7 @@ public class Levenshtein {
         sc2.close();
 
     }
+
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(new File("dictionarySortedLength.txt"));
         while(sc.hasNext()){
@@ -71,10 +80,33 @@ public class Levenshtein {
           Dictionary.add(word);
         }
         sc.close();
+        neighborsArray = new Neighbors[Dictionary.size()];
+        Scanner sc2 = new Scanner(new File("dictionaryWithNeighbors"));
+        int count=0;
+        while (sc2.hasNext()){
+            String word = sc2.nextLine();
+            String[] neighborsarr =word.split("-");
+            Neighbors nOfWord = new Neighbors(neighborsarr[0]);
+            for(int i=1;i<neighborsarr.length;i++){
+                nOfWord.neighbors.add(new Neighbors(neighborsarr[i]));
+            }
+            neighborsArray[count]=nOfWord;
+            count++;
+        }
+        for(int i=0;i<neighborsArray.length;i++){
+            Neighbors n =neighborsArray[i];
+            n.OutsideNeighbors=new int[n.neighbors.size()];
+            for(Neighbors word:n.neighbors){
+                for(int j=0;j<neighborsArray.length;j++){
+                    //if(neighborsArray[j])
+                }
+            }
+        }
+        //uses pre-computed neighbors;
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
         //test 1       24815.761561 ms predicted runtime (about 25 sec)
-        //              Current time: 88 ms run (10000) times : 3ms
+        //              Current time: 67 ms run (10000) times : 3ms
         //              100 times: 12 ms | all paths work
         //String word1="cat";
         //String word2="dog";
@@ -106,7 +138,7 @@ public class Levenshtein {
         //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
-            int num = 10000;
+            int num = 1;
             for(int i=0;i<num;i++){
                 Long pre = System.currentTimeMillis();
                 solve(word1,word2);
@@ -182,7 +214,7 @@ public class Levenshtein {
         for(int i =0; i<=word.length();i++){//for each space/character
             for(int j=0;j<26;j++){
                 char g = (char) ('a' + j);
-                if(i<word.length()) {//not the last space as their isn't a char to set
+                if(i<word.length()) {//not the last space as there isn't a char to set
                     String newWord = "";
                     letter2.set(i, g);
                     for (int k = 0; k < letter2.size(); k++) {
