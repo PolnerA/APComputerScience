@@ -14,7 +14,12 @@ public class Levenshtein {
             this.word=word;
         }
     }
-    static Neighbors[] neighborsArray;
+    HashMap<String,Integer> a ;//same as dictionary arr
+    //type of datatype to use first it has to store a value (the word), and it needs to point to other values (neighbors)
+    //Hashmap of a string would store the values with an integer array to store the different neighbors
+    static String[] DictionaryArr;//these two arrays are what is looked at try to convert to a single hash thing
+    //
+    static ArrayList<String>[] neighborsArray;
     static int paths=0;//reasonable estimate for shortest path
     static final boolean getPaths = false;
     ArrayList<String> from = new ArrayList<>();
@@ -75,33 +80,39 @@ public class Levenshtein {
 
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(new File("dictionarySortedLength.txt"));
+        int index=0;
+        DictionaryArr=new String[370099];
         while(sc.hasNext()){
           String word = sc.nextLine();
           Dictionary.add(word);
+          DictionaryArr[index]=word;
+          index++;
         }
         sc.close();
-        neighborsArray = new Neighbors[Dictionary.size()];
+        neighborsArray = new ArrayList[Dictionary.size()];
         Scanner sc2 = new Scanner(new File("dictionaryWithNeighbors"));
         int count=0;
-        while (sc2.hasNext()){
+        while (sc2.hasNext()){//goes through with the neighbors
             String word = sc2.nextLine();
             String[] neighborsarr =word.split("-");
             Neighbors nOfWord = new Neighbors(neighborsarr[0]);
+            ArrayList<String> neighbors = new ArrayList<>();
             for(int i=1;i<neighborsarr.length;i++){
-                nOfWord.neighbors.add(new Neighbors(neighborsarr[i]));
+                neighbors.add(neighborsarr[i]);
             }
-            neighborsArray[count]=nOfWord;
+            neighborsArray[count]=neighbors;
             count++;
         }
-        for(int i=0;i<neighborsArray.length;i++){
-            Neighbors n =neighborsArray[i];
-            n.OutsideNeighbors=new int[n.neighbors.size()];
-            for(Neighbors word:n.neighbors){
-                for(int j=0;j<neighborsArray.length;j++){
-                    //if(neighborsArray[j])
-                }
-            }
-        }
+        System.out.println("");
+        //for(int i=0;i<neighborsArray.length;i++){
+        //    Neighbors n =neighborsArray[i];
+        //    n.OutsideNeighbors=new int[n.neighbors.size()];
+        //    for(Neighbors word:n.neighbors){
+        //        for(int j=0;j<neighborsArray.length;j++){
+        //            //if(neighborsArray[j])
+        //        }
+        //    }
+        //}
         //uses pre-computed neighbors;
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
@@ -176,7 +187,7 @@ public class Levenshtein {
             String wordpath = queue.remove();//current neighbor is assumed
             if(wordpath.equals("")){//if it hits an end of line and shortest path is found it quits as others are longer
                 if(found){return;}
-                queue.add("");//skips over sentinal otherwise and adds a new one to the end line marking the neighbors end
+                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
                 continue;
             }
             String word = getValue(wordpath);
