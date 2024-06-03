@@ -298,8 +298,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         a.left.left= new Number();
         a.left.right= new Number(2);
         //Functions.add(a);
-        Function b = new Exp();
-        b.left=new Number(2);
+        Function b = new Div();
+        b.left=new Number(1);
         b.right=new Number();
         Functions.add(b);
         //2^x
@@ -620,7 +620,7 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                         //if y1 and y2's difference is greater than one do fractions
                         if(1<Math.abs(y1-y2)){
                             System.out.println(Math.abs(y1-y2));
-                            drawsubsections(g);
+                            drawsubsections(g);//if there is a space it calls it's inverse
 
                         }
                         g.drawRect((int) x1, (int) y1, 1, 1);
@@ -634,21 +634,15 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         }//
     }//y=x 2 x % -
     public void drawsubsections(Graphics g ){//denom starts at 2 for a 1/2 pixel nad increases by *2 from there
-        for (int a = 1; a < BoardWidth; a++) {//goes through each pixel excluding the last to be able to check ahead.
-            //check for vertical distance, if it is
-            double b=((double) a)-(BoardWidth/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
-            double i = (double) (b/ViewSize)+CameraX;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
-            double h = (double) ((b-1)/ViewSize)+CameraX;//((a-1)/ViewSize)+CameraX;
+        for (int a = 1; a < BoardHeight; a++) {//goes through each pixel excluding the last to be able to check ahead.
+            //check for vertical distance, if it is //goes through each y
+            double b=((double) a)-(BoardHeight/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
+            double i = (double) (b/ViewSize)+CameraY;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
+            double h = (double) ((b-1)/ViewSize)+CameraY;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
-                if(Function<Functions.size()) {
-                    g.setColor(Color.RED);
-                    double displayX = Math.round(FunctionAt * 1000) / (double) 1000;
-                    double displayY = Math.round(Functions.get(Function).PerformOperation((FunctionAt)) * 1000) / (double) 1000;
-                    g.drawString("eq" + Function + "  (" + displayX + "," + displayY + ")", 0, 10);
-                    g.drawRect((int) doTransformationsX(FunctionAt)-3, (int) doTransformationsY(Functions.get(Function).PerformOperation(FunctionAt))-3 , 6, 6);
-                }
                 g.setColor(Color.WHITE);
-                    double fh = Math.log(i)/Math.log(2);
+                    //at x,y it gets the log base 2 of x
+                    double fh = 1/i;//at each
 
                     if (!isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
@@ -656,8 +650,8 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                         double x1;//i & h
                         double y1;//fi & fh
 
-                        x1=doTransformationsX(h);
-                        y1=doTransformationsY(fh);
+                        x1=doTransformationsXinv(h);
+                        y1=doTransformationsYinv(fh);
                         //if y1 and y2's difference is greater than one do fractions
                         g.drawRect((int) y1, (int) x1, 1, 1);
 
@@ -677,6 +671,21 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
     public double doTransformationsY(double Y){
         Y-=CameraY;
         Y*=ViewSize;
+        Y+=BoardHeight/2;
+        Y=BoardHeight-Y;
+        return Y;
+    }
+    public double doTransformationsXinv(double X){//takes a double x
+        X-=CameraX;
+        X*=ViewSize;
+        X = -X;
+        X+=BoardWidth/2;
+        return X;
+    }
+    public double doTransformationsYinv(double Y){
+        Y-=CameraY;
+        Y*=ViewSize;
+        Y = -Y;
         Y+=BoardHeight/2;
         Y=BoardHeight-Y;
         return Y;
