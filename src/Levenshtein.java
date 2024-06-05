@@ -12,7 +12,7 @@ public class Levenshtein {
     static HashMap<String,HashSet<String>> neighbors= new HashMap<>();
     static ArrayList<ArrayList<String>> paths = new ArrayList<>();
     static int pathNumber=0;//reasonable estimate for shortest path
-    static final boolean getPaths = true;
+    static final boolean getPaths = false;
 
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
@@ -101,35 +101,35 @@ public class Levenshtein {
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
         //test 1       24815.761561 ms predicted runtime (about 25 sec)
-        //              Current time: 2 ms run (10000) times : 3ms
+        //              Current time: 0 ms run (10000) times : 3ms
         //              100 times: 0 ms | all paths work
         //String word1="cat";
         //String word2="dog";
         //test 2       15703.301474 ms predicted runtime (about 16 sec)
-        //              Current time: 5 ms run (10000) times : 4 ms
+        //              Current time: 0 ms run (10000) times : 4 ms
         //              100 times: 1 ms | all paths work
         //String word1="dog";
         //String word2="cat";
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
-        //                  current time : 130 ms
+        //                  current time : 167 ms
         //            100 times: 137 ms  | all paths throws out of memory, all past this do too
-        String word1="puppy";
-        String word2="dog";
+        //String word1="puppy";
+        //String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
-        //              current time : 132 ms
-        //            100 times: 14 ms | all paths work without string1->string2 throws out of memory pre finishing
+        //              current time : 17 ms
+        //            100 times: 14 ms | all paths work without string1->string2
         //String word1="dog";
         //String word2="smart";
         //test 5     1732498.366852 ms predicted runtime (about 29 min)
-        //          current time : 997 ms
+        //          current time : 65 ms
         //            100 times: 42 ms | all paths give java.lang.OutOfMemoryError
         //String word1="dog";
         //String word2="quack";
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
-        //          current time : 1054 ms
+        //          current time : 121 ms
         //            100 times: 103 ms
-        //String word1="monkey";
-        //String word2="business";
+        String word1="monkey";
+        String word2="business";
         //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
