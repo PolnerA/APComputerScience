@@ -12,7 +12,7 @@ public class Levenshtein {
     static HashMap<String,HashSet<String>> neighbors= new HashMap<>();
     static ArrayList<ArrayList<String>> paths = new ArrayList<>();
     static int pathNumber=0;//reasonable estimate for shortest path
-    static final boolean getPaths = true;
+    static final boolean getPaths = false;
 
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
@@ -113,8 +113,8 @@ public class Levenshtein {
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //                  current time : 167 ms
         //            100 times: 137 ms  | all paths throws out of memory, all past this do too
-        String word1="puppy";
-        String word2="dog";
+        //String word1="puppy";
+        //String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 17 ms
         //            100 times: 14 ms | all paths work without string1->string2
@@ -128,12 +128,12 @@ public class Levenshtein {
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
         //          current time : 1681 ms
         //            100 times: 103 ms 120
-        //String word1="monkey";
-        //String word2="business";
+        String word1="monkey";
+        String word2="business";
         //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
-            int num = 100;
+            int num = 1;
             for(int i=0;i<num;i++){
                 Long pre = System.currentTimeMillis();
                 solve(word1,word2);
@@ -147,18 +147,48 @@ public class Levenshtein {
     }
     public static void solve(String word1, String word2)  {
         HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
+        HashSet<String> end = new HashSet<>();
+        HashSet<String> ToEnd = new HashSet<>();
+        HashSet<String> ToEnd2 = new HashSet<>();
+        HashSet<String> end2 = new HashSet<>();
         Queue<String> queue = new LinkedList<>();
+        Queue<String> queue2 = new LinkedList<>();
         queue.add(word1);
-        while (!queue.isEmpty()) {//while there are neighbors
+        end.add(word1);
+        queue.add("");
+        queue2.add(word2);
+        end.add(word2);
+        queue2.add("");
+
+        while (!queue.isEmpty()&&!queue2.isEmpty()) {//while there are neighbors
             String word = queue.remove();//current neighbor is assumed
-            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
-            usedWords.add(word);
-            currentNeighbors.removeAll(usedWords);
-            if (!currentNeighbors.contains(word2)) {
-                queue.addAll(currentNeighbors);
-            } else {
+            if(word.equals("")){
+                end.clear();
+                end.addAll(ToEnd);
+                queue.add("");
+                word =queue.remove();
+            }
+            String CurrentWord = queue2.remove();
+            if(CurrentWord.equals("")){
+                end2.clear();
+                end2.addAll(ToEnd2);
+                queue2.add("");
+                CurrentWord =queue2.remove();
+            }
+            if(end.containsAll(end2)||end2.containsAll(end)){
                 return;
             }
+            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
+            HashSet<String> currentNeighbors2 = neighbors.get(CurrentWord);
+            usedWords.add(word);
+            usedWords.add(CurrentWord);
+            currentNeighbors.removeAll(usedWords);
+            currentNeighbors2.removeAll(usedWords);
+            ToEnd.addAll(currentNeighbors);
+            ToEnd2.addAll(currentNeighbors2);
+            queue.addAll(currentNeighbors);
+            queue2.addAll(currentNeighbors2);
+
         }
     }
     /*
@@ -202,23 +232,29 @@ public class Levenshtein {
                 continue;
             }
             if(wordpath.equals(".")){
-                index++;
                 continue;
             }
-            String word = getValue(wordpath);
-            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
+            //String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = neighbors.get(wordpath);//the current neighbors in the assumed word
             if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
                 if(!found){//only add neighbors if the shortest isn't on this level
+                    HashSet<String> currentPath=paths.remove(index);
+                    currentNeighbors.removeAll(currentPath);
                     for(String neighbor:currentNeighbors){
                         //store as a path of strings so you know to eliminate paths that come after the path
-                        queue.add(wordpath+"->"+neighbor);
+                        queue.add(neighbor);
+                        HashSet<String> Path = new HashSet<>();
+                        Path.addAll(currentPath);
+                        Path.add(neighbor);
+                        paths.add(Path);
+                        index++;
                     }
                     queue.add(".");
                 }
             } else {
                 wordpath = wordpath+"->"+word2;
                 pathNumber++;
-                System.out.println(word1+"->"+wordpath+" #"+pathNumber);
+                System.out.println(wordpath+" #"+pathNumber);
                 found=true;
 
             }
