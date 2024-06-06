@@ -306,6 +306,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //logb2ox
         //before checking for equivalence put in to x order // x on left and shook 1 x + is equal to x 1 +
         /*
+        get each equation to be equal to the same equation you could map input and outputs to try and get the same eq
+        or you could get each one into standard position
         to get left x operations if mult or add just swap nodes
         sub change right to negative and sign to add then swap, for divide change sign to power with right being neg 1 and left being swapped div (div swapped nodes)
         for exponents no change is necessary as
