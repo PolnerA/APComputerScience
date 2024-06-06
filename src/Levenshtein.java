@@ -12,7 +12,7 @@ public class Levenshtein {
     static HashMap<String,HashSet<String>> neighbors= new HashMap<>();
     static ArrayList<ArrayList<String>> paths = new ArrayList<>();
     static int pathNumber=0;//reasonable estimate for shortest path
-    static final boolean getPaths = false;
+    static final boolean getPaths = true;
 
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
@@ -113,8 +113,8 @@ public class Levenshtein {
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //                  current time : 167 ms
         //            100 times: 137 ms  | all paths throws out of memory, all past this do too
-        //String word1="puppy";
-        //String word2="dog";
+        String word1="puppy";
+        String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 17 ms
         //            100 times: 14 ms | all paths work without string1->string2
@@ -126,10 +126,10 @@ public class Levenshtein {
         //String word1="dog";
         //String word2="quack";
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
-        //          current time : 121 ms
-        //            100 times: 103 ms
-        String word1="monkey";
-        String word2="business";
+        //          current time : 1681 ms
+        //            100 times: 103 ms 120
+        //String word1="monkey";
+        //String word2="business";
         //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
@@ -160,7 +160,6 @@ public class Levenshtein {
                 return;
             }
         }
-
     }
     /*
     public static void printsolves(String word1, String word2){//implement into this with the different paths being used only in a self-contained "path"
@@ -186,26 +185,35 @@ public class Levenshtein {
 
         // list word1
         Queue<String> queue = new LinkedList<String>();//queue created once and used
-        Queue<Stack<String>> paths = new LinkedList<>();
         boolean found=false;//found boolean helps with the final line
         queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
         queue.add("");                  // 1 2 3 4 5 ""
                                         //11 12 13 14 15"" 21 22 23 24 ""
+        ArrayList<HashSet<String>> paths = new ArrayList<>();
+        paths.add(new HashSet<>());
+        paths.get(0).add(word1);
+        int index=0;
         while (!queue.isEmpty()) {//while there are neighbors goes through the stack
             String wordpath = queue.remove();//current neighbor is assumed
             if(wordpath.equals("")){//if it hits an end of line and shortest path is found it quits as others are longer
                 if(found){return;}
                 queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
+                index=0;
                 continue;
             }
-            //String word = getValue(wordpath);
-            HashSet<String> currentNeighbors = neighbors.get(wordpath);//the current neighbors in the assumed word
+            if(wordpath.equals(".")){
+                index++;
+                continue;
+            }
+            String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
             if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
                 if(!found){//only add neighbors if the shortest isn't on this level
                     for(String neighbor:currentNeighbors){
                         //store as a path of strings so you know to eliminate paths that come after the path
-                        queue.add(neighbor);
+                        queue.add(wordpath+"->"+neighbor);
                     }
+                    queue.add(".");
                 }
             } else {
                 wordpath = wordpath+"->"+word2;
