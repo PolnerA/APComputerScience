@@ -77,26 +77,49 @@ public class Levenshtein {
           index++;
         }
         sc.close();
+        File neighbor = new File("dictionaryWithOnlyNeighbors");
+        neighbor.createNewFile();
+        FileWriter writer = new FileWriter(neighbor);
+        HashSet<String> neighborlessWords = new HashSet<>();
+        Scanner scanner = new Scanner(new File("WordsWithoutNeighbors"));
+        while (scanner.hasNext()){
+            String line = scanner.nextLine();
+            neighborlessWords.add(line);
+        }
         Scanner sc2 = new Scanner(new File("dictionaryWithNeighbors"));
         while (sc2.hasNext()){//goes through with the neighbors
             String Line =sc2.nextLine();
             String[] neighborsLine = Line.split("-");
+            if(neighborlessWords.contains(neighborsLine[0])){
+                continue;//don't print line if it has no neighbors
+            }
             HashSet<String> neighborsSet = new HashSet<>();
             for(int i=1;i<neighborsLine.length;i++){
                 neighborsSet.add(neighborsLine[i]);
+                if(neighborlessWords.contains(neighborsLine[i])){
+                    String[] neighborsLine2 = new String[neighborsLine.length-1];
+                    neighborsLine2[0]=neighborsLine[0];
+                    int ij = 1;
+                    for(int j=1;j<neighborsLine2.length;j++){
+                        if(j!=i){
+                            neighborsLine2[j]=neighborsLine[ij];
+                        }
+                        ij++;
+                    }
+                    neighborsLine=neighborsLine2;
+                }
             }
-            neighbors.put(neighborsLine[0],neighborsSet);
+            writer.write(neighborsLine[0]);
+            for(int i=1;i<neighborsLine.length;i++){
+                writer.write("-"+neighborsLine[i]);
+            }
+            writer.write("\n");
+                //if there is a word that has no neighbors in it's neighbors
+
         }
+        sc2.close();
+        writer.close();
         System.out.println("");
-        //for(int i=0;i<neighborsArray.length;i++){
-        //    Neighbors n =neighborsArray[i];
-        //    n.OutsideNeighbors=new int[n.neighbors.size()];
-        //    for(Neighbors word:n.neighbors){
-        //        for(int j=0;j<neighborsArray.length;j++){
-        //            //if(neighborsArray[j])
-        //        }
-        //    }
-        //}
         //uses pre-computed neighbors;
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
@@ -111,7 +134,7 @@ public class Levenshtein {
         //String word1="dog";
         //String word2="cat";
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
-        //                  current time : 167 ms
+        //                  current time : 0 ms
         //            100 times: 137 ms  | all paths throws out of memory, all past this do too
         //String word1="puppy";
         //String word2="dog";
@@ -126,14 +149,14 @@ public class Levenshtein {
         //String word1="dog";
         //String word2="quack";
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
-        //          current time : 1681 ms
+        //          current time : 1 ms
         //            100 times: 103 ms 120
         String word1="monkey";
         String word2="business";
         //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         if(!getPaths){
             Long sum = Long.valueOf(0);
-            int num = 1;
+            int num = 100;
             for(int i=0;i<num;i++){
                 Long pre = System.currentTimeMillis();
                 solve(word1,word2);
@@ -144,6 +167,7 @@ public class Levenshtein {
         }else{
             printsolves(word1,word2);
         }
+        writer.close();
     }
     public static void solve(String word1, String word2)  {
         HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
@@ -157,20 +181,20 @@ public class Levenshtein {
         end.add(word1);
         queue.add("");
         queue2.add(word2);
-        end.add(word2);
+        end2.add(word2);
         queue2.add("");
 
         while (!queue.isEmpty()&&!queue2.isEmpty()) {//while there are neighbors
             String word = queue.remove();//current neighbor is assumed
             if(word.equals("")){
-                end.clear();
+                end=new HashSet<>();
                 end.addAll(ToEnd);
                 queue.add("");
                 word =queue.remove();
             }
             String CurrentWord = queue2.remove();
             if(CurrentWord.equals("")){
-                end2.clear();
+                end2=new HashSet<>();
                 end2.addAll(ToEnd2);
                 queue2.add("");
                 CurrentWord =queue2.remove();
@@ -180,14 +204,17 @@ public class Levenshtein {
             }
             HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
             HashSet<String> currentNeighbors2 = neighbors.get(CurrentWord);
+            if(currentNeighbors2!=null){
+                currentNeighbors2.removeAll(usedWords);
+                ToEnd2.addAll(currentNeighbors2);
+                queue2.addAll(currentNeighbors2);
+            }if(currentNeighbors!=null){
+                currentNeighbors.removeAll(usedWords);
+                ToEnd.addAll(currentNeighbors);
+                queue.addAll(currentNeighbors);
+            }
             usedWords.add(word);
             usedWords.add(CurrentWord);
-            currentNeighbors.removeAll(usedWords);
-            currentNeighbors2.removeAll(usedWords);
-            ToEnd.addAll(currentNeighbors);
-            ToEnd2.addAll(currentNeighbors2);
-            queue.addAll(currentNeighbors);
-            queue2.addAll(currentNeighbors2);
 
         }
     }
