@@ -67,7 +67,6 @@ public class Levenshtein {
         sc2.close();
 
     }
-
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(new File("dictionarySortedLength.txt"));
         int index=0;
@@ -77,49 +76,20 @@ public class Levenshtein {
           index++;
         }
         sc.close();
-        File neighbor = new File("dictionaryWithOnlyNeighbors");
-        neighbor.createNewFile();
-        FileWriter writer = new FileWriter(neighbor);
-        HashSet<String> neighborlessWords = new HashSet<>();
-        Scanner scanner = new Scanner(new File("WordsWithoutNeighbors"));
-        while (scanner.hasNext()){
-            String line = scanner.nextLine();
-            neighborlessWords.add(line);
-        }
         Scanner sc2 = new Scanner(new File("dictionaryWithNeighbors"));
         while (sc2.hasNext()){//goes through with the neighbors
             String Line =sc2.nextLine();
             String[] neighborsLine = Line.split("-");
-            if(neighborlessWords.contains(neighborsLine[0])){
-                continue;//don't print line if it has no neighbors
-            }
             HashSet<String> neighborsSet = new HashSet<>();
             for(int i=1;i<neighborsLine.length;i++){
                 neighborsSet.add(neighborsLine[i]);
-                if(neighborlessWords.contains(neighborsLine[i])){
-                    String[] neighborsLine2 = new String[neighborsLine.length-1];
-                    neighborsLine2[0]=neighborsLine[0];
-                    int ij = 1;
-                    for(int j=1;j<neighborsLine2.length;j++){
-                        if(j!=i){
-                            neighborsLine2[j]=neighborsLine[ij];
-                        }
-                        ij++;
-                    }
-                    neighborsLine=neighborsLine2;
-                }
             }
-            writer.write(neighborsLine[0]);
-            for(int i=1;i<neighborsLine.length;i++){
-                writer.write("-"+neighborsLine[i]);
-            }
-            writer.write("\n");
-                //if there is a word that has no neighbors in it's neighbors
 
+                //if there is a word that has no neighbors in it's neighbors
+//
         }
         sc2.close();
-        writer.close();
-        System.out.println("");
+        //System.out.println("");
         //uses pre-computed neighbors;
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
@@ -151,23 +121,23 @@ public class Levenshtein {
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
         //          current time : 1 ms
         //            100 times: 103 ms 120
-        String word1="monkey";
-        String word2="business";
-        //to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
-        if(!getPaths){
-            Long sum = Long.valueOf(0);
-            int num = 100;
-            for(int i=0;i<num;i++){
-                Long pre = System.currentTimeMillis();
-                solve(word1,word2);
-                Long post = System.currentTimeMillis();
-                sum +=(post-pre);
-            }
-            System.out.println("Time: "+(sum/num)+" ms");
-        }else{
-            printsolves(word1,word2);
-        }
-        writer.close();
+        //String word1="monkey";
+        //String word2="business";
+        ////to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
+        //if(!getPaths){
+        //    Long sum = Long.valueOf(0);
+        //    int num = 100;
+        //    for(int i=0;i<num;i++){
+        //        Long pre = System.currentTimeMillis();
+        //        solve(word1,word2);
+        //        Long post = System.currentTimeMillis();
+        //        sum +=(post-pre);
+        //    }
+        //    System.out.println("Time: "+(sum/num)+" ms");
+        //}else{
+        //    printsolves(word1,word2);
+        //}
+        //writer.close();
     }
     public static void solve(String word1, String word2)  {
         HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
