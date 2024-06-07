@@ -86,7 +86,7 @@ public class Levenshtein {
             }
 
                 //if there is a word that has no neighbors in it's neighbors
-//
+
         }
         sc2.close();
         //System.out.println("");
