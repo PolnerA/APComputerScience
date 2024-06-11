@@ -83,16 +83,16 @@ public class Levenshtein {
 
     public static void main(String[] args) throws IOException {
         Scanner sc2 = new Scanner(new File("dictionaryWithNeighbors"));
-        while (sc2.hasNext()) {//goes through with the neighbors
-            String Line = sc2.nextLine();
-            String[] neighborsLine = Line.split("-");
-            HashSet<String> neighborsSet = new HashSet<>();
-            for (int i = 1; i < neighborsLine.length; i++) {
-                neighborsSet.add(neighborsLine[i]);
-            }
-            Neighbors.put(neighborsLine[0], neighborsSet);
-
-        }
+        //while (sc2.hasNext()) {//goes through with the neighbors
+        //    String Line = sc2.nextLine();
+        //    String[] neighborsLine = Line.split("-");
+        //    HashSet<String> neighborsSet = new HashSet<>();
+        //    for (int i = 1; i < neighborsLine.length; i++) {
+        //        neighborsSet.add(neighborsLine[i]);
+        //    }
+        //    Neighbors.put(neighborsLine[0], neighborsSet);
+//
+        //}
         sc2.close();
         Scanner sc = new Scanner(new File("dictionarySortedLength.txt"));
         while (sc.hasNext()) {
@@ -136,19 +136,21 @@ public class Levenshtein {
         String word2="business";
         ////to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
         Long sum = Long.valueOf(0);
-        int num = 10000;
+        int num =1;
         for (int i = 0; i < num; i++) {
             Long pre = System.currentTimeMillis();
-            solve(word1, word2);
+            ArrayList<HashSet<String>>  path =solve(word1, word2);
             Long post = System.currentTimeMillis();
             sum += (post - pre);
         }
         System.out.println("Time: " + (sum / num) + " ms");
     }
 
-    public static void solve(String word1, String word2) {//solving with the neighbor ends until they meet
+    public static ArrayList<HashSet<String>> solve(String word1, String word2) {//solving with the neighbor ends until they meet
         HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
         HashSet<String> end = new HashSet<>();
+        ArrayList<HashSet<String>> ends1 = new ArrayList<>();
+        ArrayList<HashSet<String>> ends2 = new ArrayList<>();
         HashSet<String> ToEnd = new HashSet<>();
         HashSet<String> ToEnd2 = new HashSet<>();
         HashSet<String> end2 = new HashSet<>();
@@ -156,9 +158,11 @@ public class Levenshtein {
         Queue<String> queue2 = new LinkedList<>();
         queue.add(word1);
         end.add(word1);
+        ends1.add(end);
         queue.add("");
         queue2.add(word2);
         end2.add(word2);
+        ends2.add(end2);
         queue2.add("");
 
         while (!queue.isEmpty() && !queue2.isEmpty()) {//while there are neighbors
@@ -166,6 +170,7 @@ public class Levenshtein {
             if (word.equals("")) {
                 end = new HashSet<>();
                 end.addAll(ToEnd);
+                ends1.add(end);
                 queue.add("");
                 word = queue.remove();
             }
@@ -173,16 +178,18 @@ public class Levenshtein {
             if (CurrentWord.equals("")) {
                 end2 = new HashSet<>();
                 end2.addAll(ToEnd2);
+                ends2.add(end2);
                 queue2.add("");
                 CurrentWord = queue2.remove();
             }
             HashSet<String> intersection = new HashSet<>(end);
             intersection.retainAll(end2);
             if (!intersection.isEmpty()) {
-                return;
+                ends1.addAll(ends2);
+                return ends1;
             }
-            HashSet<String> currentNeighbors = Neighbors.get(word);//the current neighbors in the assumed word
-            HashSet<String> currentNeighbors2 = Neighbors.get(CurrentWord);
+            HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
+            HashSet<String> currentNeighbors2 = getNeighborsSet(CurrentWord);
             if (currentNeighbors2 != null) {
                 currentNeighbors2.removeAll(usedWords);
                 ToEnd2.addAll(currentNeighbors2);
@@ -197,6 +204,42 @@ public class Levenshtein {
             usedWords.add(CurrentWord);
 
         }
+        return ends1;
+    }
+    public static void printsolvesqueue(String word1, String word2,ArrayList<HashSet<String>> map) {//java.lang.OutOfMemoryError as there are
+        //visualize 2d list as a binary tree
+        //     word1n1 word1n2 word1n3//copy for each neighbor and add them to the list
+        //keep count of the traversal i for bottom and j for top
+        // list word1
+        Queue<String> queue = new LinkedList<String>();//queue created once and used
+        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
+        queue.add("");                  // 1 2 3 4 5 ""
+        int index=1;
+        //11 12 13 14 15"" 21 22 23 24 ""
+        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
+            String wordpath = queue.remove();//current neighbor is assumed
+            if (wordpath.equals("")) {//if it hits an end of line and shortest path is found it quits as others are longer
+                index++;
+                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
+                continue;
+            }
+            String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = getNeighborsSet(word);//the current neighbors in the assumed word
+            currentNeighbors.retainAll(map.get(index));
+            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
+                for (String neighbor : currentNeighbors) {
+                    //store as a path of strings so you know to eliminate paths that come after the path
+                    queue.add(wordpath+"->"+neighbor);
+                }
+            } else {
+                wordpath = wordpath + "->" + word2;
+                System.out.println(wordpath);
+                return;
+            }
+        }
+    }
+    public static String getValue(String path){//from the word1 +"->" +neighbors get the last arrow thing
+        return path.substring(path.lastIndexOf(">")+1);
     }
     //method for calculating neighbors instead of pre-populating the Neighbors hashmap
     public static HashSet<String> getNeighborsSet(String word) {
@@ -250,7 +293,7 @@ public class Levenshtein {
             String newWord3 ="";
             letter3.remove(i);
             for(int k=0;k< letter3.size();k++){
-                newWord3 = newWord3+letter3.get(i);
+                newWord3 = newWord3+letter3.get(k);
             }
             if(Dictionary.contains(newWord3)){
                 neighbors.add(newWord3);

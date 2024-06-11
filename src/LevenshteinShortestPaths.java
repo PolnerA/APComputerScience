@@ -118,13 +118,13 @@ public class LevenshteinShortestPaths {
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //                  current time : 13 ms
         //            100 times: 5 ms  | all paths throws out of memory, all past this do too
-        String word1="puppy";
-        String word2="dog";
+        //String word1="puppy";
+        //String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 12 ms
         //            100 times: 6 ms | all paths work without string1->string2
-        //String word1="dog";
-        //String word2="smart";
+        String word1="dog";
+        String word2="smart";
         //test 5     1732498.366852 ms predicted runtime (about 29 min)
         //          current time : 50 ms
         //            100 times: 20 ms | all paths give java.lang.OutOfMemoryError
@@ -361,7 +361,7 @@ public class LevenshteinShortestPaths {
         System.out.println("done");
     }
 
-    public static ArrayList<HashSet<String>> GetMap(String word1,String word2){
+    public static ArrayList<HashSet<String>> GetMap(String word1,String word2){//find a way to trim down the map, first instance of anything in the second map?
         Queue<String> queue = new LinkedList<>();
         HashSet<String> End = new HashSet<>();
         HashSet<String> ToEnd = new HashSet<>();
@@ -394,10 +394,47 @@ public class LevenshteinShortestPaths {
         }
         return map;
     }
+    public static ArrayList<HashSet<String>> GetMap2(String word1,String word2,ArrayList<HashSet<String>> map1){//find a way to trim down the map, first instance of anything in the second map?
+        Queue<String> queue = new LinkedList<>();
+        HashSet<String> End = new HashSet<>();
+        HashSet<String> ToEnd = new HashSet<>();
+        ArrayList<HashSet<String>> map=new ArrayList<>();
+        queue.add(word1);
+        boolean solved=false;
+        int index=0;
+        queue.add("");
+        End.add(word1);
+        map.add(End);
+        while (!queue.isEmpty()) {//while there are neighbors
+            String word = queue.remove();//current neighbor is assumed
+            if(word.equals("")){
+                End=new HashSet<>();
+                End.addAll(ToEnd);
+                map.add(End);
+                index++;
+                queue.add("");
+                word =queue.remove();
+                if(solved){
+                    return map;
+                }
+            }
+            HashSet<String> currentNeighbors = Neighbors.get(word);//the current neighbors in the assumed word
 
+            if (!currentNeighbors.contains(word2)) {
+                queue.addAll(currentNeighbors);
+                ToEnd.addAll(currentNeighbors);
+                if(map1.get(index).contains(currentNeighbors)){
+                    return map;
+                }
+            } else {
+                solved=true;
+            }
+        }
+        return map;
+    }
     public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError as there are
-        ArrayList<HashSet<String>> map1 = GetMap(word1,word2);
-        ArrayList<HashSet<String>> map2 = GetMap(word2,word1);
+        ArrayList<HashSet<String>> map1 = GetMap(word1,word2);//too memory intensive
+        ArrayList<HashSet<String>> map2 = GetMap2(word2,word1,map1);
         ArrayList<HashSet<String>> Intersection = new ArrayList<>();
         for(int i=0;i<map1.size();i++){
             HashSet<String> SetIntersection = new HashSet<>(map1.get(i));
