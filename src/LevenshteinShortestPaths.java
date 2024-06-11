@@ -108,8 +108,8 @@ public class LevenshteinShortestPaths {
         //test 1       24815.761561 ms predicted runtime (about 25 sec)
         //              Current time: 2 ms run (10000) times : 0ms
         //              100 times: 0 ms | all paths work
-        String word1="cat";
-        String word2="dog";
+        //String word1="cat";
+        //String word2="dog";
         //test 2       15703.301474 ms predicted runtime (about 16 sec)
         //              Current time: 2 ms run (10000) times : 0 ms
         //              100 times: 0 ms | all paths work
@@ -118,8 +118,8 @@ public class LevenshteinShortestPaths {
         //test 3      185795.471987 ms predicted runtime (about 3 min 6 sec)
         //                  current time : 13 ms
         //            100 times: 5 ms  | all paths throws out of memory, all past this do too
-        //String word1="puppy";
-        //String word2="dog";
+        String word1="puppy";
+        String word2="dog";
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 12 ms
         //            100 times: 6 ms | all paths work without string1->string2
@@ -206,7 +206,62 @@ public class LevenshteinShortestPaths {
     //        }
     //    }
     //}
+/*
+    public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError as there are
+        //visualize 2d list as a binary tree
+        //     word1n1 word1n2 word1n3//copy for each neighbor and add them to the list
+        //keep count of the traversal i for bottom and j for top
+        // list word1
+        Queue<String> queue = new LinkedList<String>();//queue created once and used
+        boolean found=false;//found boolean helps with the final line
+        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
+        queue.add("");                  // 1 2 3 4 5 ""
+                                        //11 12 13 14 15"" 21 22 23 24 ""
+        ArrayList<HashSet<String>> paths = new ArrayList<>();
+        paths.add(new HashSet<>());
+        paths.get(0).add(word1);
+        int index=0;
+        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
+            String wordpath = queue.remove();//current neighbor is assumed
+            if(wordpath.equals("")){//if it hits an end of line and shortest path is found it quits as others are longer
+                if(found){return;}
+                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
+                index=0;
+                continue;
+            }
+            if(wordpath.equals(".")){
+                index++;
+                continue;
+            }
+            String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
+            //String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = neighbors.get(wordpath);//the current neighbors in the assumed word
+            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
+                if(!found){//only add neighbors if the shortest isn't on this level
+                    HashSet<String> currentPath=paths.remove(index);
+                    currentNeighbors.removeAll(currentPath);
+                    for(String neighbor:currentNeighbors){
+                        //store as a path of strings so you know to eliminate paths that come after the path
+                        queue.add(wordpath+"->"+neighbor);
+                        queue.add(neighbor);
+                        HashSet<String> Path = new HashSet<>();
+                        Path.addAll(currentPath);
+                        Path.add(neighbor);
+                        paths.add(Path);
+                        index++;
+                    }
+                    queue.add(".");
+                }
+            } else {
+                wordpath = wordpath+"->"+word2;
+                pathNumber++;
+                System.out.println(word1+"->"+wordpath+" #"+pathNumber);
+                System.out.println(wordpath+" #"+pathNumber);
+                found=true;
 
+            }
+ */
 
     // public static void printsolves(String word1, String word2) {//implement into this with the different paths being used only in a self-contained "path"
     //     HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
@@ -349,12 +404,54 @@ public class LevenshteinShortestPaths {
             SetIntersection.retainAll(map2.get(map2.size()-1-i));
             Intersection.add(SetIntersection);
         }
-        System.out.println("done");
+        HashSet<String> beginning = new HashSet<>();
+        beginning.add(word1);
+        HashSet<String> end = new HashSet<>();
+        end.add(word2);
+        Intersection.set(0,beginning);
+        Intersection.set(Intersection.size()-1, end);
+        printsolvesqueue(word1,word2,Intersection);
     }
-
-
-    public static String getValue(String path){
-        //from the word1 +"->" +neighbors get the last arrow thing
+    public static void printsolvesqueue(String word1, String word2,ArrayList<HashSet<String>> map) {//java.lang.OutOfMemoryError as there are
+        //visualize 2d list as a binary tree
+        //     word1n1 word1n2 word1n3//copy for each neighbor and add them to the list
+        //keep count of the traversal i for bottom and j for top
+        // list word1
+        Queue<String> queue = new LinkedList<String>();//queue created once and used
+        boolean found = false;//found boolean helps with the final line
+        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
+        queue.add("");                  // 1 2 3 4 5 ""
+        int index=1;
+        //11 12 13 14 15"" 21 22 23 24 ""
+        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
+            String wordpath = queue.remove();//current neighbor is assumed
+            if (wordpath.equals("")) {//if it hits an end of line and shortest path is found it quits as others are longer
+                if (found) {
+                    return;
+                }
+                index++;
+                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
+                continue;
+            }
+            String word = getValue(wordpath);
+            HashSet<String> currentNeighbors = Neighbors.get(word);//the current neighbors in the assumed word
+            currentNeighbors.retainAll(map.get(index));
+            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
+                if (!found) {//only add neighbors if the shortest isn't on this level
+                    for (String neighbor : currentNeighbors) {
+                        //store as a path of strings so you know to eliminate paths that come after the path
+                        queue.add(wordpath+"->"+neighbor);
+                    }
+                }
+            } else {
+                wordpath = wordpath + "->" + word2;
+                pathNumber++;
+                System.out.println(wordpath + " #" + pathNumber);
+                found = true;
+            }
+        }
+    }
+    public static String getValue(String path){//from the word1 +"->" +neighbors get the last arrow thing
         return path.substring(path.lastIndexOf(">")+1);
     }
 
