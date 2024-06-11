@@ -142,6 +142,7 @@ public class Levenshtein {
             ArrayList<HashSet<String>>  path =solve(word1, word2);
             Long post = System.currentTimeMillis();
             sum += (post - pre);
+            printsolvesqueue(word1,word2,path);
         }
         System.out.println("Time: " + (sum / num) + " ms");
     }
@@ -178,7 +179,7 @@ public class Levenshtein {
             if (CurrentWord.equals("")) {
                 end2 = new HashSet<>();
                 end2.addAll(ToEnd2);
-                ends2.add(end2);
+                ends2.add(0,end2);
                 queue2.add("");
                 CurrentWord = queue2.remove();
             }
