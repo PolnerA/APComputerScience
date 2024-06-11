@@ -349,7 +349,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //get lists of operations and reverse it
         return originalFunction;
     }
-    public boolean isOperation(Function input){
+    public boolean isOperation(Function input){//the little schemer
         Class<?> a = input.getClass();
         if(a == Mult.class){
             return true;
