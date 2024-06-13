@@ -144,7 +144,7 @@ public class LevenshteinShortestPaths {
             HashMap<String,ArrayList<String>> end = new HashMap<>();
             HashSet<String> n;
             for(String word:currentMap.keySet()){
-                n=Neighbors.get(word);
+                n=getNeighborsSet(word);
                 if(n!=null){
                     for(String neighbor:n){
                         if(!end.keySet().contains(neighbor)){
@@ -212,7 +212,7 @@ public class LevenshteinShortestPaths {
                 String[] setArray = set.toArray(new String[0]);
                 if(1<=path.size()){
                     String word=path.get(path.size()-1);
-                    if(Neighbors.get(word).contains(setArray[index])){
+                    if(getNeighborsSet(word).contains(setArray[index])){
                         path.add(setArray[index]);
                     }else{
                         skip=true;
@@ -238,11 +238,90 @@ public class LevenshteinShortestPaths {
             }
         }
     }
+    public static HashSet<String> getNeighborsSet(String word) {
+        //if it is already calculated it just stores and returns the value
+        if (Neighbors.containsKey(word)) {
+            return new HashSet<>(getNeighborsSet(word));
+        }
+        ArrayList<Character> letter = new ArrayList<>();//sets up new ArrayLists for the new generated possible neighbors
+        //one for additions, subtractions and replacements
+        ArrayList<Character> letter2 = new ArrayList<>();
+        ArrayList<Character> letter3 = new ArrayList<>();
+        char[] letters = word.toCharArray();
+        for (int i = 0; i < letters.length; i++) {
+            letter.add(letters[i]);
+            letter2.add(letters[i]);
+            letter3.add(letters[i]);
+        }
+        HashSet<String> neighbors = new HashSet<>();
+        for (int i = 0; i < word.length(); i++) {//for each space/character
+
+            for (int j = 0; j < 26; j++) {
+                char g = (char) ('a' + j);
+                String newWord = "";
+                letter2.set(i, g);
+                for (int k = 0; k < letter2.size(); k++) {
+                    newWord = newWord + letter2.get(k);
+                }
+                if (Dictionary.contains(newWord)) {
+                    if (!word.equals(newWord)) {
+                        neighbors.add(newWord);
+                    }
+                }
+
+                letter2 = new ArrayList<>();
+                for (int k = 0; k < letter.size(); k++) {
+                    letter2.add(letter.get(k));
+                }
+                String newWord2 = "";
+                letter2.add(i, g);
+                for (int k = 0; k < letter2.size(); k++) {
+                    newWord2 = newWord2 + letter2.get(k);
+                }
+                if (Dictionary.contains(newWord2)) {
+                    neighbors.add(newWord2);
+                }
+                letter2 = new ArrayList<>();
+                for (int k = 0; k < letter.size(); k++) {
+                    letter2.add(letter.get(k));
+                }
+            }
+            String newWord3 ="";
+            letter3.remove(i);
+            for(int k=0;k< letter3.size();k++){
+                newWord3 = newWord3+letter3.get(k);
+            }
+            if(Dictionary.contains(newWord3)){
+                neighbors.add(newWord3);
+            }
+            letter3=new ArrayList<>();
+            for(int k=0;k< letter.size();k++){
+                letter3.add(letter.get(k));
+            }
+        }
+        for(int j=0;j<26;j++){
+            char g = (char) ('a'+ j);
+            String newWord2 = "";
+            letter2.add(word.length(), g);
+            for (int k = 0; k < letter2.size(); k++) {
+                newWord2 = newWord2 + letter2.get(k);
+            }
+            if (Dictionary.contains(newWord2)) {
+                neighbors.add(newWord2);
+            }
+            letter2 = new ArrayList<>();
+            for (int k = 0; k < letter.size(); k++) {
+                letter2.add(letter.get(k));
+            }
+        }
+        Neighbors.put(word, neighbors);
+        return new HashSet<>(neighbors);
+    }
     public static boolean isValidPath(ArrayList<String> path){
         for(int i=0;i<path.size()-1;i++){
             String word=path.get(i);
             String nextword = path.get(i+1);
-            HashSet<String> neighbors = Neighbors.get(word);
+            HashSet<String> neighbors = getNeighborsSet(word);
             if(!neighbors.contains(nextword)){
                 return false;
             }
