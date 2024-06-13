@@ -316,17 +316,17 @@ public class Levenshtein {
             return;
         }
     }
-    //public static boolean isValidPath(ArrayList<String> path){
-    //    for(int i=0;i<path.size()-1;i++){
-    //        String word=path.get(i);
-    //        String nextword = path.get(i+1);
-    //        HashSet<String> neighbors = getNeighborsSet(word);
-    //        if(!neighbors.contains(nextword)){
-    //            return false;
-    //        }
-    //    }
-    //    return true;
-    //}
+    public static boolean isValidPath(ArrayList<String> path){
+        for(int i=0;i<path.size()-1;i++){
+            String word=path.get(i);
+            String nextword = path.get(i+1);
+            HashSet<String> neighbors = getNeighborsSet(word);
+            if(!neighbors.contains(nextword)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static ArrayList<HashSet<String>> solve(String word1, String word2) {//solving with the neighbor ends until they meet
         HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away

@@ -10,7 +10,7 @@ public class LevenshteinShortestPaths {
     //Hashmap of a string would store the values with an integer array to store the different neighbors
     //
     static HashMap<String,HashSet<String>> Neighbors= new HashMap<>();
-    static int pathNumber=0;//reasonable estimate for shortest path
+    static int pathNumber=1;//reasonable estimate for shortest path
 
     public static void preCompute() throws IOException {
         Scanner sc2 = new Scanner(new File("dictionarySortedLength.txt"));
@@ -99,9 +99,6 @@ public class LevenshteinShortestPaths {
             Dictionary.add(word);
         }
         sc.close();
-        //preCompute();
-
-        //System.out.println("");
         //uses pre-computed neighbors;
         //tests: cat to dog, dog to cat, puppy to dog, dog to smart, dog to quack, monkey to business
         //shortest paths: 6,     6     ,      38     ,      51     ,      107    ,       1
@@ -123,8 +120,8 @@ public class LevenshteinShortestPaths {
         //test 4      189735.666912 ms predicted runtime (about 3 min 10 sec)
         //              current time : 12 ms
         //            100 times: 6 ms | all paths work without string1->string2
-        //String word1="dog";
-        //String word2="smart";
+        String word1="dog";
+        String word2="smart";
         //test 5     1732498.366852 ms predicted runtime (about 29 min)
         //          current time : 50 ms
         //            100 times: 20 ms | all paths give java.lang.OutOfMemoryError
@@ -133,379 +130,123 @@ public class LevenshteinShortestPaths {
         //test 6     2814028.051959 ms predicted runtime (about 47 min)
         //          current time : 95 ms
         //            100 times: 8 ms
-        String word1="monkey";
-        String word2="business";
-        ////to solve out of memory improve the maps to smaller sizes and use vm options: -Xlog:gc to print the garbage collector
+        //String word1="monkey";
+        //String word2="business";
         printsolves(word1,word2);
     }
-    public static void solve(String word1, String word2)  {//solving with the neighbor ends until they meet
-        HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
-        HashSet<String> end = new HashSet<>();
-        HashSet<String> ToEnd = new HashSet<>();
-        HashSet<String> ToEnd2 = new HashSet<>();
-        HashSet<String> end2 = new HashSet<>();
-        Queue<String> queue = new LinkedList<>();
-        Queue<String> queue2 = new LinkedList<>();
-        queue.add(word1);
-        end.add(word1);
-        queue.add("");
-        queue2.add(word2);
-        end2.add(word2);
-        queue2.add("");
-
-        while (!queue.isEmpty()&&!queue2.isEmpty()) {//while there are neighbors
-            String word = queue.remove();//current neighbor is assumed
-            if(word.equals("")){
-                end=new HashSet<>();
-                end.addAll(ToEnd);
-                queue.add("");
-                word =queue.remove();
-            }
-            String CurrentWord = queue2.remove();
-            if(CurrentWord.equals("")){
-                end2=new HashSet<>();
-                end2.addAll(ToEnd2);
-                queue2.add("");
-                CurrentWord =queue2.remove();
-            }
-            HashSet<String> intersection = new HashSet<>(end);
-            intersection.retainAll(end2);
-            if (!intersection.isEmpty()) {
-                return;
-            }
-            HashSet<String> currentNeighbors = Neighbors.get(word);//the current neighbors in the assumed word
-            HashSet<String> currentNeighbors2 = Neighbors.get(CurrentWord);
-            if(currentNeighbors2!=null){
-                currentNeighbors2.removeAll(usedWords);
-                ToEnd2.addAll(currentNeighbors2);
-                queue2.addAll(currentNeighbors2);
-            }if(currentNeighbors!=null){
-                currentNeighbors.removeAll(usedWords);
-                ToEnd.addAll(currentNeighbors);
-                queue.addAll(currentNeighbors);
-            }
-            usedWords.add(word);
-            usedWords.add(CurrentWord);
-
-        }
-    }
-
-    //public static void solve(String word1, String word2)  {//solving by adding to queue until the path is found
-    //    HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
-    //    Queue<String> queue = new LinkedList<>();
-    //    queue.add(word1);
-    //    while (!queue.isEmpty()) {//while there are neighbors
-    //        String word = queue.remove();//current neighbor is assumed
-    //        HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
-    //        usedWords.add(word);
-    //        currentNeighbors.removeAll(usedWords);
-    //        if (!currentNeighbors.contains(word2)) {
-    //            queue.addAll(currentNeighbors);
-    //        } else {
-    //            return;
-    //        }
-    //    }
-    //}
-/*
-    public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError as there are
-        //visualize 2d list as a binary tree
-        //     word1n1 word1n2 word1n3//copy for each neighbor and add them to the list
-        //keep count of the traversal i for bottom and j for top
-        // list word1
-        Queue<String> queue = new LinkedList<String>();//queue created once and used
-        boolean found=false;//found boolean helps with the final line
-        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
-        queue.add("");                  // 1 2 3 4 5 ""
-                                        //11 12 13 14 15"" 21 22 23 24 ""
-        ArrayList<HashSet<String>> paths = new ArrayList<>();
-        paths.add(new HashSet<>());
-        paths.get(0).add(word1);
-        int index=0;
-        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
-            String wordpath = queue.remove();//current neighbor is assumed
-            if(wordpath.equals("")){//if it hits an end of line and shortest path is found it quits as others are longer
-                if(found){return;}
-                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
-                index=0;
-                continue;
-            }
-            if(wordpath.equals(".")){
-                index++;
-                continue;
-            }
-            String word = getValue(wordpath);
-            HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
-            //String word = getValue(wordpath);
-            HashSet<String> currentNeighbors = neighbors.get(wordpath);//the current neighbors in the assumed word
-            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
-                if(!found){//only add neighbors if the shortest isn't on this level
-                    HashSet<String> currentPath=paths.remove(index);
-                    currentNeighbors.removeAll(currentPath);
-                    for(String neighbor:currentNeighbors){
-                        //store as a path of strings so you know to eliminate paths that come after the path
-                        queue.add(wordpath+"->"+neighbor);
-                        queue.add(neighbor);
-                        HashSet<String> Path = new HashSet<>();
-                        Path.addAll(currentPath);
-                        Path.add(neighbor);
-                        paths.add(Path);
-                        index++;
-                    }
-                    queue.add(".");
-                }
-            } else {
-                wordpath = wordpath+"->"+word2;
-                pathNumber++;
-                System.out.println(word1+"->"+wordpath+" #"+pathNumber);
-                System.out.println(wordpath+" #"+pathNumber);
-                found=true;
-
-            }
- */
-
-    // public static void printsolves(String word1, String word2) {//implement into this with the different paths being used only in a self-contained "path"
-    //     HashSet<String> usedWords = new HashSet<>();//not repeating a word helps keep the out of memory error away
-    //     HashSet<String> end = new HashSet<>();
-    //     HashSet<String> ToEnd = new HashSet<>();
-    //     HashSet<String> ToEnd2 = new HashSet<>();
-    //     HashSet<String> end2 = new HashSet<>();
-    //     Queue<String> queue = new LinkedList<>();
-    //     Queue<String> queue2 = new LinkedList<>();
-    //     ArrayList<HashSet<String>> map1 = new ArrayList<>();
-    //     ArrayList<HashSet<String>> map2 = new ArrayList<>();
-    //     queue.add(word1);
-    //     end.add(word1);
-    //     map1.add(end);
-    //     queue.add("");
-    //     queue2.add(word2);
-    //     end2.add(word2);
-    //     map2.add(end2);
-    //     queue2.add("");
-//
-    //     while (!queue.isEmpty() && !queue2.isEmpty()) {//while there are neighbors
-    //         String word = queue.remove();//current neighbor is assumed
-    //         if (word.equals("")) {
-    //             end = new HashSet<>();
-    //             end.addAll(ToEnd);
-    //             map1.add(end);
-    //             queue.add("");
-    //             word = queue.remove();
-    //         }
-    //         String CurrentWord = queue2.remove();
-    //         if (CurrentWord.equals("")) {
-    //             end2 = new HashSet<>();
-    //             end2.addAll(ToEnd2);
-    //             map2.add(0,end2);
-    //             queue2.add("");
-    //             CurrentWord = queue2.remove();
-    //         }
-    //         HashSet<String> intersection = new HashSet<>(end);
-    //         intersection.retainAll(end2);
-    //         if (!intersection.isEmpty()) {
-    //             CalculatePath(word1,word2,CompleteMap(map1,map2));
-    //             return;
-    //             //pivot to calculate the paths
-    //         }
-    //         HashSet<String> currentNeighbors = neighbors.get(word);//the current neighbors in the assumed word
-    //         HashSet<String> currentNeighbors2 = neighbors.get(CurrentWord);
-    //         if (currentNeighbors2 != null) {
-    //             currentNeighbors2.removeAll(usedWords);
-    //             ToEnd2.addAll(currentNeighbors2);
-    //             queue2.addAll(currentNeighbors2);
-    //         }
-    //         if (currentNeighbors != null) {
-    //             currentNeighbors.removeAll(usedWords);
-    //             ToEnd.addAll(currentNeighbors);
-    //             queue.addAll(currentNeighbors);
-    //         }
-    //         usedWords.add(word);
-    //         usedWords.add(CurrentWord);
-    //     }
-    //     System.out.println("no intersect?");
-    // }
-    public static ArrayList<HashSet<String>> CompleteMap(ArrayList<HashSet<String>> mapPart1,ArrayList<HashSet<String>> mapPart2){
-        HashSet<String> Intersection = new HashSet<>(mapPart1.get(mapPart1.size()-1));//clones the ending of the first map part
-        Intersection.retainAll(mapPart2.get(0));//keeps the intersection of the two ends
-        ArrayList<HashSet<String>> result = new ArrayList<>();
-        result.add(Intersection);
-        for(int i=2;i<=mapPart1.size();i++){
-            HashSet<String> set = mapPart1.get(mapPart1.size()-i);
-            for(String word:set){
-                HashSet<String> n=Neighbors.get(word);
-                n.retainAll(Intersection);
-                if(n.isEmpty()){
-                    set.remove(word);
-                }
-            }
-            Intersection=set;
-            mapPart1.set(mapPart1.size()-i,set);
-        }
-        result.addAll(0,mapPart1);
-        Intersection=result.get(result.size()-1);
-        for(int i=1;i<mapPart2.size()-1;i++){
-            HashSet<String> set = mapPart1.get(i);
-            for(String word:set){
-                HashSet<String> n=Neighbors.get(word);
-                n.retainAll(Intersection);
-                if(n.isEmpty()){
-                    set.remove(word);
-                }
-            }
-            Intersection=set;
-            mapPart2.set(i,set);
-        }
-        result.addAll(mapPart2);
-        return result;
-    }
-    public static void CalculatePath(String word1,String word2, ArrayList<HashSet<String>> Map){
-        System.out.println("done");
-    }
-
-    public static ArrayList<HashSet<String>> GetMap(String word1,String word2){//find a way to trim down the map, first instance of anything in the second map?
-        ArrayList<HashSet<String>> map=new ArrayList<>();
-        HashSet<String> wordset =new HashSet<String>();
-        wordset.add(word1);
-        map.add(wordset);
+    public static ArrayList<HashMap<String,ArrayList <String>>> GetMap(String word1,String word2){//find a way to trim down the map, first instance of anything in the second map?
+        ArrayList<HashMap<String,ArrayList<String>>> map=new ArrayList<>();
+        HashMap<String,ArrayList<String>> wordmap =new HashMap<>();
+        wordmap.put(word1,new ArrayList<>());
+        map.add(wordmap);
         for(int i=0;i<map.size();i++){
-            HashSet<String> set =map.get(i);
-            HashSet<String> end = new HashSet<>();
-            HashSet<String> n =new HashSet<>();
-            for(String word:set){
+            HashMap<String,ArrayList<String>> currentMap =map.get(i);
+            HashMap<String,ArrayList<String>> end = new HashMap<>();
+            HashSet<String> n;
+            for(String word:currentMap.keySet()){
                 n=Neighbors.get(word);
                 if(n!=null){
-                    end.addAll(n);
+                    for(String neighbor:n){
+                        if(!end.keySet().contains(neighbor)){
+                            ArrayList<String> parents = new ArrayList<>();
+                            parents.add(word);
+                            end.put(neighbor,parents);
+                        }else{
+                            ArrayList<String> parents =end.get(neighbor);
+                            parents.add(word);
+                            end.put(neighbor,parents);
+                        }
+                    }
                 }
             }
             map.add(end);
-            if(map.get(i+1).contains(word2)){
+            if(map.get(i+1).keySet().contains(word2)){
                 return map;
             }
         }
         return map;
     }
-    public static ArrayList<HashSet<String>> GetMap2(String word1,String word2){//find a way to trim down the map, first instance of anything in the second map?
-        ArrayList<HashSet<String>> map=new ArrayList<>();
-        HashSet<String> wordset =new HashSet<String>();
-        wordset.add(word2);
-        map.add(wordset);
-        while(!map.get(0).contains(word1)){
-            HashSet<String> set =map.get(0);
-            HashSet<String> end = new HashSet<>();
-            HashSet<String> n =new HashSet<>();
-            for(String word:set){
-                n=Neighbors.get(word);
-                if(n!=null){
-                    end.addAll(n);
+    public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError as there are
+        ArrayList<HashMap<String,ArrayList<String>>> map1 = GetMap(word1,word2);//
+        System.out.println();
+        ArrayList<HashMap<String,ArrayList<String>>> map2 = GetMap(word2,word1);
+        ArrayList<HashMap<String,ArrayList<String>>> Intersection = new ArrayList<>();
+        for(int i=0;i<map1.size();i++){
+            HashSet<String> SetIntersection = new HashSet<>(map1.get(i).keySet());
+            SetIntersection.retainAll(map2.get(map2.size()-1-i).keySet());
+            //get all the things
+            HashMap<String,ArrayList<String>> currentmap = new HashMap<>();
+            for(String word:SetIntersection){
+                currentmap.put(word,map1.get(i).get(word));
+                currentmap.put(word,map2.get(i).get(word));
+            }
+            Intersection.add(currentmap);
+
+        }
+        ArrayList<HashSet<String>> IntersectionSet = new ArrayList<>();
+        for (int i=0;i<Intersection.size();i++){
+            HashMap<String,ArrayList<String>> PossibleWordsMap = Intersection.get(i);
+            HashSet<String> PossibleWordsHashSet = new HashSet<>();
+            PossibleWordsHashSet.addAll(PossibleWordsMap.keySet());
+            IntersectionSet.add(PossibleWordsHashSet);
+        }
+        generatePaths(IntersectionSet);
+    }
+    public static void generatePaths(ArrayList<HashSet<String>> map){
+        int[] indices = new int[map.size()];
+        int totalcombinations=1;
+        for(HashSet<String> set: map){
+            totalcombinations*= set.size();
+        }
+        boolean skip=false;
+        HashSet<ArrayList<String>> paths = new HashSet<>();
+        for(int i=0;i<totalcombinations;i++){
+            if(skip){
+                skip=false;
+            }
+            ArrayList<String> path = new ArrayList<>();
+            for(int j=0;j<map.size();j++){
+                HashSet<String> set = map.get(j);
+                int setSize= set.size();
+                int index = indices[j];
+                String[] setArray = set.toArray(new String[0]);
+                if(1<=path.size()){
+                    String word=path.get(path.size()-1);
+                    if(Neighbors.get(word).contains(setArray[index])){
+                        path.add(setArray[index]);
+                    }else{
+                        skip=true;
+                        break;
+                    }
+                }
+                else{
+                    path.add(setArray[index]);
+                }
+                if((i/totalcombinations)%setSize==0){
+                    indices[j] = (indices[j]+1) % setSize;
                 }
             }
-            map.add(0,end);
-        }
-        return map;
-    }
-    public static void printsolves(String word1, String word2) {//java.lang.OutOfMemoryError as there are
-        ArrayList<HashSet<String>> map1 = GetMap(word1,word2);//too memory intensive
-        System.out.println();
-        ArrayList<HashSet<String>> map2 = GetMap2(word2,word1);
-        ArrayList<HashSet<String>> Intersection = new ArrayList<>();
-        for(int i=0;i<map1.size();i++){
-            HashSet<String> SetIntersection = new HashSet<>(map1.get(i));
-            SetIntersection.retainAll(map2.get(map2.size()-1-i));
-            Intersection.add(SetIntersection);
-        }
-        HashSet<String> beginning = new HashSet<>();
-        beginning.add(word1);
-        HashSet<String> end = new HashSet<>();
-        end.add(word2);
-        Intersection.set(0,beginning);
-        Intersection.set(Intersection.size()-1, end);
-        printsolvesqueue(word1,word2,Intersection);
-    }
-    public static void printsolvesqueue(String word1, String word2,ArrayList<HashSet<String>> map) {//java.lang.OutOfMemoryError as there are
-        //visualize 2d list as a binary tree
-        //     word1n1 word1n2 word1n3//copy for each neighbor and add them to the list
-        //keep count of the traversal i for bottom and j for top
-        // list word1
-        Queue<String> queue = new LinkedList<String>();//queue created once and used
-        boolean found = false;//found boolean helps with the final line
-        queue.add(word1);//populates    //w ""   try to get a sentinel of empty string for each distance
-        queue.add("");                  // 1 2 3 4 5 ""
-        int index=1;
-        //11 12 13 14 15"" 21 22 23 24 ""
-        while (!queue.isEmpty()) {//while there are neighbors goes through the stack
-            String wordpath = queue.remove();//current neighbor is assumed
-            if (wordpath.equals("")) {//if it hits an end of line and shortest path is found it quits as others are longer
-                if (found) {
-                    return;
-                }
-                index++;
-                queue.add("");//skips over sentinel otherwise and adds a new one to the end line marking the neighbors end
+            if(skip){
                 continue;
             }
-            String word = getValue(wordpath);
-            HashSet<String> currentNeighbors = Neighbors.get(word);//the current neighbors in the assumed word
-            currentNeighbors.retainAll(map.get(index));
-            if (!currentNeighbors.contains(word2)) {//if that neighbor isn't
-                if (!found) {//only add neighbors if the shortest isn't on this level
-                    for (String neighbor : currentNeighbors) {
-                        //store as a path of strings so you know to eliminate paths that come after the path
-                        queue.add(wordpath+"->"+neighbor);
-                    }
+            if(!paths.contains(path)){
+                if(isValidPath(path)){
+                    System.out.println(path+" #"+pathNumber);
+                    paths.add(path);
+                    pathNumber++;
                 }
-            } else {
-                wordpath = wordpath + "->" + word2;
-                pathNumber++;
-                System.out.println(wordpath + " #" + pathNumber);
-                found = true;
             }
         }
     }
-    public static String getValue(String path){//from the word1 +"->" +neighbors get the last arrow thing
-        return path.substring(path.lastIndexOf(">")+1);
-    }
-
-    public static HashSet<String> getNeighborsSet(String word) {
-        if(Neighbors.containsKey(word)){
-            return Neighbors.get(word);
-        }
-        ArrayList<Character> letter = new ArrayList<>();
-        ArrayList<Character> letter2 = new ArrayList<>();
-        char[] letters = word.toCharArray();
-        for(int i=0;i<letters.length;i++){
-            letter.add(letters[i]);
-            letter2.add(letters[i]);
-        }
-        HashSet<String> neighbors = new HashSet<>();
-        for(int i =0; i<=word.length();i++){//for each space/character
-            for(int j=0;j<26;j++){
-                char g = (char) ('a' + j);
-                if(i<word.length()) {//not the last space as there isn't a char to set
-                    String newWord = "";
-                    letter2.set(i, g);
-                    for (int k = 0; k < letter2.size(); k++) {
-                        newWord = newWord + letter2.get(k);
-                    }
-                    if (Dictionary.contains(newWord)) {
-                        if (!word.equals(newWord)) {
-                            neighbors.add(newWord);
-                        }
-                    }
-                }
-                letter2=new ArrayList<>();
-                for(int k=0;k<letter.size();k++){letter2.add(letter.get(k));}
-                String newWord2="";
-                letter2.add(i,g);
-                for(int k=0;k<letter2.size();k++){
-                    newWord2= newWord2 + letter2.get(k);
-                }
-                if(Dictionary.contains(newWord2)){
-                    neighbors.add(newWord2);
-                }
-                letter2=new ArrayList<>();
-                for(int k=0;k<letter.size();k++){letter2.add(letter.get(k));}
+    public static boolean isValidPath(ArrayList<String> path){
+        for(int i=0;i<path.size()-1;i++){
+            String word=path.get(i);
+            String nextword = path.get(i+1);
+            HashSet<String> neighbors = Neighbors.get(word);
+            if(!neighbors.contains(nextword)){
+                return false;
             }
         }
-        Neighbors.put(word,neighbors);
-        return neighbors;
+        return true;
     }
-
 }
