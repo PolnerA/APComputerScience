@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -31,6 +32,44 @@ public class Main {
         }
     }
     public static void main(String[] args) throws IOException {
+        // Sample ArrayList of HashSets of strings
+        ArrayList<HashSet<String>> arrayList = new ArrayList<>();
+        HashSet<String> set1 = new HashSet<>();
+        set1.add("A");
+        set1.add("B");
+        set1.add("C");
+
+        HashSet<String> set2 = new HashSet<>();
+        set2.add("X");
+        set2.add("Y");
+
+        arrayList.add(set1);
+        arrayList.add(set2);
+
+        // Method call to generate combinations
+        generateCombinations(arrayList);
+    }
+    public static void generateCombinations(ArrayList<HashSet<String>> arrayList) {
+        int[] indices = new int[arrayList.size()];
+        int totalCombinations = 1;
+        for (HashSet<String> set : arrayList) {
+            totalCombinations *= set.size();
+        }
+
+        for (int i = 0; i < totalCombinations; i++) {
+            ArrayList<String> combination = new ArrayList<>();
+            for (int j = 0; j < arrayList.size(); j++) {
+                HashSet<String> set = arrayList.get(j);
+                int setSize = set.size();
+                int index = indices[j];
+                String[] setArray = set.toArray(new String[0]);
+                combination.add(setArray[index]);
+                if ((i / totalCombinations) % setSize == 0) {
+                    indices[j] = (indices[j] + 1) % setSize;
+                }
+            }
+            System.out.println(combination);
+        }
     }
     public static boolean isNumber(String string,int index){
         char a = string.charAt(index);
