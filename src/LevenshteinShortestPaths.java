@@ -4,8 +4,15 @@ import java.io.IOException;
 import java.util.*;
 /*
 Name: Adam Polner
-Problem:
+Problem: go from two given words, and print all the shortest ways to get from word1 to word2, with a neighbor being
+a new word one edit from the old one (an edit being an insertion, replacement, or deletion)
 Pseudocode:
+a way to get from the first word to the last is to calculate the first's neighbors, then calculate all the neighbors
+from the neighbors, keep going until the hashset of the current spots neighbors contain the second word, return all the
+neighbors that are calculated by distance (in an array list, of 0 being the first word, 1 is its neighbors etc...) then
+calculate from word 2 as well, get the intersection of the two maps to get the words that could be used to get from
+the first word to the second one. then using those words go through each possible combination of neighbors, printing
+if it is a valid path.
  */
 public class LevenshteinShortestPaths {
     //dictionary storing all words for either preComputing or neighbors on the fly
