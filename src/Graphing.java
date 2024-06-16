@@ -1,29 +1,41 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 public class Graphing extends JPanel implements ActionListener, KeyListener {
     int BoardWidth;
     int BoardHeight;
     Timer frames;
     boolean gridlines=false;
-    float ViewSize=1f;
+    float ViewSize=50f;
     int tilesize=1;
     double FunctionAt=0.0;
-    double StepSize=1.0;
+    double StepSize=0.1;
     int Function = 0;
     int CameraX=0;
+    int domainFrom;
+    int domainTo;
     int CameraY=0;
     public class Function{//acts as a tree, recursively has smaller functions within it abstract to be able to utilize.
+        boolean Sine =false;
+        boolean Cosine = false;
+        boolean Inverse = false;
+        public void SetInverse(){
+            Inverse=true;
+        }
+        boolean VertAsymptote = false;
         Function left;
         Function right;
+        public void SetSine(){
+            Sine=true;
+        }public void SetCosine(){
+            Cosine=true;
+        }
         boolean negative =false;//number can still be negative and neg bool for double neg for tree changing (1-x) becomes (-x + 1)
         public void setNegative(){
             negative=true;
@@ -48,6 +60,21 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
 
         public Function(){
+        }
+        public double CheckTrig(double toReturn){
+            if(Sine){
+                if(Inverse){
+                    return Math.asin(toReturn);
+                }
+                return Math.sin(toReturn);
+            }
+            if(Cosine){
+                if(Inverse){
+                    return Math.acos(toReturn);
+                }
+                return Math.cos(toReturn);
+            }
+            return toReturn;
         }
         public Function Simplify(){
             if(this.getClass()==Add.class||this.getClass()==Mult.class){
@@ -126,6 +153,19 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             }
             return false;
         }
+        public boolean HasVertAsymptote(){
+            if(VertAsymptote){return true;}
+            if(left!=null){
+                if(right!=null){//left & right
+                    return right.HasVertAsymptote()||left.HasVertAsymptote();
+                }else{//only left
+                    return left.HasVertAsymptote();
+                }
+            }else if(right!=null){//only right branch
+                return right.HasVertAsymptote();
+            }
+            return false;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -173,8 +213,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public class Add extends Operation{
         public double PerformOperation(double input){
-            if(negative){ return -(left.PerformOperation(input)+right.PerformOperation(input));}
-            return left.PerformOperation(input) + right.PerformOperation(input);
+            if(negative){ return CheckTrig(-(left.PerformOperation(input)+right.PerformOperation(input)));}
+            return CheckTrig(left.PerformOperation(input) + right.PerformOperation(input));
         }
         public Function getInverse(){
             return new Sub();
@@ -183,9 +223,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Sub extends Operation{
         boolean ToAdd = false;//to be able to change the function to an addition of a negative
         public double PerformOperation(double input){
-            if(negative){ return -(left.PerformOperation(input)-right.PerformOperation(input));}
-            if(ToAdd){return left.PerformOperation(input)+right.PerformOperation(input);}
-            return left.PerformOperation(input)-right.PerformOperation(input);
+            if(negative){ return CheckTrig(-(left.PerformOperation(input)-right.PerformOperation(input)));}
+            if(ToAdd){return CheckTrig(left.PerformOperation(input)+right.PerformOperation(input));}
+            return CheckTrig(left.PerformOperation(input)-right.PerformOperation(input));
         }
         public Function getInverse(){
             return new Add();
@@ -193,8 +233,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public class Mult extends Operation{
         public double PerformOperation(double input){
-            if(negative){ return -(left.PerformOperation(input)*right.PerformOperation(input));}
-            return left.PerformOperation(input)*right.PerformOperation(input);
+            if(negative){ return CheckTrig(-(left.PerformOperation(input)*right.PerformOperation(input)));}
+            return CheckTrig(left.PerformOperation(input)*right.PerformOperation(input));
         }
         public Function getInverse(){
             return new Div();
@@ -203,9 +243,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     public class Div extends Operation{
         boolean PowNegOne = false;//needs insertion of new things go through and build a new tree, use derivatives post ap test
         public double PerformOperation(double input) {
-            if(negative){ return -(left.PerformOperation(input)/right.PerformOperation(input));}
-            if(PowNegOne){ return Math.pow(left.PerformOperation(input),-1);}
-            return left.PerformOperation(input)/right.PerformOperation(input);
+            if(right.containsX()){
+                VertAsymptote=true;
+            }
+            if(negative){ return CheckTrig(-(left.PerformOperation(input)/right.PerformOperation(input)));}
+            if(PowNegOne){ return CheckTrig(Math.pow(left.PerformOperation(input),-1));}
+            return CheckTrig(left.PerformOperation(input)/right.PerformOperation(input));
         }
         public Function getInverse(){
             return new Mult();
@@ -213,8 +256,17 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public class Exp extends Operation{
         public double PerformOperation(double input) {
-            if(negative){ return -Math.pow(left.PerformOperation(input),right.PerformOperation(input));}
-            return Math.pow(left.PerformOperation(input),right.PerformOperation(input));
+            double numright = right.PerformOperation(input);
+            if(numright<0){
+                if(left.containsX()){
+                    VertAsymptote=true;
+                }
+            }
+            if(negative){ return CheckTrig( -Math.pow(left.PerformOperation(input),numright));}
+            if(Inverse){
+                return CheckTrig(Math.log(left.PerformOperation(input))/Math.log(numright));
+            }
+            return CheckTrig(Math.pow(left.PerformOperation(input),numright));
         }
         public Function getInverse(){
             Function inv= new Exp();
@@ -270,12 +322,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             if(entrance){
 
                     if(negative){
-                        return -input;
+                        return CheckTrig(-input);
                     }
-                    return input;
+                    return CheckTrig(input);
 
             }
-            return number;
+            return CheckTrig(number);
         }
 
     }//to change the thing at will change the class to a base operation with different id's for the ops to change at will
@@ -283,7 +335,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     //execute a tree of operations, numbers on stack, perform the operation on the stack,
     //parse the string to get the tree of operations s
     public ArrayList<Function> Functions = new ArrayList<>();
-    public ArrayList<Function> InvFunctions = new ArrayList<>();
+    public ArrayList<HashMap<Double, Double>> values = new ArrayList<>();
+    public HashMap<Integer,Function> InvFunctions = new HashMap<>();
     public Graphing(int Boardwidth, int Boardheight){
         BoardWidth=Boardwidth;
         //inv doesn't work as you don't know what is on what side of the mult, so how div?
@@ -301,7 +354,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         Function b = new Div();
         b.left=new Number(1);
         b.right=new Number();
-        Functions.add(b);
+        //Functions.add(b);
         //2^x
         //logb2ox
         //before checking for equivalence put in to x order // x on left and shook 1 x + is equal to x 1 +
@@ -351,6 +404,12 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     }
     public boolean isOperation(Function input){//the little schemer
         Class<?> a = input.getClass();
+        if(input.left!=null||input.right!=null){
+            return false;//if it is a previous equation
+            //it would have a left or right, unless it is just a number
+            //meaning past equations won't count as operations having their
+            //left and right branches removed
+        }
         if(a == Mult.class){
             return true;
         }if(a == Div.class){
@@ -391,26 +450,38 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         System.out.print("y=");
         String rule =sc.nextLine();
         Functions.add(parseFunction(rule));
+        values.add(new HashMap<>());
     }
     public Function parseFunction(String rule){//eq# would count as a number as it should return one instead of an operation
         ArrayList<Function> treelist = new ArrayList<>();//take numbers and flip it reversing their symbols
         int NumberFrom = -1;
         int NumberTo = -1;
-        rule=rule.toLowerCase();
+        rule=rule.toLowerCase()+' ';
         for(int i=0;i<rule.length();i++){
             if(rule.charAt(i)==' '){
                 if(NumberFrom!=-1){
+                    Function num=new Function();
                     if(NumberTo!=-1){
-                        treelist.add(ParseDouble(rule,NumberFrom,NumberTo));
+                        num = ParseDouble(rule,NumberFrom,NumberTo);
                     }else{
                         if(rule.charAt(NumberFrom)!='-') {
                             if(rule.charAt(NumberFrom)=='x'){
-                                treelist.add(new Number());
-                            }else {
-                                treelist.add(ParseDouble(rule, NumberFrom, NumberFrom));
+                                num = new Number();
+                            }else if(rule.charAt(NumberFrom)=='p'){
+                                num = new Number(Math.PI);
+                            }else{
+                                num = ParseDouble(rule,NumberFrom,NumberFrom);
                             }
                         }
                     }
+                    if(NumberFrom!=0){
+                        if(rule.charAt(NumberFrom-1)=='s'){
+                            num.SetSine();
+                        }else if(rule.charAt(NumberFrom-1)=='c'){
+                            num.SetCosine();
+                        }
+                    }
+                    treelist.add(num);
                 }
                 NumberFrom=-1;//resets number if character is a space
                 NumberTo=-1;
@@ -427,19 +498,6 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 if(NumberTo==-1){
                     if(!isNumber(rule,i)){
                         treelist.add(GiveOp(rule,i));
-                    }
-                }
-            }
-        }
-        if(NumberFrom!=-1){//checks digit without a space for the end
-            if(NumberTo!=-1){
-                treelist.add(ParseDouble(rule,NumberFrom,NumberTo));
-            }else{
-                if(rule.charAt(NumberFrom)!='-') {
-                    if(rule.charAt(NumberFrom)=='x'){
-                        treelist.add(new Number());
-                    }else {
-                        treelist.add(ParseDouble(rule, NumberFrom, NumberFrom));
                     }
                 }
             }
@@ -516,22 +574,64 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         char character = string.charAt(index);//to check for nums check a string of num possibles (each a num) and the consecutive runs
         if(character=='+'){
             Operation op = new Add();
+            if(index!=0){
+                if(string.charAt(index-1)=='s'){
+                    op.Sine=true;
+                }else if(string.charAt(index-1)=='c'){
+                    op.Cosine=true;
+                }
+            }
             return op;
 
         }if(character=='*'){
             Operation op = new Mult();
-
+            if(index!=0){
+                if(string.charAt(index-1)=='s'){
+                    op.Sine=true;
+                }else if(string.charAt(index-1)=='c'){
+                    op.Cosine=true;
+                }
+            }
             return op;
         }if(character=='^'){
             Operation op = new Exp();
+            if(index!=0){
+                if(string.charAt(index-1)=='s'){
+                    op.Sine=true;
+                }else if(string.charAt(index-1)=='c'){
+                    op.Cosine=true;
+                }
+            }
             return op;
         }if(character=='/') {
             Operation op = new Div();
+            if(index!=0){
+                if(string.charAt(index-1)=='s'){
+                    op.Sine=true;
+                }else if(string.charAt(index-1)=='c'){
+                    op.Cosine=true;
+                }
+            }
             return op;
         }
-        return new Sub();
+        Operation op = new Sub();
+        if(index!=0){
+            if(string.charAt(index-1)=='s'){
+                op.Sine=true;
+            }else if(string.charAt(index-1)=='c'){
+                op.Cosine=true;
+            }
+        }
+        return op;
 
     }
+    /*
+    doing:
+    done: p as a stand in for pi, tan with sin/cos add sin and cos as a bool to the function class set domain store values in hashmap, domain class
+    to return the sin of a value instead of the regular value, identify graphs with unobtainable gaps (vertical asymptotes)
+    as it gets closer and closer to division by 0, check division by x and set the power to a negative to the division
+    by a power in the denominator
+     */
     public boolean isNumber(String string,int index){
         char a = string.charAt(index);
         boolean isNumber ='0'<=string.charAt(index)&&string.charAt(index)<='9';
@@ -546,7 +646,16 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                     return true;
                 }
             }
+            //parts of eq count as a number
+            if(string.charAt(index)=='e'){
+                return true;
+            }
+            if(string.charAt(index)=='q'){
+                return true;
+            }
             if(string.charAt(index)=='x'){
+                return true;
+            }if(string.charAt(index)=='p'){
                 return true;
             }
             return false;
@@ -559,7 +668,14 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         try {
             a=Double.parseDouble(numstring);
         }catch (Exception e){
-            //try and catch x
+            if(rangeend-rangestart==2){
+                if(string.charAt(rangestart)=='e'&&string.charAt(rangestart+1)=='q'){
+                    char eqnum =string.charAt(rangestart+2);
+                    if('0'<=eqnum&&eqnum<='9'){
+                        return Functions.get(Integer.parseInt(eqnum+""));
+                    }
+                }
+            }
         }
         num=new Number(a);//a . by itself would create the number 0.0
         return num;
@@ -602,11 +718,23 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                     g.drawRect((int) doTransformationsX(FunctionAt)-3, (int) doTransformationsY(Functions.get(Function).PerformOperation(FunctionAt))-3 , 6, 6);
                 }
                 g.setColor(Color.WHITE);
-                for (Function function : Functions) {
-
-                    double fi = function.PerformOperation(i);
-                    double fh = function.PerformOperation(h);
-
+                for (int k=0;k<Functions.size();k++) {
+                    HashMap XYPairs = values.get(k);
+                    Function function = Functions.get(k);
+                    double fi;
+                    double fh;
+                    if(!XYPairs.containsKey(i)){
+                        fi = function.PerformOperation(i);
+                        XYPairs.put(i,fi);
+                    }else{
+                        fi= (double) XYPairs.get(i);
+                    }
+                    if (!XYPairs.containsKey(h)) {
+                        fh = function.PerformOperation(h);
+                        XYPairs.put(h, fh);
+                    }else{
+                        fh=(double) XYPairs.get(h);
+                    }
                     if (!isNan(fi) && !isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
                         //21 22 23
@@ -620,11 +748,45 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                         y1=doTransformationsY(fh);
                         y2=doTransformationsY(fi);
                         //if y1 and y2's difference is greater than one do fractions
-                        if(1<Math.abs(y1-y2)){
-                            System.out.println(Math.abs(y1-y2));
-                            drawsubsections(g);//if there is a space it calls it's inverse
-
-                        }
+                        //if(!function.HasVertAsymptote()){
+                            int denom=1;
+                            while(1<Math.abs(y1-y2)){
+                                if(InvFunctions.containsKey(k)){
+                                    drawsubsections(g,k);
+                                    break;
+                                }
+                                denom++;
+                                if(200<denom){
+                                    break;
+                                }
+                                double h2 = ((double) (b-((double)1/denom))/ViewSize) +CameraX;
+                                double fh2;
+                                if(!XYPairs.containsKey(h2)){
+                                    fh2= function.PerformOperation(h2);
+                                    XYPairs.put(h2,fh2);
+                                }else{
+                                    fh2= (double) XYPairs.get(h2);
+                                }
+                                y1=doTransformationsY(fh2);
+                                //System.out.println(Math.abs(y1-y2));
+                                //drawsubsections(g);//if there is a space it calls it's inverse
+//
+//
+                            }
+                            for(int j=0;j<=denom;j++){
+                                double h2=(double) ((b-(((double) denom-j)/denom))/ViewSize)+CameraX;
+                                double fh2;
+                                if(!XYPairs.containsKey(h2)){
+                                    fh2= function.PerformOperation(h2);
+                                    XYPairs.put(h2,fh2);
+                                }else{
+                                    fh2= (double) XYPairs.get(h2);
+                                }
+                                x2=doTransformationsX(h2);
+                                y2=doTransformationsY(fh2);
+                                g.drawRect((int)x2,(int)y2,1,1);
+                            }
+                        //}
                         g.drawRect((int) x1, (int) y1, 1, 1);
 
                         //g.drawLine((int) ((h - CameraX) * ViewSize), (int) ((BoardHeight - test(h) + CameraY) * ViewSize), (int) ((i - CameraX) * ViewSize), (int) ((BoardHeight - test(i) + CameraY) * ViewSize));
@@ -635,16 +797,17 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
             }
         }//
     }//y=x 2 x % -
-    public void drawsubsections(Graphics g ){//denom starts at 2 for a 1/2 pixel nad increases by *2 from there
+    public void drawsubsections(Graphics g, int k ){//denom starts at 2 for a 1/2 pixel nad increases by *2 from there
         for (int a = 1; a < BoardHeight; a++) {//goes through each pixel excluding the last to be able to check ahead.
             //check for vertical distance, if it is //goes through each y
             double b=((double) a)-(BoardHeight/2);//shifts the pixels from 0- BoardWidth to instead show negative values with 0 in middle
             double i = (double) (b/ViewSize)+CameraY;//(a/ViewSize)+CameraX;//transposes the domain (if zoomed in by 2, divides domain by 2 then adds the camera shift of values)
             double h = (double) ((b-1)/ViewSize)+CameraY;//((a-1)/ViewSize)+CameraX;
             if(1<=Functions.size()) {
+                Function invFunction = InvFunctions.get(k);
                 g.setColor(Color.WHITE);
                     //at x,y it gets the log base 2 of x
-                    double fh = 1/i;//at each
+                    double fh = invFunction.PerformOperation(i);//at each
 
                     if (!isNan(fh)) {//to avoid drawing lines in asymptotes, check if it crosses through Nan at any time
                         //if((0<i&&0<h)||(i<0&&h<0)) {
@@ -714,13 +877,13 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
                 ViewSize *= 0.9f;//divides the view-size making things smaller
             }
         }if(e.getKeyCode()==KeyEvent.VK_W) {
-            CameraY+=5;
+            CameraY+=1;
         }if(e.getKeyCode()==KeyEvent.VK_A) {//does the same for all WASD keys
-            CameraX-=5;
+            CameraX-=1;
         }if(e.getKeyCode()==KeyEvent.VK_S) {
-            CameraY-=5;
+            CameraY-=1;
         }if(e.getKeyCode()==KeyEvent.VK_D) {
-            CameraX+=5;
+            CameraX+=1;
         }if(e.getKeyCode()==KeyEvent.VK_RIGHT){
             FunctionAt+=StepSize;
         }if(e.getKeyCode()==KeyEvent.VK_LEFT){
@@ -738,14 +901,31 @@ d(f(g(x)))/dx = df/dg ∙ dg/dx.
         if(e.getKeyCode()==KeyEvent.VK_R) {
             AddFunctionRPN();
         }if(e.getKeyCode()==KeyEvent.VK_BACK_SPACE){
+            values.remove(Functions.size()-1);
+            if(InvFunctions.containsKey(Functions.size()-1)){
+                InvFunctions.remove(Functions.size()-1);
+            }
             Functions.remove(Functions.size()-1);
-            //InvFunctions.remove(InvFunctions.size()-1);
+                //InvFunctions.remove(InvFunctions.size()-1);
         }if(e.getKeyCode()==KeyEvent.VK_G){
             GetAt();
         }if(e.getKeyCode()==KeyEvent.VK_1){
             System.out.println("Set step size to what?");
             Scanner sc = new Scanner(System.in);
             StepSize = Double.parseDouble(sc.nextLine());
+        }if(e.getKeyCode()==KeyEvent.VK_2){
+            System.out.println("Writing in inverse for greater definition,");
+            System.out.println("recommended for exponential functions");
+            System.out.println("order matters regular operations used for the ones that don't have inverses,");
+            System.out.println("example: no log so 2 x ^ would return logbase(2,x) or s is automatically arc-sine");
+            System.out.println("Which eq# do you want to put the inverse in for?");
+            Scanner sc= new Scanner(System.in);
+            Integer eq = sc.nextInt();
+            System.out.println("Write in the equation for the inverse of eq"+eq+":");
+            System.out.print("y=");
+            Scanner scanner = new Scanner(System.in);
+            String lineEq=scanner.nextLine();
+            InvFunctions.put(eq,parseFunction(lineEq));
         }
     }
     public void GetAt(){
