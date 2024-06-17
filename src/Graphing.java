@@ -52,13 +52,14 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     int CameraX=0;
     int CameraY=0;
     public static class Function{//acts as a tree, recursively has smaller functions within it, useful for user input
+        Function left;
+        Function right;
+        //left and right sides to the function help evaluate the two arguments a function has
+
         //sine and cosine aren't operations as they only take one argument, so they act like wrappers for the function
         //if a number or op has a sine in it, it takes what it would return and returns the sine or cosine of it instead
         boolean Sine =false;
         boolean Cosine = false;
-        Function left;
-        Function right;
-        //left and right sides to the function help evaluate the two arguments a function has
         public void SetSine(){
             Sine=true;
         }public void SetCosine(){
@@ -578,7 +579,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                         //split that it doesn't have a gap
                         //it goes through the entirety of the split
                         //doing the same y calculation to drawing
-                        for(int j=1;j<denom;j++){
+                        for(int j=0;j<=denom;j++){
                             double h2=(double) ((b-(((double) denom-j)/denom))/ViewSize)+CameraX;
                             double fh2;
                             if(!XYPairs.containsKey(h2)){
@@ -603,15 +604,15 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         //and the centering of the point
         X-=CameraX;
         X*=ViewSize;
-        X+=BoardWidth/2;
+        X+= (double) BoardWidth /2;
         return X;
     }
     public double doTransformationsY(double Y){
-        //does the same thing for y as with x except for drawing it changes
-        //the y to BoardHeight-y as y=0 is at the top of the screen
+        //does the same thing for y as with x except for drawing it changes the y value
+        //it changes it to BoardHeight-y as y=0 is at the top of the screen
         Y-=CameraY;
         Y*=ViewSize;
-        Y+=BoardHeight/2;
+        Y+= (double) BoardHeight /2;
         Y=BoardHeight-Y;
         return Y;
     }
