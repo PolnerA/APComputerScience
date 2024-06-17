@@ -51,9 +51,9 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
     //camera x & y are the camera offsets from panning the camera
     int CameraX=0;
     int CameraY=0;
-    public class Function{//acts as a tree, recursively has smaller functions within it, useful for user input
-        //sine and cosine aren't operations as they only take one argument so they act like wrappers for the function
-        //if a number or op has a sine in it it takes what it would return and returns the sine or cosine of it instead
+    public static class Function{//acts as a tree, recursively has smaller functions within it, useful for user input
+        //sine and cosine aren't operations as they only take one argument, so they act like wrappers for the function
+        //if a number or op has a sine in it, it takes what it would return and returns the sine or cosine of it instead
         boolean Sine =false;
         boolean Cosine = false;
         Function left;
@@ -100,6 +100,8 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             return false;
         }
         //Perform operation performs the operations recursively throughout the tree to get a result
+        //Perform operation in the Function class isn't actually used for anything only for overrides
+        //so the method below would just recurse infinitely as if you access it you did something wrong.
         public double PerformOperation(double input){
             if(left!=null){
                 double l=left.PerformOperation(input);
@@ -162,7 +164,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
         }
     }
     public class Number extends Function{
-        //number class has a number that it returns if it is asked to
+        //number class has a number that it returns if it is asked to,
         //or it returns double input if it is an entrance (x, variable for whatever input is placed in)
         //numbers value if constant
         double number;
@@ -270,7 +272,7 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
             if(rule.charAt(i)==' '){
                 //if it reaches a space, and it has a number for number from
                 if(NumberFrom!=-1){
-                    Function num=new Function();
+                    Function num= new Function();
                     //it creates a placeholder num
                     if(NumberTo!=-1){
                         //if it has a number to, it takes the number from the part of the string
