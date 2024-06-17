@@ -9,8 +9,8 @@ public class App extends Frame{//an extension of Frame (a window)
 
     public static void main(String[] args) throws InterruptedException {
         //sets the width and height
-        int boardWidth = 1000;
-        int boardHeight = 1000;
+        int boardWidth = 500;
+        int boardHeight = 500;
 
         //name of the window is set to Graph, makes it visible and sets the size
         JFrame frame = new JFrame("Graph");
