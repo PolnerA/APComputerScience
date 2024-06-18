@@ -716,6 +716,6 @@ public class Graphing extends JPanel implements ActionListener, KeyListener {
                 x=Math.PI;
             }
         }
-        System.out.println("\n"+"Eq"+s1+"("+s2+") = "+function.PerformOperation(x));
+        System.out.println("\n"+"Eq"+s1+"("+x+") = "+function.PerformOperation(x));
     }
 }
