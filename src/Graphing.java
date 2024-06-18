@@ -6,7 +6,11 @@ the graphing goes through each pixel running it through the equation. if there i
 y direction it splits the current pixel distance in the x into halves then thirds
 (etc... increasing by 1 in the denominator) until it drops the gap below 1 pixel then it prints out all the  x,y values
 to keep the graph looking smooth and continuous.
-Notes: Previous equations wouldn't count as operations instead as an already defined value, so treat it like a number
+Notes: Previous equations wouldn't count as operations instead as an already defined value, so treat it like a number,
+for continuing project: get derivatives (program already kind of does that), find inverses. get algebraic functions
+with the from being a1x^n1  a2x^n2 keeps going, extends in the negative direction to adding or subtracting between.
+cosine functions could get standardised to phase shifted sins use the sines on either the a value or the x (right?)
+1x^1 + 1X^0 = y = x + 1, tangent function sx cx / would be translated to 1cx^-1 + 0x^0 + 1sx^1 add series with
 Maintenance log:
 as the project was started back in february the maintenance log is merely a summary of big steps in the program
 other smaller work was done in between the given dates
