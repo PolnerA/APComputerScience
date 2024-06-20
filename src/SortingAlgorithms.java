@@ -43,7 +43,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     private static class DrawLists{
         int[] list;//class stores the original list whether its indexed as a boolean and the indices it has
         boolean indexed;
+        double t;//arraylists progress or time t with complete being one
         ArrayList<Integer> indices;//stores indices to highlight
+        public void setT(double t){
+            this.t=t;
+        }
         DrawLists(int[] list, ArrayList<Integer> indices){//be able to add indices
             this.list=list;
             this.indices=indices;
@@ -61,6 +65,8 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
     //list that is sorted with its copies stored in lists
     int[] list2;
     //list2 is for swapping values with the original array for visualizing merge sort
+    int[] sortedlist;
+    //sorted list for getting the current progress of an algorithm
     Timer frames;
     //frames get updated as fast as the timer can call
     static Random rng = new Random();
@@ -76,17 +82,29 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         //populates both the list to sort (list) and list 2 as original list
         list=originallist.clone();
         list2=originallist.clone();
-        CountingSort(list);//boots up with radix sort but can be changed with button input
+        BubbleSort(list);//boots up with radix sort but can be changed with button input
+        DrawLists a = lists.get(lists.size()-1);
         frames = new Timer(0,this);
         //draws a new list with a swap and/or index every frame updates as fast as swing can keep up
         frames.start();
 
+    }
+    public double GetGraph(double x,double t){
+        //f(x,t)= x if x>1-t
+        //       x/(x+t) if x<=1-t
+        if(x>1-t){
+            return x;
+        }else{
+            double y = (double)x/(x+t);
+            return y;
+        }
     }
     public void populatelist(){
         int [] templist= new int[boardwidth];
         for(int i=0;i<boardwidth;i++){
             templist[i]=i;
         }
+        sortedlist=templist.clone();
         //populates the list with all board width values
         shuffle(templist,false);
         //shuffles the templist not recording the swaps
@@ -103,12 +121,13 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
         g.setColor(Color.white);
         DrawLists drawarray= lists.get(0);
         int index = -1;//sets index to one as the list starts at 0 so index shouldn't ever be used unless overridden
-        if(drawarray.indexed){//if it is indexed then it bubble sorts the array of indices 
+        if(drawarray.indexed){//if it is indexed then it bubble sorts the array of indices
             ListBubbleSort(drawarray.indices);// (usually not more than 10 and bubble is easy to implement) and get at 0
             if(drawarray.indices.size()!=0){
                 index=drawarray.indices.get(0);
             }
         }
+        double currentT = drawarray.t;
         for (int i = 0; i < drawarray.list.length; i++) {//goes through the entire draw array list
             if(i==index) {//if the index is the same as the one it wants
                 g.setColor(Color.red);
@@ -116,7 +135,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 g.setColor(Color.white);
                 drawarray.indices.remove(0);
                 if(drawarray.indices.size()!=0){//removes the current one in the queue and if there is still more it moves on
-                    index=drawarray.indices.get(0);//as it was sorted it should be in increasing number meaning as it goes 
+                    index=drawarray.indices.get(0);//as it was sorted it should be in increasing number meaning as it goes
                 }                        //across it should print all on one array
             }
             else{
@@ -125,6 +144,11 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 //draws the y as the value of the current array segment width of one (each pixel shows a spot on the array)
                 //then the length subtracts the y value from the board height as y=0 is at the top of the screen
             }
+            g.setColor(Color.BLUE);
+            double x = (double)i/boardwidth;
+            double y = GetGraph(x,currentT);
+            g.drawRect(boardwidth-i,(int)((y*boardheight)),1,1);
+            g.setColor(Color.white);
         }//
         if(1<lists.size()) {//only removes if there are 2 or more elements as if there is only one,
                             //and it removes it, it has nothing to draw, otherwise keeps drawing last element
@@ -208,6 +232,7 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
             //goes through the list
             boolean swapped = false;
             //checks if it has swapped it yet
+            DrawLists a = new DrawLists(list.clone(),new ArrayList<>());
             for(int j=0;j< list.length-i-1;j++){
                 //checks all the elements it hasn't sorted yet
                 if(list[j+1]<list[j]){
@@ -219,14 +244,30 @@ public class SortingAlgorithms extends JPanel implements ActionListener, KeyList
                 indexes.add(j);
                 indexes.add(j+1);
                 //added the two it swapped as indices
-                DrawLists a = new DrawLists(list.clone(),indexes);
+                a = new DrawLists(list.clone(),indexes);
                 //records the list post swap but with indices
+                int same =sameElements(list,sortedlist);
+                a.setT((double) same/sortedlist.length);
                 lists.add(a);
             }
             if(!swapped){
                 break;
             }
         }
+    }
+    public int sameElements(int[] a, int[] b){
+        int sameNumbers =0;
+        int i=0;
+        while(true){
+            if(a.length<=i||b.length<=i){
+                break;
+            }
+            if(a[i]==b[i]){
+                sameNumbers++;
+            }
+            i++;
+        }
+        return sameNumbers;
     }
     public void ListBubbleSort(ArrayList<Integer> list){//O(N^2) worst-case complexity
         for (int i=0;i< list.size()-1;i++){//fast list bubble sort to sort the indices array list while drawing
