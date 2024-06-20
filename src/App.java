@@ -21,7 +21,7 @@ public class App extends Frame{//an extension of Frame (a window)
         //sets the window to exit on close
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Creates an instance of Graphing through the Graph class, and adds it to the window giving focus to it
-        Graphing graph = new Graphing(boardWidth, boardHeight);
+        SortingAlgorithms graph = new SortingAlgorithms(boardWidth, boardHeight);
         frame.add(graph);
         frame.pack();
         graph.requestFocus();
